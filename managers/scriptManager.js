@@ -18,6 +18,8 @@ exports.newScript = function(req, res){
     res.send({"message":script})
 }
 
+//TODO: make script updator function to fetch new scripts on startup
+
 
 /** Get all json event action scripts from directory */
 function readScriptsInDirectory() {

@@ -22,7 +22,7 @@ class MasterDevices {
     }
 
     initialise() {
-        var name = this.comName
+        var masterDeviceName = this.comName
         this.timer = Date.now()
         this.port = new SerialPort(this.comName, {
             baudRate: this.baudRate,
@@ -36,9 +36,9 @@ class MasterDevices {
             var str = data;
             str = str.toString(); //Convert to string
             str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-            log(`msg_${name}`, str)
+            log(`msg_${masterDeviceName}`, str)
             try {
-                parseMessage(str, name)
+                parseMessage(str, masterDeviceName)
             } catch (err) {
                 log(err)
             }
@@ -69,14 +69,14 @@ class MasterDevices {
 }
 
 //might initialise in the class
-function parseMessage(packet, deviceName) {
+function parseMessage(packet, masterDeviceName) {
     var len = packet.length - 1
     if (packet[0] != "{" && packet[len] != "}") { //TODO: if json parsing errors check this....
         return;
     }
-    log(deviceName)
+    log(masterDeviceName)
     packet = JSON.parse(packet)
-    if (packet.ready == "true") { setDeviceReady(deviceName) }
+    if (packet.ready == "true") { setDeviceReady(masterDeviceName) }
     if (packet.eventType != "noneET") { /*DO SOME EVENT*/ }
     else { /*DO SOME ACTION*/ }
 
