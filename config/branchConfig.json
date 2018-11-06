@@ -1,7 +1,7 @@
 {
     "server_url"    :   "http://192.168.1.11:5001/",
     "branch_name"     :   "ex-revenge",
-    "selected_script" : "",
+    "selected_script" : "game_script.json",
     "start_script_command" : "",
     "end_script_command" : ""
 }

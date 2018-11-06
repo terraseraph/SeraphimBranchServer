@@ -3,13 +3,16 @@
 
 /** Keeps the current event action scripts in memory */
 var eventActionScripts = new Array()
-var selectedScript
+var config = require("../config/branchConfig.json")
+// var selectedScript = config.selected_script;
+var selectedScript = require("../config/branchConfig.json").selected_script;
+var selectedS = require(`../EventActionScripts/${selectedScript}`) 
 
 
 
 /** for local functions accessing the script */
 function getSelectedScriptLocal(){
-    return selectedScript
+    return selectedS
 }
 
 
@@ -29,7 +32,7 @@ exports.setSelectedScript = function(script){
 }
 
 exports.getSelectedScriptModule = function(){
-    return getSelectedScriptLocal
+    return getSelectedScriptLocal()
 }
 
 

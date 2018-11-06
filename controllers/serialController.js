@@ -2,7 +2,7 @@
 const SerialPort = require('serialport');
 const Readline = require('parser-readline')
 const log = require('./loggingController').log;
-const eventController = require('./eventActionController')
+const eventActionController = require('./eventActionController')
 
 //TODO: curently broadcast to all com ports the message to send.
 //in the script, if it has a type send only on that, otherwise send to all.
@@ -77,8 +77,8 @@ function parseMessage(packet, masterDeviceName) {
     log(masterDeviceName)
     packet = JSON.parse(packet)
     if (packet.ready == "true") { setDeviceReady(masterDeviceName) }
-    if (packet.eventType != "noneET") { /*DO SOME EVENT*/ }
-    else { /*DO SOME ACTION*/ }
+    if (packet.eventType != "noneET") { eventActionController.parseEvent(packet) }
+    else { eventActionController.parseAction(packet) }
 
 
 }
