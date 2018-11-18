@@ -5,7 +5,7 @@ var httpManager = require('../managers/httpManager')
 var log = require('./loggingController').log;
 var selectedScript = memoryManager.getSelectedScriptModule();
 
-
+var actions_array = new Array()
 /**
  * 
  * State Variables
@@ -29,9 +29,9 @@ exports.parseEvent = function (packet, callback) {
         .then((evt) => {
             log("script_state: ", script_state)
             log("non_repeatable_actions: ", non_repeatable_actions)
-            //dependencies are met or skipped if fromServer (http request)
+            /*dependencies are met or skipped if fromServer (http request)*/
             if (dependenciesCheck(evt) || fromServer) {
-                //Dependencies are met, check if the event is in the script_state
+                /*Dependencies are met, check if the event is in the script_state*/
                 scriptStateValidation(evt, (result) => {
                     if (result) {
                         evt.branch_name = sScript.branch_name;
@@ -59,7 +59,7 @@ exports.parseAction = function (packet, callback) {
     var actions_arr
     log("============ACTION=================")
     log(packet.fromId, packet.action, packet.actionType, packet.data)
-    //find the matching event
+    //find the matching action
     //maybe just send the action name from the server and parse it here....
     findAction(packet).then((act) => {
         log(act.message)
@@ -81,19 +81,23 @@ exports.parseAction = function (packet, callback) {
 }
 
 
-
-function forceAction(obj, callback){
+/**
+ * Forces the action, rather than checking for dependencies
+ * @param {*} obj json object 
+ * @param {*} callback array of actions as callback
+ */
+function forceAction(obj, callback) {
     var actions_to_complete = new Array();
     console.log("DEPECNDENCIES : ", obj.dependencies)
-    if (obj.dependencies.length < 1 || !obj.dependencies){
+    if (obj.dependencies.length < 1 || !obj.dependencies) {
         callback("no dependencies")
         return
     }
-    for (var i = 0 ; i < obj.dependencies.length; i ++){
+    for (var i = 0; i < obj.dependencies.length; i++) {
         var dep = obj.dependencies[i]
-        if (!non_repeatable_actions.includes(dep)){
+        if (!non_repeatable_actions.includes(dep)) {
             console.log("dependencey name: ", dep)
-            playAction(dep, function(data){
+            playAction(dep, function (data) {
                 actions_to_complete.push(data)
             })
         }
@@ -120,7 +124,9 @@ function playAction(action, callback) {
                     return log("Dependencies not met for acitons..")
                 }
             }
+            //TODO: make this a class model if it is cleaner later on
             let result = {
+                "messageType": "eventAction",
                 "fromId": Number(selectedScript.masterId),
                 "toId": Number(act[i].device_id),
                 "wait": act[i].wait,
@@ -148,14 +154,6 @@ function playAction(action, callback) {
         }
     }
     log("play_action ===CANNOT FIND===")
-}
-
-/**
- * Send the message to serial
- * @param {*} obj 
- */
-function sendToSerial(obj) {
-
 }
 
 /**
@@ -202,12 +200,6 @@ function eventStateSpecialActions(evt) { //TODO:make it check config
         script_state = new Array();
         log("ENDING Script script_state:", script_state)
     }
-}
-
-function sendToServer() {
-    return new Promise((resolve, reject) => {
-
-    })
 }
 
 

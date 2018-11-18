@@ -1,5 +1,10 @@
 //@ts-check
+var config = require("../config/branchConfig.json")
+
 
 /**
- * Make a config reader/writer here
+ * Gets the config file.
  */
+exports.getConfig = function(){
+    return config;
+}

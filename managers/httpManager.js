@@ -1,6 +1,10 @@
 //@ts-check
+
+//NOTE: use this httpManager to communicate with the controllers
+
 const $ = require('jquery')
-var config = require("../config/branchConfig.json")
+var config = require("./configManager").getConfig();
+var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController').log;
 
 exports.sendEventsToServer = function (message) {
@@ -10,5 +14,19 @@ exports.sendEventsToServer = function (message) {
             log(result)
             res(result)
         })
+    })
+}
+
+/** Get all master devices connected to serial */
+exports.getAllMasterDeviceInfo = function(req, res){
+    res.send(serialController.masterDeviceInfo())
+}
+
+/** Send message to serial device */
+exports.sendMessageToMasterSerial = function(req, res){
+    var deviceName = req.params.deviceName;
+    var message = req.params.message
+    serialController.sendMessageToMaster(deviceName, message, (result) => {
+        res.send(result)
     })
 }

@@ -4,8 +4,12 @@ const Readline = require('parser-readline')
 const log = require('./loggingController').log;
 const eventActionController = require('./eventActionController')
 
+
+var tempMasterName;
 //TODO: curently broadcast to all com ports the message to send.
 //in the script, if it has a type send only on that, otherwise send to all.
+
+//TODO: make a connect and disconnect for new serial devices
 
 var masterDeviceList = new Array() //list of the attached serial devices
 generateSerialDevices() //TODO: place this function in an init controller
@@ -18,6 +22,7 @@ class MasterDevices {
         this.baudRate = 115200;
         this.writeCount = 0;
         this.ready = false;
+        this.actionsArray = new Array();
         this.initialise();
     }
 
@@ -65,32 +70,95 @@ class MasterDevices {
         });
     }
 
-    
+    playAction(callback) {
+        if (this.actionsArray.length != undefined) {
+            if (!this.ready) {
+                callback(`${this.comName} Not ready`)
+                return
+            }
+            if (this.actionsArray[0] == "") {
+                callback("no message");
+                return
+            }
+            if (this.actionsArray[0] == "Cannot Repeat") {
+                callback('Cannot repeat');
+                return
+            }
+
+            this.write(this.actionsArray[0], (data) => {
+                log(data);
+                this.actionsArray.shift();
+                this.ready = false;
+            })
+        }
+    }
+
+
 }
 
-//might initialise in the class
+//TODO: might initialise in the class
 function parseMessage(packet, masterDeviceName) {
     var len = packet.length - 1
     if (packet[0] != "{" && packet[len] != "}") { //TODO: if json parsing errors check this....
         return;
     }
     log(masterDeviceName)
+    tempMasterName = masterDeviceName; // to call in the following functions
     packet = JSON.parse(packet)
-    if (packet.ready == "true") { setDeviceReady(masterDeviceName) }
-    if (packet.eventType != "noneET") { eventActionController.parseEvent(packet) }
-    else { eventActionController.parseAction(packet) }
-
-
+    if (packet.ready == "true") {
+        setDeviceReady(masterDeviceName);
+        playAction(masterDeviceName);
+        return;
+    }
+    if (packet.eventType != "noneET") { //if is event
+        eventActionController.parseEvent(packet, addActionsToMasterQueue)
+    }
+    else { //is action
+        eventActionController.parseAction(packet, addActionsToMasterQueue)
+    }
 }
 
-function setDeviceReady(name){
+/**
+ * Add actions to masters queue
+ * @param {*} actionsArray The actions to add to queue
+ */
+function addActionsToMasterQueue(actionsArray) {
+    //TODO: using the tempMasterName limits the useage to only actions on that device.. fix
     masterDeviceList.forEach(device => {
-        if(device.comName == name){
+        if (device.comName == tempMasterName) {
+            actionsArray.forEach(action => {
+                device.actionsArray.push(action)
+            });
+        }
+    })
+}
+
+/**
+ * Sets the master device ready to receive messages
+ * @param {*} name name of master device
+ */
+function setDeviceReady(name) {
+    masterDeviceList.forEach(device => {
+        if (device.comName == name) {
             device.ready = true
         }
     });
 }
 
+/**
+ * Plays the action queue for the device
+ * @param {*} masterName Master device name
+ */
+function playAction(masterName) {
+    masterName.playAction((data) => {
+        log(data)
+    })
+}
+
+
+/**
+ * Generates a list of all serial devices
+ */
 function generateSerialDevices() {
     SerialPort.list(function (err, result) {
         log(result)
@@ -99,6 +167,26 @@ function generateSerialDevices() {
             var dev = new MasterDevices(device)
             masterDeviceList.push(dev)
         });
+    })
+}
+
+
+/** Get all master devices connected to serial */
+exports.masterDeviceInfo = function(){
+    var result = {
+        masterDevices : masterDeviceList
+    }
+    return result;
+}
+
+
+exports.sendMessageToMaster = function(masterDeviceName, message, callback){
+    masterDeviceList.forEach(device => {
+        if(device.comName == masterDeviceName){
+            device.write(message, (result) => {
+                callback(result)
+            })
+        }
     })
 }
 

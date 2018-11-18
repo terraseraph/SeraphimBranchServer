@@ -3,9 +3,8 @@
 
 /** Keeps the current event action scripts in memory */
 var eventActionScripts = new Array()
-var config = require("../config/branchConfig.json")
-// var selectedScript = config.selected_script;
-var selectedScript = require("../config/branchConfig.json").selected_script;
+var config = require("./configManager").getConfig();
+var selectedScript = config.selected_script;
 var selectedS = require(`../EventActionScripts/${selectedScript}`) 
 
 
@@ -52,5 +51,5 @@ exports.showScripts = function(req, res){
 
 /** sends the currently selected script */
 exports.getSelectedScript = function(req, res){
-    res.send(getSelectedScriptLocal)
+    res.send(getSelectedScriptLocal())
 }

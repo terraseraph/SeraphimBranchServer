@@ -5,6 +5,7 @@ var router = express.Router();
 const sysInfo = require('../controllers/systemInformation')
 const scriptReader = require('../managers/scriptManager')
 const memoryManager = require('../managers/memoryManager')
+const httpManager = require('../managers/httpManager')
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -15,6 +16,11 @@ router.get('/', function(req, res, next) {
 router.get("/info", sysInfo.getSystemInfo)
 
 
+/** Get all master devices connected to serial */
+router.get('/devices', httpManager.getAllMasterDeviceInfo)
+
+/** Send command to serial (deviceName, message) */
+router.post('/devices/serialCommand', httpManager.sendMessageToMasterSerial)
 
 /**
  * 
