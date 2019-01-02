@@ -1,6 +1,7 @@
 //@ts-check
 const SerialPort = require('serialport');
-const Readline = require('parser-readline')
+// const Readline = require('parser-readline')
+var Readline = SerialPort.parsers.Readline;
 const log = require('./loggingController').log;
 const eventActionController = require('./eventActionController')
 
@@ -23,6 +24,12 @@ class MasterDevices {
         this.writeCount = 0;
         this.ready = false;
         this.actionsArray = new Array();
+
+        this.timer = null
+        this.port = null
+        this.parser = null
+
+
         this.initialise();
     }
 
@@ -33,10 +40,10 @@ class MasterDevices {
             baudRate: this.baudRate,
             lock: true,
         });
-        this.parser = this.port.pipe(new Readline({ delimiter: '\r\n' }))
         this.port.on('error', function (err) {
             log('Error: ', err.message);
         })
+        this.parser = this.port.pipe(new Readline({ delimiter: '\n' }))
         this.parser.on('data', function (data) {
             var str = data;
             str = str.toString(); //Convert to string
@@ -98,10 +105,13 @@ class MasterDevices {
 
 //TODO: might initialise in the class
 function parseMessage(packet, masterDeviceName) {
-    var len = packet.length - 1
-    if (packet[0] != "{" && packet[len] != "}") { //TODO: if json parsing errors check this....
+    if(!isJSON(packet)){
         return;
     }
+    // var len = packet.length - 1
+    // if (packet[0] != "{" && packet[len] != "}") { //TODO: if json parsing errors check this....
+    //     return;
+    // }
     log(masterDeviceName)
     tempMasterName = masterDeviceName; // to call in the following functions
     packet = JSON.parse(packet)
@@ -110,10 +120,14 @@ function parseMessage(packet, masterDeviceName) {
         playAction(masterDeviceName);
         return;
     }
-    if (packet.eventType != "noneET") { //if is event
+    if(packet.hasOwnProperty("heartbeat")){
+        log(packet);
+        return
+    }
+    if (packet.eventType != "noneET" && packet.hasOwnProperty("event")) { //if is event
         eventActionController.parseEvent(packet, addActionsToMasterQueue)
     }
-    else { //is action
+    else if(packet.actionType != "noneAT" && packet.hasOwnProperty("action")){ //is action
         eventActionController.parseAction(packet, addActionsToMasterQueue)
     }
 }
@@ -169,6 +183,15 @@ function generateSerialDevices() {
         });
     })
 }
+
+function isJSON(str) {
+    if (/^\s*$/.test(str)) return false;
+    str = str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@');
+    str = str.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']');
+    str = str.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
+    return (/^[\],:{}\s]*$/).test(str);
+
+  }
 
 
 /** Get all master devices connected to serial */

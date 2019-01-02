@@ -25,7 +25,7 @@ exports.setEventFromServer = function () {
 exports.parseEvent = function (packet, callback) {
     var sScript = selectedScript; //selected script
     var actionsArr = new Array()
-    findEvent(packet.event.name)
+    findEvent(packet.name)
         .then((evt) => {
             log("script_state: ", script_state)
             log("non_repeatable_actions: ", non_repeatable_actions)
