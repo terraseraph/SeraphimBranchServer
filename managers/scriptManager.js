@@ -5,6 +5,7 @@ var memoryManager = require('./memoryManager')
 var EventActionScriptModel = require('../models/eventActionScriptModel')
 const path = require('path');
 const fs = require('fs');
+var log = require('../controllers/loggingController').log;
 const directoryPath = path.join(__dirname, '../EventActionScripts');
 
 var eventActionScriptList = new Array();
@@ -25,13 +26,37 @@ exports.newScript = function(req, res){
 function readScriptsInDirectory() {
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
-            return console.log('Unable to scan directory: ' + err);
+            return log('Unable to scan directory: ' + err);
         }
         files.forEach(function (file) {
-            generateScriptObjects(file)
+            // generateScriptObjects(file)
+            var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
+            var pScript = JSON.parse(script)
+            eventActionScriptList.push(pScript);
         });
     });
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//NOTE: All the below is not needed -------------
+
 
 /** Gets all the json file and creates Event Action objects from them */
 function generateScriptObjects(file) {

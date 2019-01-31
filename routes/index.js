@@ -6,6 +6,7 @@ const sysInfo = require('../controllers/systemInformation')
 const scriptReader = require('../managers/scriptManager')
 const memoryManager = require('../managers/memoryManager')
 const httpManager = require('../managers/httpManager')
+const mqttController = require('../controllers/mqttController');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -40,8 +41,16 @@ router.post('/scripts', scriptReader.newScript)
  * Root server routes
  * - Used for sending events/actions to the nodes
  */
-router.post("/server/event");
-router.post("/server/action");
+router.post("/server/event", httpManager.serverEvent);
+router.post("/server/action", httpManager.serverEvent);
+
+
+
+/**
+ * Test routes
+ */
+router.get('/test/mqtt', mqttController.pubMqtt);
+router.get('/test/mqtt/nodes', mqttController.getNodeList);
 
 
 module.exports = router;

@@ -9,6 +9,8 @@ var config = {}; // local config file;
 
 configInit();
 
+exports.config = config;
+
 
 function configInit(){
     return new Promise((resolve, reject)=>{

@@ -17,7 +17,7 @@ generateSerialDevices() //TODO: place this function in an init controller
 
 
 
-class MasterDevices {
+class SerialMasterNode {
     constructor(details) {
         this.comName = details.comName;
         this.baudRate = 115200;
@@ -103,7 +103,19 @@ class MasterDevices {
 
 }
 
+
+exports.parseMessage = function(packet, masterDeviceName){
+    parseMessage(packet, masterDeviceName);
+}
+
 //TODO: might initialise in the class
+/**
+ * Parse message from serial
+ *
+ * @param {*} packet
+ * @param {*} masterDeviceName
+ * @returns
+ */
 function parseMessage(packet, masterDeviceName) {
     if(!isJSON(packet)){
         return;
@@ -131,6 +143,11 @@ function parseMessage(packet, masterDeviceName) {
         eventActionController.parseAction(packet, addActionsToMasterQueue)
     }
 }
+
+
+exports.addActionsToMasterQueue = function(actionsArray){
+    addActionsToMasterQueue(actionsArray);
+};
 
 /**
  * Add actions to masters queue
@@ -178,7 +195,7 @@ function generateSerialDevices() {
         log(result)
         result.forEach(device => {
             log(device)
-            var dev = new MasterDevices(device)
+            var dev = new SerialMasterNode(device)
             masterDeviceList.push(dev)
         });
     })

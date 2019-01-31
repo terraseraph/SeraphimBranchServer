@@ -16,6 +16,7 @@
     "jquery": "^3.3.1",
     "jsonfile": "^5.0.0",
     "morgan": "~1.9.0",
+    "mosca": "^2.8.3",
     "mqtt": "^2.18.8",
     "nodemon": "^1.18.5",
     "parser-readline": "^1.0.2",
