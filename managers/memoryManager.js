@@ -3,10 +3,14 @@
 
 /** Keeps the current event action scripts in memory */
 var eventActionScripts = new Array()
-var config = require("./configManager").getConfig();
-var selectedScript = config.selected_script;
-var selectedS = require(`../EventActionScripts/${selectedScript}`) 
+var configManager = require("./configManager");
+var selectedScript, config, selectedS;
 
+configManager.getConfig().then(c =>{
+    config = c;
+    selectedScript = config.selected_script;
+    selectedS = require(`../EventActionScripts/${selectedScript}`);
+})
 
 
 /** for local functions accessing the script */

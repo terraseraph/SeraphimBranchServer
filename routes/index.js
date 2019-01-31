@@ -35,4 +35,13 @@ router.post('/scripts', scriptReader.newScript)
 
 
 
+/**
+ * 
+ * Root server routes
+ * - Used for sending events/actions to the nodes
+ */
+router.post("/server/event");
+router.post("/server/action");
+
+
 module.exports = router;

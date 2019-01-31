@@ -1,5 +1,7 @@
 {
     "server_url"    :   "http://192.168.1.11:5001/",
+    "port"          : 4400,
+    "localUrl"      : "0.0.0.0",
     "branch_name"     :   "ex-revenge",
     "selected_script" : "game_script.json",
     "start_script_command" : "",

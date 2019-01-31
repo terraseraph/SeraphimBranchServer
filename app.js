@@ -1,5 +1,6 @@
 //@ts-check
 /**Packages */
+var config = require('./managers/configManager');
 var express = require('express');
 var exphbs  = require('express-handlebars');
 var path = require('path');
@@ -7,6 +8,9 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser')
 var logger = require('morgan');
 var http = require('http');
+
+var server, port, ipAddress;
+
 
 /**Local requires */
 var serialPort = require('./controllers/serialController')
@@ -28,13 +32,18 @@ app.set('view engine', 'handlebars');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/packages",express.static(path.join(__dirname, 'node_modules'))) //TODO: make individ paths for each (jquery..etc)
 
+
+
+
 /** Server Settings */
-var server = http.createServer(app);
-var port = 5002 //TODO: get this from a config file
-var ipAddress = "0.0.0.0"; //TODO: get this froma  config file too
-server.listen(port, ipAddress);
-server.on('error', onError);
-server.on('listening', onListening);
+config.getConfig().then(c =>{
+    server = http.createServer(app);
+    port = c.port;
+    ipAddress = c.localUrl;
+    server.listen(port, ipAddress);
+    server.on('error', onError);
+    server.on('listening', onListening);
+})
 
 
 /** Routes */
