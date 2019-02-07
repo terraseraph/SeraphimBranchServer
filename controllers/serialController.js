@@ -4,6 +4,7 @@ const SerialPort = require('serialport');
 var Readline = SerialPort.parsers.Readline;
 const log = require('./loggingController').log;
 const eventActionController = require('./eventActionController')
+const DeviceManager = require('../managers/deviceManager');
 
 
 var tempMasterName;
@@ -12,11 +13,11 @@ var tempMasterName;
 
 //TODO: make a connect and disconnect for new serial devices
 
-var masterDeviceList = new Array() //list of the attached serial devices
+var nodeDeviceList = new Array() //list of the attached serial devices
 generateSerialDevices() //TODO: place this function in an init controller
 
 
-
+// TODO: CURRENTLY UNUSED MOVED TO DEVICE MANAGER!!!!
 class SerialMasterNode {
     constructor(details) {
         this.comName = details.comName;
@@ -104,9 +105,7 @@ class SerialMasterNode {
 }
 
 
-exports.parseMessage = function(packet, masterDeviceName){
-    parseMessage(packet, masterDeviceName);
-}
+exports.parseMessage = parseMessage;
 
 //TODO: might initialise in the class
 /**
@@ -120,11 +119,7 @@ function parseMessage(packet, masterDeviceName) {
     if(!isJSON(packet)){
         return;
     }
-    // var len = packet.length - 1
-    // if (packet[0] != "{" && packet[len] != "}") { //TODO: if json parsing errors check this....
-    //     return;
-    // }
-    log(masterDeviceName)
+    log("parsing message from: ",masterDeviceName)
     tempMasterName = masterDeviceName; // to call in the following functions
     packet = JSON.parse(packet)
     if (packet.ready == "true") {
@@ -145,9 +140,7 @@ function parseMessage(packet, masterDeviceName) {
 }
 
 
-exports.addActionsToMasterQueue = function(actionsArray){
-    addActionsToMasterQueue(actionsArray);
-};
+exports.addActionsToMasterQueue = addActionsToMasterQueue;
 
 /**
  * Add actions to masters queue
@@ -155,7 +148,7 @@ exports.addActionsToMasterQueue = function(actionsArray){
  */
 function addActionsToMasterQueue(actionsArray) {
     //TODO: using the tempMasterName limits the useage to only actions on that device.. fix
-    masterDeviceList.forEach(device => {
+    DeviceManager.nodeDeviceList.forEach(device => {
         if (device.comName == tempMasterName) {
             actionsArray.forEach(action => {
                 device.actionsArray.push(action)
@@ -169,11 +162,12 @@ function addActionsToMasterQueue(actionsArray) {
  * @param {*} name name of master device
  */
 function setDeviceReady(name) {
-    masterDeviceList.forEach(device => {
-        if (device.comName == name) {
-            device.ready = true
-        }
-    });
+    DeviceManager.setDeviceReady(name);
+    // DeviceManager.nodeDeviceList.forEach(device => {
+    //     if (device.comName == name) {
+    //         device.ready = true
+    //     }
+    // });
 }
 
 /**
@@ -181,9 +175,10 @@ function setDeviceReady(name) {
  * @param {*} masterName Master device name
  */
 function playAction(masterName) {
-    masterName.playAction((data) => {
-        log(data)
-    })
+    // masterName.playAction((data) => {
+    //     log(data)
+    // })
+    DeviceManager.sendAction(masterName)
 }
 
 
@@ -195,8 +190,10 @@ function generateSerialDevices() {
         log(result)
         result.forEach(device => {
             log(device)
-            var dev = new SerialMasterNode(device)
-            masterDeviceList.push(dev)
+            // var dev = new SerialMasterNode(device)
+            // nodeDeviceList.push(dev)
+
+            DeviceManager.addNewDevice(device, DeviceManager.NodeType.SERIAL, true); //add new serial devices and overwrite
         });
     })
 }
@@ -214,14 +211,14 @@ function isJSON(str) {
 /** Get all master devices connected to serial */
 exports.masterDeviceInfo = function(){
     var result = {
-        masterDevices : masterDeviceList
+        nodeDevices : nodeDeviceList
     }
     return result;
 }
 
 
 exports.sendMessageToMaster = function(masterDeviceName, message, callback){
-    masterDeviceList.forEach(device => {
+    nodeDeviceList.forEach(device => {
         if(device.comName == masterDeviceName){
             device.write(message, (result) => {
                 callback(result)

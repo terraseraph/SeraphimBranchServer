@@ -11,9 +11,10 @@ exports.nodeDeviceList = nodeDeviceList;
 var settings = {
   port: 1883
 };
- 
+
 var server = new mosca.Server(settings);
 server.on('ready', setup);
+exports.server = server;
 
 // fired when the mqtt server is ready
 function setup() {
@@ -173,8 +174,17 @@ var s = {
   name : "sexcc"
 }
 
+exports.publishtMqtt = function(req,res){
+  var topic = req.params.topic;
+  var packet = JSON.stringify(req.body);
+  client.publish(topic, packet, (result)=>{
+    log(result);
+    res.send(result);
+  });
+}
+
 exports.pubMqtt = function (req, res){
-  client.publish('presence', JSON.stringify(s));
+  client.publish('10', JSON.stringify(s));
   res.send('sent')
 }
 

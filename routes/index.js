@@ -51,6 +51,7 @@ router.post("/server/action", httpManager.serverEvent);
  */
 router.get('/test/mqtt', mqttController.pubMqtt);
 router.get('/test/mqtt/nodes', mqttController.getNodeList);
+router.post('/test/mqtt/publish/:topic', mqttController.publishtMqtt);
 
 
 module.exports = router;
