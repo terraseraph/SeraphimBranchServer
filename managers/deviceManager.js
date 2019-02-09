@@ -404,7 +404,7 @@ class NodeDevice {
 
         MqttController.server.publish({
             topic: this.details.name,
-            payload: new Buffer(JSON.stringify(JSON.stringify(data))), //weird 2 stringify's?
+            payload: new Buffer(JSON.stringify(data)),
             qos: 1,
             retain: false
         }, () => {
