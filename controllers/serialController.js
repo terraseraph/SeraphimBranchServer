@@ -14,95 +14,7 @@ var tempMasterName;
 //TODO: make a connect and disconnect for new serial devices
 
 var nodeDeviceList = new Array() //list of the attached serial devices
-generateSerialDevices() //TODO: place this function in an init controller
-
-
-// TODO: CURRENTLY UNUSED MOVED TO DEVICE MANAGER!!!!
-class SerialMasterNode {
-    constructor(details) {
-        this.comName = details.comName;
-        this.baudRate = 115200;
-        this.writeCount = 0;
-        this.ready = false;
-        this.actionsArray = new Array();
-
-        this.timer = null
-        this.port = null
-        this.parser = null
-
-
-        this.initialise();
-    }
-
-    initialise() {
-        var masterDeviceName = this.comName
-        this.timer = Date.now()
-        this.port = new SerialPort(this.comName, {
-            baudRate: this.baudRate,
-            lock: true,
-        });
-        this.port.on('error', function (err) {
-            log('Error: ', err.message);
-        })
-        this.parser = this.port.pipe(new Readline({ delimiter: '\n' }))
-        this.parser.on('data', function (data) {
-            var str = data;
-            str = str.toString(); //Convert to string
-            str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-            log(`msg_${masterDeviceName}`, str)
-            try {
-                parseMessage(str, masterDeviceName)
-            } catch (err) {
-                log(err)
-            }
-        })
-    }
-
-    write(data, callback) {
-        this.writeCount += 1
-        log("Total writes to port: ", this.writeCount)
-        log("===== Data to be written to serial ===== ", data)
-
-        data = JSON.stringify(data)
-        this.port.write(data + "\n", function (err) {
-            if (err) {
-                log('Error on write: ', err.message);
-                return
-            }
-            log('======= message written to serial==========');
-            log(data)
-            log('======= time taken to send ==========')
-            log(Date.now() - this.timer, "ms")
-            this.ready = false
-            callback("data written")
-        });
-    }
-
-    playAction(callback) {
-        if (this.actionsArray.length != undefined) {
-            if (!this.ready) {
-                callback(`${this.comName} Not ready`)
-                return
-            }
-            if (this.actionsArray[0] == "") {
-                callback("no message");
-                return
-            }
-            if (this.actionsArray[0] == "Cannot Repeat") {
-                callback('Cannot repeat');
-                return
-            }
-
-            this.write(this.actionsArray[0], (data) => {
-                log(data);
-                this.actionsArray.shift();
-                this.ready = false;
-            })
-        }
-    }
-
-
-}
+// generateSerialDevices() //TODO: place this function in an init controller
 
 
 exports.parseMessage = parseMessage;
@@ -192,11 +104,13 @@ function generateSerialDevices() {
             log(device)
             // var dev = new SerialMasterNode(device)
             // nodeDeviceList.push(dev)
+            device.id = device.comName;
 
             DeviceManager.addNewDevice(device, DeviceManager.NodeType.SERIAL, true); //add new serial devices and overwrite
         });
     })
 }
+exports.generateSerialDevices = generateSerialDevices;
 
 function isJSON(str) {
     if (/^\s*$/.test(str)) return false;
@@ -214,17 +128,6 @@ exports.masterDeviceInfo = function(){
         nodeDevices : nodeDeviceList
     }
     return result;
-}
-
-
-exports.sendMessageToMaster = function(masterDeviceName, message, callback){
-    nodeDeviceList.forEach(device => {
-        if(device.comName == masterDeviceName){
-            device.write(message, (result) => {
-                callback(result)
-            })
-        }
-    })
 }
 
 

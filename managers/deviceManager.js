@@ -4,39 +4,82 @@ var Readline = SerialPort.parsers.Readline;
 const log = require('../controllers/loggingController').log;
 const SerialController = require('../controllers/serialController');
 const MqttController = require('../controllers/mqttController');
+const HttpManager = require('./httpManager');
 
 var nodeDeviceList = new Array();
-exports.nodeDeviceList = nodeDeviceList;
 
+exports.nodeDeviceList = nodeDeviceList;
 exports.addNewDevice = addNewDevice;
+exports.setDeviceReady = setDeviceReady;
+
 
 /**
  * Adds a new device to the list, with optional overwrite
  * @param {*} details
  * @param {boolean} [overwrite=false]
  */
-function addNewDevice(details, type, overwrite = false){
+function addNewDevice(details, type, overwrite = false) {
     var node = new NodeDevice(details, type);
-    for( var i = 0 ; i < nodeDeviceList.length; i++){
-        if ( nodeDeviceList[i].name === details.name){
-            if(overwrite){
-                // nodeDeviceList.splice(i, 1);
-                nodeDeviceList[i] = node;
-            }
-            else{
-                log('already exists, skipping')
-                continue;
-            }
-        }
-        else{
-            nodeDeviceList.push(node);
-            log('Adding new device', node)
-        }
+
+    if (!nodeExists(details.id)) {
+        nodeDeviceList.push(node);
+    } else if (nodeExists(details.id) && overwrite) {
+        findNodeIndex(details.id).then(i => {
+            nodeDeviceList[i] = node;
+        })
     }
 }
 
+function nodeExists(id) {
+    if(nodeDeviceList.length == 0){
+        return false;
+    }
+    for(let node of nodeDeviceList){
+        if (node.id == id) {
+            return (true);
+        }
 
-function setDeviceReady(deviceName){
+    }
+    return (false);
+}
+
+function findNodeIndex(id) {
+    return new Promise((resolve, reject) => {
+        for (var i = 0; i < nodeDeviceList.length; i++) {
+            if (nodeDeviceList[i].id == id) {
+                resolve(i);
+            }
+        }
+    })
+}
+
+/**
+ * Removes a node device from the list, also handles disconnect for serial
+ *
+ * @param {*} deviceId
+ */
+function removeDevice(deviceId) {
+    nodeDeviceList.forEach(device => {
+        if (device.id == deviceId) {
+            if (device.nodeType == NodeType.SERIAL) {
+                device.serial_disconnect(cb => {
+                    log(cb);
+                    nodeDeviceList.splice(nodeDeviceList.indexOf(device), 1);
+                })
+            }
+
+        }
+    });
+}
+exports.removeDevice = removeDevice;
+
+
+/**
+ * Sets the device as ready to receive commands
+ * Used to stop the device from getting overloaded with too many messages at once
+ * @param {*} deviceName
+ */
+function setDeviceReady(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
             device.ready = true
@@ -44,14 +87,14 @@ function setDeviceReady(deviceName){
         }
     });
 }
-exports.setDeviceReady = setDeviceReady;
+
 
 /**
  *Can use to force the next action down the pipe, if the ready has not triggered it yet
  *
  * @param {*} deviceName
  */
-function sendAction(deviceName){
+function sendAction(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
             device.playAction();
@@ -62,20 +105,92 @@ exports.sendAction = sendAction;
 
 // Replacement for an enum;
 const NodeType = {
-    MQTT : 'mqtt',
-    SERIAL : 'serial',
-    HTTP : 'http'
+    MQTT: 'mqtt',
+    SERIAL: 'serial',
+    HTTP: 'http'
 }
 exports.NodeType = NodeType;
 
 
-function getNodeInfo(){
-    var result = {
-        nodeDevices : nodeDeviceList
-    }
-    return result;
+function getAllNodeInfo() {
+    return new Promise((resolve, reject) => {
+        resolve(nodeDeviceList)
+    })
+}
+exports.getAllNodeInfo = getAllNodeInfo;
+
+function getNodeInfo(id) {
+    return new Promise((resolve, reject) => {
+        nodeDeviceList.forEach(device => {
+            if (device.id == id) {
+                resolve(device)
+            }
+        });
+    })
 }
 exports.getNodeInfo = getNodeInfo;
+
+//=====================================================
+//========== Direct message Handling ==================
+//=====================================================
+
+/**
+ *Direct message to serial device
+ *
+ * @param {*} deviceId
+ * @param {*} message
+ * @param {*} callback
+ */
+function directSerialMessage(deviceId, message, callback) {
+    nodeDeviceList.forEach(device => {
+        if (device.id == deviceId) {
+            device.serial_write(message, (result) => {
+                callback(result)
+            })
+        }
+    })
+}
+exports.directSerialMessage = directSerialMessage;
+
+
+
+/**
+ *Direct message to Mqtt device
+ *
+ * @param {*} deviceId
+ * @param {*} message
+ * @param {*} callback
+ */
+function directMqttMessage(deviceId, message, callback) {
+    nodeDeviceList.forEach(device => {
+        if (device.id == deviceId) {
+            device.mqtt_write(message, (result) => {
+                callback(result)
+            })
+        }
+    })
+}
+exports.directMqttMessage = directMqttMessage;
+
+/**
+ *Direct message to Http device
+ *
+ * @param {*} deviceId
+ * @param {*} message
+ * @param {*} callback
+ */
+function directHTTPMessage(deviceId, message, callback) {
+    nodeDeviceList.forEach(device => {
+        if (device.id == deviceId) {
+            device.http_write(message, (result) => {
+                callback(result)
+            })
+        }
+    })
+}
+exports.directHTTPMessage = directHTTPMessage;
+
+
 
 
 
@@ -110,64 +225,71 @@ class NodeDevice {
         this.port = null
         this.parser = null
         // ================
-        
+
         this.nodeType = nodeType;
         this.details = details;
-        
+
         this.init();
     }
 
-    init(){
-        switch(this.nodeType){
+    init() {
+        switch (this.nodeType) {
             case NodeType.MQTT:
                 this.mqtt_initialise();
-            break;
+                break;
             case NodeType.SERIAL:
                 this.serial_initialise();
-            break;
+                break;
             case NodeType.HTTP:
-            break;
+                this.http_initialise();
+                break;
             default:
         }
     }
 
-    write(message, callback){
-        switch(this.nodeType){
+    write(message, callback) {
+        switch (this.nodeType) {
             case NodeType.MQTT:
-                this.mqtt_write(message, (cb) =>{
+                this.mqtt_write(message, (cb) => {
                     callback(cb)
                 });
-            break;
+                break;
             case NodeType.SERIAL:
-                this.serial_write(message, (cb) =>{
+                this.serial_write(message, (cb) => {
                     callback(cb)
                 });
-            break;
+                break;
             case NodeType.HTTP:
-            break;
+                this.http_write(message, (cb) => {
+                    callback(cb)
+                });
+                break;
             default:
         }
     }
 
-    setReady(){
+    setReady() {
         this.ready = true;
         this.playAction();
     }
 
-    playAction(){
-        switch(this.nodeType){
+    playAction() {
+        switch (this.nodeType) {
             case NodeType.MQTT:
-                this.mqtt_playAction((cb) =>{
+                this.mqtt_playAction((cb) => {
                     log(cb)
                 });
-            break;
+                break;
             case NodeType.SERIAL:
-                this.serial_playAction((cb) =>{
+                this.serial_playAction((cb) => {
                     log(cb)
                 });
-            break;
+                break;
             case NodeType.HTTP:
-            break;
+                this.http_playAction((cb) => {
+                    log(cb)
+                });
+                break;
             default:
         }
     }
@@ -178,7 +300,8 @@ class NodeDevice {
 
     serial_initialise() {
         log("==================== Creating Node ====================", this.details)
-        var masterDeviceName = this.details.comName
+        var masterDeviceName = this.details.comName;
+        this.id = this.details.id;
         this.name = masterDeviceName;
         this.timer = Date.now()
         this.port = new SerialPort(this.details.comName, {
@@ -188,7 +311,9 @@ class NodeDevice {
         this.port.on('error', function (err) {
             log('Error: ', err.message);
         })
-        this.parser = this.port.pipe(new Readline({ delimiter: '\n' }))
+        this.parser = this.port.pipe(new Readline({
+            delimiter: '\n'
+        }))
         this.parser.on('data', function (data) {
             var str = data;
             str = str.toString(); //Convert to string
@@ -245,47 +370,55 @@ class NodeDevice {
         }
     }
 
+    serial_disconnect(callback) {
+        this.port.close(cb => {
+            callback(cb)
+        })
+    }
+
     // =======================================================
     // ========= MQTT ========================================
     // =======================================================
 
-    mqtt_initialise(){
+    mqtt_initialise() {
+        this.name = this.details.name;
+        this.id = this.details.id;
         var branchDetails = {
-          branchIp : "0.0.0.0",
-          branchName: "somebranch name",
-          usingScript: "script name"
+            branchIp: "0.0.0.0",
+            branchName: "somebranch name",
+            usingScript: "script name"
         }
         // publish branch details to the node
         MqttController.server.publish({
-          topic: this.details.name,
-          payload: Buffer.from(JSON.stringify(branchDetails)),
-          qos: 1,
-          retain:false
+            topic: this.details.name,
+            payload: Buffer.from(JSON.stringify(branchDetails)),
+            qos: 1,
+            retain: false
         }, () => {})
         log("================ created node =================")
-      }
-    
-      mqtt_write(data, callback) {
+    }
+
+    mqtt_write(data, callback) {
         this.writeCount += 1
         log("Total writes to this node: ", this.writeCount)
-    
+
         MqttController.server.publish({
-          topic: this.details.name,
-          payload: new Buffer(JSON.stringify(JSON.stringify(data))),
-          qos: 1,
-          retain:false
+            topic: this.details.name,
+            payload: new Buffer(JSON.stringify(JSON.stringify(data))), //weird 2 stringify's?
+            qos: 1,
+            retain: false
         }, () => {
-          log('======= message written to mqtt ==========');
-          log(data)
-          log('======= time taken to send ==========')
-          log(Date.now() - this.timer, "ms")
-          this.ready = false
-          callback("data written")
+            log('======= message written to mqtt ==========');
+            log(data)
+            log('======= time taken to send ==========')
+            log(Date.now() - this.timer, "ms")
+            this.ready = false
+            callback("data written")
         })
     }
-    
-    
-      mqtt_playAction(callback) {
+
+
+    mqtt_playAction(callback) {
         if (this.actionsArray.length != undefined) {
             if (!this.ready) {
                 callback(`${this.details.name} Not ready`)
@@ -299,7 +432,7 @@ class NodeDevice {
                 callback('Cannot repeat');
                 return
             }
-    
+
             this.mqtt_write(this.actionsArray[0], (data) => {
                 log(data);
                 this.actionsArray.shift();
@@ -308,5 +441,63 @@ class NodeDevice {
         }
     }
 
+
+    // =======================================================
+    // ========= HTTP ========================================
+    // =======================================================
+    http_initialise() {
+        this.name = this.details.name;
+        this.id = this.details.id;
+        this.ipAddress = this.details.ipAddress;
+        var branchDetails = {
+            branchIp: "0.0.0.0",
+            branchName: "somebranch name",
+            usingScript: "script name"
+        }
+        // publish branch details to the node
+        HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, JSON.stringify(branchDetails), "GET", (data) => {
+            log("================ created node =================")
+            log(data);
+        });
+    }
+
+    http_write(data, callback) {
+        this.writeCount += 1
+        log("Total writes to this node: ", this.writeCount)
+
+        HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, JSON.stringify(data), "GET", (data) => {
+
+            log('======= message written to http ==========');
+            log(data)
+            log('======= time taken to send ==========')
+            log(Date.now() - this.timer, "ms")
+            this.ready = false
+            callback("data written")
+        });
+    }
+
+
+    http_playAction(callback) {
+        if (this.actionsArray.length != undefined) {
+            if (!this.ready) {
+                callback(`${this.details.name} Not ready`)
+                return
+            }
+            if (this.actionsArray[0] == "") {
+                callback("no action");
+                return
+            }
+            if (this.actionsArray[0] == "Cannot Repeat") {
+                callback('Cannot repeat');
+                return
+            }
+
+            this.http_write(this.actionsArray[0], (data) => {
+                log(data);
+                this.actionsArray.shift();
+                this.ready = false;
+            })
+        }
+    }
 
 }

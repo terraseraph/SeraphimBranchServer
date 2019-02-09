@@ -17,11 +17,6 @@ router.get('/', function(req, res, next) {
 router.get("/info", sysInfo.getSystemInfo)
 
 
-/** Get all master devices connected to serial */
-router.get('/devices', httpManager.getAllMasterDeviceInfo)
-
-/** Send command to serial (deviceName, message) */
-router.post('/devices/serialCommand', httpManager.sendMessageToMasterSerial)
 
 /**
  * 
@@ -47,11 +42,37 @@ router.post("/server/action", httpManager.serverEvent);
 
 
 /**
+ * Direct node messaging
+ */
+router.post('/node/mqtt/:id', httpManager.deviceManager_directMqttMessage);
+router.post('/node/serial/:id', httpManager.deviceManager_directSerialMessage);
+router.post('/node/http/:id', httpManager.deviceManager_directHTTPMessage);
+
+
+/**
+ * Device Manager routes
+ */
+router.get('/node/:id', httpManager.deviceManager_info); // Get a nodes info
+router.get('/node', httpManager.deviceManager_infoAll); // Get all node info
+router.post('/node', httpManager.DeviceManager_createNewNode); // Create new node
+router.patch('/node', httpManager.DeviceManager_updateNode)
+router.delete('/node/:id', httpManager.DeviceManager_deleteNode); // Delete and disconnect a node
+
+
+/**
+ * Serial Controller
+ */
+router.get('/serial/refresh', httpManager.serialController_refresh)
+
+
+
+/**
  * Test routes
  */
-router.get('/test/mqtt', mqttController.pubMqtt);
 router.get('/test/mqtt/nodes', mqttController.getNodeList);
 router.post('/test/mqtt/publish/:topic', mqttController.publishtMqtt);
+
+
 
 
 module.exports = router;

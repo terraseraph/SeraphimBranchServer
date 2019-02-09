@@ -1,6 +1,7 @@
 //@ts-check
 //https://github.com/espressif/esp-mqtt
 const log = require('./loggingController').log;
+const DeviceManager = require('../managers/deviceManager');
 var mqtt = require('mqtt')
 var mosca = require('mosca');
 
@@ -28,7 +29,6 @@ server.on('clientConnected', function(client) {
 
 // fired when a message is received
 server.on('published', function(packet, client) {
-  console.log('Published : ', packet.payload);
   console.log('Published : ', packet.payload.toString());
   createMqttNode(packet);
 });
@@ -51,6 +51,7 @@ server.on('clientDisconnecting', function(client) {
 // fired when a client is disconnected
 server.on('clientDisconnected', function(client) {
   console.log('clientDisconnected : ', client.id);
+  DeviceManager.removeDevice(client.id);
 });
 
 
@@ -59,98 +60,24 @@ function createMqttNode(packet){
   if(isJSON(details)){
     details = JSON.parse(details);
     if(details.hasOwnProperty("JOAT_CONNECT")){
-      let node = new MqttMasterNode(details);
-      nodeDeviceList.push(node);
+      // let node = new MqttMasterNode(details);
+      // details.ipAddress = int2ip(details.ipAddress);
+      DeviceManager.addNewDevice(details, DeviceManager.NodeType.MQTT, true);
+      // nodeDeviceList.push(node);
     }
   }
 }
 
-
-
-
-
-// when a node connects
-  // make a new mqtmasternode
-  // node sends through its details {name, id, thoer stuff}
-
-class MqttMasterNode {
-  constructor(details){
-    this.name = details.name; //the topic to publish to
-    this.ipAddress = ""; // the nodes ip address probably
-    this.id = null;
-    this.ready = false;
-    this.actionsArray = new Array();
-    this.writeCount = 0;
-    this.timer = null;
-
-    this.initialise();
-  }
-
-  initialise(){
-    var branchDetails = {
-      branchIp : "0.0.0.0",
-      branchName: "somebranch name",
-      usingScript: "script name"
-    }
-    // publish branch details to the node
-    server.publish({
-      topic: this.name,
-      payload: Buffer.from(JSON.stringify(branchDetails)),
-      qos: 1,
-      retain:false
-    }, () => {})
-    log("================ created node =================")
-  }
-
-  write(data, callback) {
-    this.writeCount += 1
-    log("Total writes to this node: ", this.writeCount)
-
-    server.publish({
-      topic: this.name,
-      payload: new Buffer(JSON.stringify(JSON.stringify(data))),
-      qos: 1,
-      retain:false
-    }, () => {
-      log('======= message written to mqtt ==========');
-      log(data)
-      log('======= time taken to send ==========')
-      log(Date.now() - this.timer, "ms")
-      this.ready = false
-      callback("data written")
-    })
-}
-
-
-  playAction(callback) {
-    if (this.actionsArray.length != undefined) {
-        if (!this.ready) {
-            callback(`${this.name} Not ready`)
-            return
-        }
-        if (this.actionsArray[0] == "") {
-            callback("no message");
-            return
-        }
-        if (this.actionsArray[0] == "Cannot Repeat") {
-            callback('Cannot repeat');
-            return
-        }
-
-        this.write(this.actionsArray[0], (data) => {
-            log(data);
-            this.actionsArray.shift();
-            this.ready = false;
-        })
-    }
-}
+function int2ip (ipInt) {
+  ipInt = parseInt(ipInt);
+  return ( (ipInt & 255) +'.' + (ipInt>>8 & 255) +'.' + (ipInt>>16 & 255) +'.' +  (ipInt>>>24));
 }
 
 
 
 var client = mqtt.connect('http://localhost');
  
-client.subscribe('presence');
+client.subscribe('root');
  
 client.on('message', function(topic, message) {
   console.log(message.toString());
@@ -158,21 +85,12 @@ client.on('message', function(topic, message) {
 });
 
 client.on('connect', function () {
-  client.subscribe('presence', function (err) {
+  client.subscribe('root', function (err) {
     if (!err) {
-      client.publish('presence', 'Hello mqtt')
+      client.publish('root', 'Hello mqtt')
     }
   })
 })
- 
- 
-console.log('Client started...');
-
-
-var s = {
-  JOAT_CONNECT : "true",
-  name : "sexcc"
-}
 
 exports.publishtMqtt = function(req,res){
   var topic = req.params.topic;
@@ -181,11 +99,6 @@ exports.publishtMqtt = function(req,res){
     log(result);
     res.send(result);
   });
-}
-
-exports.pubMqtt = function (req, res){
-  client.publish('10', JSON.stringify(s));
-  res.send('sent')
 }
 
 exports.getNodeList = function(req, res){

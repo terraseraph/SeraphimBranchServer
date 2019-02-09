@@ -7,25 +7,14 @@ var config = require("./configManager").config;
 var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController').log;
 var EventActionController = require("../controllers/eventActionController");
+var DeviceManager = require('./deviceManager');
 
 var serverRoutes = {
     script : `/script`,
 }
 
 
-/** Get all master devices connected to serial */
-exports.getAllMasterDeviceInfo = function(req, res){
-    res.send(serialController.masterDeviceInfo())
-}
 
-/** Send message to serial device */
-exports.sendMessageToMasterSerial = function(req, res){
-    var deviceName = req.params.deviceName;
-    var message = req.params.message
-    serialController.sendMessageToMaster(deviceName, message, (result) => {
-        res.send(result)
-    })
-}
 
 
 
@@ -75,4 +64,92 @@ exports.getRootServerScript = function(scriptName){
             resolve(script);
         });
     });
+}
+
+
+
+// =============================================================================== //
+// ========================= HTTP from Device manager =========================== //
+// ============================================================================= //
+exports.deviceManager_sendHttp = function(address, message, type = "GET", callback){
+    if(type == "GET"){
+        $.get(`${address}/?BROADCAST=${message}`, (res)=>{
+            callback(res);
+        })
+    }
+    else if(type == "POST"){
+        $.post(address, message, (result)=>{
+            callback(result)
+        })
+    }
+}
+
+
+
+// =============================================================================== //
+// ========================= HTTP for Device manager =========================== //
+// ============================================================================= //
+
+exports.deviceManager_info = function(req, res){
+    DeviceManager.getNodeInfo(req.params.id).then(info=>{
+        res.send(info);
+    })
+}
+
+exports.DeviceManager_createNewNode = function(req, res){
+    DeviceManager.addNewDevice(req.body.details, req.body.type, true)
+    res.send("Node created")
+}
+
+exports.DeviceManager_updateNode = function(req, res){
+    res.send("Node updated ------- TODO: NOT DONE YET")
+}
+
+exports.DeviceManager_deleteNode = function(req, res){
+    DeviceManager.removeDevice(req.params.id);
+    res.send("Node removed")
+}
+
+
+/** Get all master devices connected to serial */
+exports.deviceManager_infoAll = function(req, res){
+    DeviceManager.getAllNodeInfo().then(result=>{
+        res.send(result);
+    })
+}
+
+
+exports.deviceManager_directMqttMessage = function(req,res){
+    var id = req.body.id;
+    var message = req.body.message;
+    DeviceManager.directMqttMessage(id, message, (result)=>{
+        res.send(result);
+    })
+}
+
+exports.deviceManager_directSerialMessage = function(req,res){
+    var id = req.body.id;
+    var message = req.body.message
+    DeviceManager.directSerialMessage(id, message, (result) => {
+        res.send(result)
+    })
+}
+
+exports.deviceManager_directHTTPMessage = function(req,res){
+    var id = req.body.id;
+    var message = req.body.message
+    DeviceManager.directHTTPMessage(id, message, (result) => {
+        res.send(result)
+    })
+}
+
+
+
+
+// =============================================================================== //
+// ========================= Serial Controller ================================== //
+// ============================================================================= //
+exports.serialController_refresh = function(req, res){
+    serialController.generateSerialDevices();
+    res.send("Refreshed");
 }
