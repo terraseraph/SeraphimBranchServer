@@ -2,7 +2,8 @@
 
 //NOTE: use this httpManager to communicate with the controllers
 
-const $ = require('jquery')
+// var $ = require('jQuery')
+var request = require('request');
 var config = require("./configManager").config;
 var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController').log;
@@ -73,16 +74,33 @@ exports.getRootServerScript = function(scriptName){
 // ============================================================================= //
 exports.deviceManager_sendHttp = function(address, message, type = "GET", callback){
     if(type == "GET"){
-        $.get(`${address}/?BROADCAST=${message}`, (res)=>{
-            callback(res);
-        })
+        request
+            .get(`${address}/?BROADCAST=${JSON.stringify(message)}`)
+            .on('response', function(response) {
+                callback(response);
+            })
+        // $.get(`${address}/?BROADCAST=${message}`, function(res){
+        //     callback(res);
+        // })
     }
     else if(type == "POST"){
-        $.post(address, message, (result)=>{
-            callback(result)
+        var options = {
+            method: 'post',
+            body: message,
+            json: true,
+            url: address
+        }
+        request(options, (err, res, body)=>{
+            callback(res)
         })
+        // $.post(address, message, (result)=>{
+        //     callback(result)
+        // })
     }
 }
+
+
+
 
 
 

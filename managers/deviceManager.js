@@ -383,6 +383,7 @@ class NodeDevice {
     mqtt_initialise() {
         this.name = this.details.name;
         this.id = this.details.id;
+        this.ipAddress = this.details.ipAddress
         var branchDetails = {
             branchIp: "0.0.0.0",
             branchName: "somebranch name",
@@ -465,7 +466,7 @@ class NodeDevice {
         this.writeCount += 1
         log("Total writes to this node: ", this.writeCount)
 
-        HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, JSON.stringify(data), "GET", (data) => {
+        HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, data, "GET", (data) => {
 
             log('======= message written to http ==========');
             log(data)

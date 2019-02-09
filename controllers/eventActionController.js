@@ -1,5 +1,5 @@
 //@ts-check
-const $ = require('jquery');
+// const $ = require('jquery');
 var memoryManager = require('../managers/memoryManager');
 var httpManager = require('../managers/httpManager')
 var log = require('./loggingController').log;
