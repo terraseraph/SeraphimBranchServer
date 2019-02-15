@@ -36,6 +36,7 @@ app.use("/packages",express.static(path.join(__dirname, 'node_modules'))) //TODO
 
 
 /** Server Settings */
+config.configInit;
 config.getConfig().then(c =>{
     server = http.createServer(app);
     port = c.port;

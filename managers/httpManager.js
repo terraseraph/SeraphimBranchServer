@@ -4,7 +4,7 @@
 
 // var $ = require('jQuery')
 var request = require('request');
-var config = require("./configManager").config;
+var config = require("./configManager").configJson;
 var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController').log;
 var EventActionController = require("../controllers/eventActionController");
@@ -37,11 +37,16 @@ exports.serverEvent = function(req, res){
 
 
 exports.sendEventsToServer = function (message) {
-    return new Promise((res, rej) => {
-        $.post(config.serverUrl, message, (data) => {
-            var result = { "Success": data }
-            log(result)
-            res(result)
+    return new Promise((resolve, reject) => {
+        var options = {
+            method: 'post',
+            body: message,
+            json: true,
+            url: config.serverUrl
+        }
+        request(options, (err, res, body)=>{
+            var result = { "Success": res}
+            resolve(result)
         })
     })
 }
@@ -53,17 +58,37 @@ exports.sendEventsToServer = function (message) {
 // ============================================================================= //
 exports.getRootServerScripts = function(){
     return new Promise((resolve, reject) => {
-        $.get(config.serverUrl + serverRoutes.script, function(scripts){
-            resolve(scripts);
-        });
+        
+        var address = (config.server_url + serverRoutes.script);
+        var options = {
+            method: 'get',
+            url: address
+        }
+        request(options, (err, res, body)=>{
+            resolve(body)
+        })
     });
 }
 
 exports.getRootServerScript = function(scriptName){
     return new Promise((resolve, reject) => {
-        $.get(config.serverUrl + serverRoutes.script + `/${scriptName}`, function(script){
-            resolve(script);
-        });
+        var address = (config.server_url + serverRoutes.script + `/${scriptName}`);
+        var options = {
+            method: 'get',
+            url: address
+        }
+        request(options, (err, res, body)=>{
+            resolve(body)
+        })
+
+
+
+
+        // request
+        // .get(address)
+        // .on('response', function(response) {
+        //     resolve(response);
+        // })
     });
 }
 
@@ -74,14 +99,13 @@ exports.getRootServerScript = function(scriptName){
 // ============================================================================= //
 exports.deviceManager_sendHttp = function(address, message, type = "GET", callback){
     if(type == "GET"){
+        var url = encodeURI(`${address}/?BROADCAST=${JSON.stringify(message)}`);
+        log(url);
         request
-            .get(`${address}/?BROADCAST=${JSON.stringify(message)}`)
+            .get(url)
             .on('response', function(response) {
                 callback(response);
             })
-        // $.get(`${address}/?BROADCAST=${message}`, function(res){
-        //     callback(res);
-        // })
     }
     else if(type == "POST"){
         var options = {
@@ -93,9 +117,6 @@ exports.deviceManager_sendHttp = function(address, message, type = "GET", callba
         request(options, (err, res, body)=>{
             callback(res)
         })
-        // $.post(address, message, (result)=>{
-        //     callback(result)
-        // })
     }
 }
 

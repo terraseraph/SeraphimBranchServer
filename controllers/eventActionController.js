@@ -3,7 +3,7 @@
 var memoryManager = require('../managers/memoryManager');
 var httpManager = require('../managers/httpManager')
 var log = require('./loggingController').log;
-var selectedScript = memoryManager.getSelectedScriptModule();
+var selectedScript;
 
 var actions_array = new Array()
 /**
@@ -23,7 +23,7 @@ exports.setEventFromServer = function () {
 
 /** Find the event */
 exports.parseEvent = function (packet, callback) {
-    var sScript = selectedScript; //selected script
+    selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
     findEvent(packet, false)
         .then((evt) => {
@@ -34,7 +34,7 @@ exports.parseEvent = function (packet, callback) {
                 /*Dependencies are met, check if the event is in the script_state*/
                 scriptStateValidation(evt, (result) => {
                     if (result) {
-                        evt.branch_name = sScript.branch_name;
+                        evt.branch_name = selectedScript.branch_name;
                         sendToServer(evt)
                         eventStateSpecialActions(evt);
                         if (evt.actions.length > 0) {
@@ -56,7 +56,7 @@ exports.parseEvent = function (packet, callback) {
 
 /** Force event by name */
 exports.forceEvent = function(packet, callback){
-    var sScript = selectedScript; //selected script
+    selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
     findEvent(packet, true).then(evt =>{
         log("script_state: ", script_state)
@@ -66,7 +66,7 @@ exports.forceEvent = function(packet, callback){
             /*Dependencies are met, check if the event is in the script_state*/
             scriptStateValidation(evt, (result) => {
                 if (result) {
-                    evt.branch_name = sScript.branch_name;
+                    evt.branch_name = selectedScript.branch_name;
                     sendToServer(evt)
                     eventStateSpecialActions(evt);  //TODO: use triggers instead!!!!
                     if (evt.actions.length > 0) {
@@ -119,7 +119,7 @@ exports.parseAction = function (packet, callback) {
  */
 function forceAction(obj, callback) {
     var actions_to_complete = new Array();
-    console.log("DEPECNDENCIES : ", obj.dependencies)
+    log("DEPECNDENCIES : ", obj.dependencies)
     if (obj.dependencies.length < 1 || !obj.dependencies) {
         callback("no dependencies")
         return
@@ -127,7 +127,7 @@ function forceAction(obj, callback) {
     for (var i = 0; i < obj.dependencies.length; i++) {
         var dep = obj.dependencies[i]
         if (!non_repeatable_actions.includes(dep)) {
-            console.log("dependencey name: ", dep)
+            log("dependencey name: ", dep)
             playAction(dep, function (data) {
                 actions_to_complete.push(data)
             })
@@ -157,6 +157,21 @@ function playAction(action, callback) {
             }
             //TODO: make this a class model if it is cleaner later on
             let result = {
+                toId : Number(act[i].device_id),
+                state : {
+                    type : "action",
+                    message : {
+                        toId : Number(act[i].device_id),
+                        wait : act[i].wait,
+                        event : act[i].event,
+                        eventType : act[i].eventType,
+                        action : act[i].action,
+                        actionType : act[i].actionType,
+                        data : act[i].data
+                    }
+                }
+            }
+            let result_old = {
                 "messageType": "eventAction",
                 "fromId": Number(selectedScript.masterId),
                 "toId": Number(act[i].device_id),
@@ -239,23 +254,23 @@ function eventStateSpecialActions(evt) { //TODO:make it check config
  * @param {*} obj 
  */
 function dependenciesCheck(obj) {
-    console.log("======== dependencies_check() ========")
+    log("======== dependencies_check() ========")
     var dependencies_ok;
     if (obj.dependencies.length > 0) {
         for (var x = 0; x < obj.dependencies.length; x++) {
             if (script_state.indexOf(obj.dependencies[x]) !== -1) {
                 dependencies_ok = true;
-                console.log("dependencies met: ", obj.dependencies[x])
+                log("dependencies met: ", obj.dependencies[x])
             } else {
                 dependencies_ok = false;
-                console.log("===== All Dependencies not met ====")
+                log("===== All Dependencies not met ====")
                 break;
             }
         }
     } else {
         dependencies_ok = true;
     }
-    if (dependencies_ok) console.log("===== All Dependencies met ====");
+    if (dependencies_ok) log("===== All Dependencies met ====");
     return dependencies_ok
 }
 
@@ -264,6 +279,8 @@ function dependenciesCheck(obj) {
  * @param {*} packet Event name to find
  */
 function findEvent(packet, findByName = false) {
+    log("============== Searching Selected Script =============");
+    log(selectedScript.name);
     var evt;
     return new Promise((resolve, reject) => {
         if (findByName) {
@@ -276,13 +293,13 @@ function findEvent(packet, findByName = false) {
             for (var i = 0; i < selectedScript.events.length; i++) {
                 evt = selectedScript.events[i]
                 if ((evt.device_id == packet.fromId) && (evt.event == packet.event) && (arraysEqual(evt.data, packet.data) || evt.data == packet.data)) {
-                    console.log("script state: ", script_state)
-                    console.log("non_repeatable_actions: ", non_repeatable_actions)
+                    log("script state: ", script_state)
+                    log("non_repeatable_actions: ", non_repeatable_actions)
                     resolve(evt);
                 }
             }
         }
-
+        log("====== Cannot find matching event ========")
     })
 }
 
@@ -308,7 +325,7 @@ function findAction(actionName) {
  * @param {Array} b 
  */
 function arraysEqual(a, b) {
-    console.log("array comapre")
+    log("array comapre")
     return JSON.stringify(a) == JSON.stringify(b);
 
 }

@@ -1,21 +1,26 @@
 //@ts-check
-var EventModel = require('../models/eventModel')
-var ActionModel = require('../models/actionModel')
-var memoryManager = require('./memoryManager')
-var EventActionScriptModel = require('../models/eventActionScriptModel')
+var EventModel = require('../models/eventModel');
+var ActionModel = require('../models/actionModel');
+var memoryManager = require('./memoryManager');
+var EventActionScriptModel = require('../models/eventActionScriptModel');
 const path = require('path');
 const fs = require('fs');
 var log = require('../controllers/loggingController').log;
 const directoryPath = path.join(__dirname, '../EventActionScripts');
+const jsonfile = require("jsonfile");
+var configManager = require("./configManager");
+const HttpManager = require('./httpManager');
 
 var eventActionScriptList = new Array();
 readScriptsInDirectory(); //TODO: put this in an init file or something
+updateScriptsFromRootServer();
 
 
 /** Create new script from http request */
 exports.newScript = function(req, res){
     var script = req.body
-    createScriptModel(script)
+    // createScriptModel(script)
+    createLocalScript(script);
     res.send({"message":script})
 }
 
@@ -37,9 +42,31 @@ function readScriptsInDirectory() {
     });
 }
 
+/**
+ *Update scripts from root server.
+ *Scripts are defined in config.json
+ */
+function updateScriptsFromRootServer(){
+    configManager.getConfig().then(config =>{
+        for(var scriptName of config.branch_scripts){
+            HttpManager.getRootServerScript(scriptName).then(script =>{
+                createLocalScript(script);
+                log(script);
+            })
+        }
+    })
+}
 
 
-
+/**
+ * Creates a local copy of the script to the file directory
+ *
+ * @param {*} script
+ */
+function createLocalScript(script){
+    script = JSON.parse(script);
+    jsonfile.writeFileSync(directoryPath + `/${script.name}.json`, script, {spaces: 2});
+}
 
 
 

@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "D:\\Documents\\Arduino\\tools\\**",
+                "D:\\Documents\\Arduino\\hardware\\espressif\\esp32\\**"
+            ],
+            "forcedInclude": []
+        }
+    ]
+}

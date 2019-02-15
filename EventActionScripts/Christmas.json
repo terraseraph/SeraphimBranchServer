@@ -1,0 +1,289 @@
+{
+  "name": "Christmas",
+  "id": "0",
+  "masterId": "255",
+  "time": {
+    "hours": "0",
+    "minutes": "30",
+    "seconds": "0"
+  },
+  "states": [
+    {
+      "name": "start_game",
+      "active": false
+    },
+    {
+      "name": "end_game",
+      "active": false
+    },
+    {
+      "name": "open_doo",
+      "active": true
+    },
+    {
+      "name": "cnu5yncy",
+      "active": false
+    }
+  ],
+  "events": [
+    {
+      "id": "1",
+      "name": "start_Christmas_game",
+      "device_id": "10",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "0",
+      "description": "the beginning of the game, code typed or something",
+      "dependencies": [],
+      "actions": [
+        "chest_door_start"
+      ],
+      "message": "started the game",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        },
+        {
+          "name": "the_mighty_one",
+          "active": true
+        },
+        {
+          "name": "open_doorcftbtrrtx",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "tetris",
+      "device_id": "25",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "description": "tetris0",
+      "dependencies": [],
+      "actions": [
+        "top_drawer_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "Tetris",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "phone_continue",
+      "device_id": "12",
+      "event": "callOut",
+      "eventType": "phoneET",
+      "data": "1#",
+      "description": "phone call",
+      "dependencies": [
+        "phone1"
+      ],
+      "actions": [
+        "continue_phone"
+      ],
+      "can_toggle": "true",
+      "message": "phone out",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "end_open_door",
+      "device_id": "13",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "description": "players opened door after phone call",
+      "dependencies": [
+        "phone1"
+      ],
+      "actions": [
+        "second_drawer_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "opened jack_in_the_box",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "states": [
+        {
+          "name": "open_door",
+          "active": true
+        }
+      ],
+      "id": "111",
+      "name": "the blockes@#@#",
+      "device_id": "dsfewf",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "fefaewf",
+      "description": "aesfaef",
+      "dependencies": [
+        "end_game"
+      ],
+      "actions": [],
+      "message": ""
+    }
+  ],
+  "actions": [
+    {
+      "id": "7",
+      "name": "chest_door_toggle",
+      "device_id": "31",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "chest_door_on",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "top_drawer_toggle",
+      "device_id": "22",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "5",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "Top drawer open",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "second_drawer_toggle",
+      "device_id": "22",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "second_drawer_on",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "vent_latch_toggle",
+      "device_id": "21",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "vent_latch_on",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "name": "end video",
+      "trigger": "end_game",
+      "audio": "anoptherfile.mp3",
+      "video": "another video.mp4",
+      "hint": "",
+      "can_toggle": "true"
+    },
+    {
+      "name": "Best trigger",
+      "trigger": "start_game",
+      "audio": "audio.mp3",
+      "video": "movie.mp4",
+      "hint": "sopme hint",
+      "can_toggle": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "Start hint",
+      "hint": "Read the whole thing bro"
+    },
+    {
+      "name": "not hint",
+      "hint": "make sure you drop some loose change"
+    },
+    {
+      "name": "end hint",
+      "hint": "waughhhh"
+    }
+  ]
+}

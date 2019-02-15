@@ -10,7 +10,7 @@ exports.getSystemInfo = function(req, res){
     getInfo().then(data => res.send(data))
 }
 
-
+//TODO: print the config too 
 //Gets OS, system & cpu
 function getInfo(){
     var result = {}

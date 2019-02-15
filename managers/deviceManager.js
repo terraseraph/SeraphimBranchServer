@@ -130,6 +130,23 @@ function getNodeInfo(id) {
 }
 exports.getNodeInfo = getNodeInfo;
 
+
+
+function updateMeshHeartbeat(nodeId, heartbeatPacket){
+    getNodeInfo(nodeId).then(node =>{
+        node.updateHeartbeat(heartbeatPacket);
+    })
+}
+exports.updateMeshHeartbeat = updateMeshHeartbeat;
+
+
+function updateBridgeMemory(nodeId, packet){
+    getNodeInfo(nodeId).then(node =>{
+        node.updateBridgeStatus(packet);
+    })
+}
+exports.updateBridgeMemory = updateBridgeMemory;
+
 //=====================================================
 //========== Direct message Handling ==================
 //=====================================================
@@ -228,6 +245,8 @@ class NodeDevice {
 
         this.nodeType = nodeType;
         this.details = details;
+        this.meshNodes = {};
+        this.bridgeStatus = {};
 
         this.init();
     }
@@ -292,6 +311,16 @@ class NodeDevice {
                 break;
             default:
         }
+    }
+
+    updateHeartbeat(heartbeatPacket){
+        this.meshNodes[`${heartbeatPacket.heartbeat.hardwareId}`] = heartbeatPacket.heartbeat;
+    }
+
+    updateBridgeStatus(packet){
+        log("=====UPDATING BRIDGE STATUS======");
+        log(packet);
+        this.bridgeStatus = packet;
     }
 
     // =======================================================

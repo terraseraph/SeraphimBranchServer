@@ -3,21 +3,27 @@
 
 /** Keeps the current event action scripts in memory */
 var eventActionScripts = new Array()
+const path = require('path');
+const fs = require('fs');
 var configManager = require("./configManager");
+var log = require('../controllers/loggingController').log;
+var jsonfile = require("jsonfile");
 var selectedScript, config, selectedS;
+var currentScript;
 
 configManager.getConfig().then(c =>{
     config = c;
     selectedScript = config.selected_script;
     selectedS = require(`../EventActionScripts/${selectedScript}`);
+    currentScript = jsonfile.readFileSync(path.join(__dirname, `../EventActionScripts/${selectedScript}`));
 })
 
 
 /** for local functions accessing the script */
-function getSelectedScriptLocal(){
+function getSelectedScript(){
     return selectedS
 }
-
+exports.getSelectedScript = getSelectedScript;
 
 /** 
  * 
@@ -35,7 +41,7 @@ exports.setSelectedScript = function(script){
 }
 
 exports.getSelectedScriptModule = function(){
-    return getSelectedScriptLocal()
+    return getSelectedScript()
 }
 
 
@@ -51,9 +57,4 @@ exports.getSelectedScriptModule = function(){
 exports.showScripts = function(req, res){
     res.send(eventActionScripts)
     console.log(eventActionScripts)
-}
-
-/** sends the currently selected script */
-exports.getSelectedScript = function(req, res){
-    res.send(getSelectedScriptLocal())
 }

@@ -7,9 +7,11 @@ const fs = require('fs');
 var configPath = path.join(__dirname, '../config/branchConfig.json');
 var config = {}; // local config file;
 
-configInit();
+// configInit();
+exports.configInit = configInit;
 
 exports.config = config;
+exports.configJson = configJson;
 
 
 function configInit(){
@@ -31,5 +33,6 @@ exports.getConfig = function(){
 
 exports.updateConfig = function(configUpdate){
     config = configUpdate;
+    configJson = configUpdate;
     jsonfile.writeFileSync(configPath, configUpdate, {spaces: 2})
 }
