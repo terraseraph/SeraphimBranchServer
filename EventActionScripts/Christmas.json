@@ -28,13 +28,7 @@
           "name": "start_game",
           "active": true
         }
-      ],
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      ]
     },
     {
       "states": [],
@@ -49,13 +43,7 @@
       "actions": [
         "realy2"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -70,13 +58,7 @@
       "actions": [
         "relay3"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -91,13 +73,7 @@
       "actions": [
         "relay1_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -112,13 +88,7 @@
       "actions": [
         "relay2_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -133,13 +103,7 @@
       "actions": [
         "relay3_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 30
-      }
+      "message": ""
     }
   ],
   "actions": [
@@ -220,8 +184,7 @@
       "repeatable": true,
       "message": "",
       "states": [],
-      "wait": 0,
-      "status": "complete"
+      "wait": 0
     },
     {
       "id": "",
@@ -273,8 +236,8 @@
   ],
   "timeUpdate": {
     "hours": 0,
-    "minutes": 30,
-    "seconds": 30
+    "minutes": 29,
+    "seconds": 53
   },
   "ended": false
 }

@@ -51,10 +51,10 @@ exports.serverAction = function(req, res){
 exports.sendEventsToServer = function (message) {
     return new Promise((resolve, reject) => {
         var options = {
-            method: 'post',
+            method: 'put',
             body: message,
             json: true,
-            url: config.serverUrl
+            url: config.serverUrl + '/game/event/complete'
         }
         request(options, (err, res, body)=>{
             var result = { "Success": res}
