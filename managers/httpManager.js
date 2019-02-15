@@ -35,6 +35,16 @@ exports.serverEvent = function(req, res){
     });
 }
 
+exports.serverAction = function(req, res){
+    var packet = {
+        scriptName : req.body.scriptName,
+        actionName : req.body.actionName,
+        masterId : req.body.masterId
+    }
+    EventActionController.forceActionFromServer(packet.actionName, packet.masterId);
+    res.send("Forcing Action")
+}
+
 
 
 exports.sendEventsToServer = function (message) {
@@ -59,7 +69,6 @@ exports.sendEventsToServer = function (message) {
 // ============================================================================= //
 exports.getRootServerScripts = function(){
     return new Promise((resolve, reject) => {
-        
         var address = (config.server_url + serverRoutes.script);
         var options = {
             method: 'get',
@@ -81,16 +90,24 @@ exports.getRootServerScript = function(scriptName){
         request(options, (err, res, body)=>{
             resolve(body)
         })
-
-
-
-
-        // request
-        // .get(address)
-        // .on('response', function(response) {
-        //     resolve(response);
-        // })
     });
+}
+
+exports.resetEventActionStates = (req, res)=>{
+    EventActionController.resetStates();
+    res.send("States reset");
+}
+
+exports.getSelectedEventActionScript = (req, res)=>{
+    EventActionController.getSelectedScript().then((script)=>{
+        res.send(script);
+    })
+}
+
+/** Route from root server to fetch updates on all scripts */
+exports.forceEventActionScriptUpdate = function(req, res){
+    ScriptManager.updateScriptsFromRootServer();
+    res.send("Updated");
 }
 
 

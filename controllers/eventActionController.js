@@ -3,6 +3,7 @@
 var memoryManager = require('../managers/memoryManager');
 var httpManager = require('../managers/httpManager')
 var log = require('./loggingController').log;
+var DeviceManager = require('../managers/deviceManager');
 var selectedScript;
 
 var actions_array = new Array()
@@ -30,61 +31,118 @@ exports.parseEvent = function (packet, callback) {
             log("script_state: ", script_state)
             log("non_repeatable_actions: ", non_repeatable_actions)
             /*dependencies are met or skipped if fromServer (http request)*/
-            if (dependenciesCheck(evt)) {
+            checkStateDependencies(evt).then(result => {
                 /*Dependencies are met, check if the event is in the script_state*/
-                scriptStateValidation(evt, (result) => {
-                    if (result) {
-                        evt.branch_name = selectedScript.branch_name;
-                        sendToServer(evt)
-                        eventStateSpecialActions(evt);
-                        if (evt.actions.length > 0) {
-                            for (var j = 0; j < evt.actions.length; j++) {
-                                playAction(evt.actions[j], function (result) {
-                                    actionsArr.push(result)
+                setScriptStates(evt).then(() => {
+                    evt.branch_name = selectedScript.branch_name;
+                    sendToServer(evt)
+                    eventStateSpecialActions(evt);
+                    if (evt.actions.length > 0) {
+                        for (var j = 0; j < evt.actions.length; j++) {
+                            findAction(evt.actions[j]).then((act) => {
+                                playAction(act, function (result) {
+                                    actionsArr.push(result);
                                 })
-                            }
-                            callback(actionsArr)
+                            })
+                            // playAction(evt.actions[j], function (result) {
+                            //     actionsArr.push(result)
+                            // })
                         }
-
+                        callback(actionsArr)
                     }
                 })
-            }
-
-
+            })
         })
 }
+
+
+// exports.parseEvent = function (packet, callback) {
+//     selectedScript = memoryManager.getSelectedScript();
+//     var actionsArr = new Array()
+//     findEvent(packet, false)
+//         .then((evt) => {
+//             log("script_state: ", script_state)
+//             log("non_repeatable_actions: ", non_repeatable_actions)
+//             /*dependencies are met or skipped if fromServer (http request)*/
+//             if (dependenciesCheck(evt)) {
+//                 /*Dependencies are met, check if the event is in the script_state*/
+//                 scriptStateValidation(evt, (result) => {
+//                     if (result) {
+//                         evt.branch_name = selectedScript.branch_name;
+//                         sendToServer(evt)
+//                         eventStateSpecialActions(evt);
+//                         if (evt.actions.length > 0) {
+//                             for (var j = 0; j < evt.actions.length; j++) {
+//                                 playAction(evt.actions[j], function (result) {
+//                                     actionsArr.push(result)
+//                                 })
+//                             }
+//                             callback(actionsArr)
+//                         }
+
+//                     }
+//                 })
+//             }
+
+
+//         })
+// }
 
 /** Force event by name */
 exports.forceEvent = function (packet, callback) {
     selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
     findEvent(packet, true).then(evt => {
-        log("script_state: ", script_state)
-        log("non_repeatable_actions: ", non_repeatable_actions)
-        /*dependencies are met or skipped if fromServer (http request)*/
-        if (dependenciesCheck(evt)) {
-            /*Dependencies are met, check if the event is in the script_state*/
-            scriptStateValidation(evt, (result) => {
-                if (result) {
-                    evt.branch_name = selectedScript.branch_name;
-                    sendToServer(evt)
-                    eventStateSpecialActions(evt); //TODO: use triggers instead!!!!
-                    if (evt.actions.length > 0) {
-                        for (var j = 0; j < evt.actions.length; j++) {
-                            playAction(evt.actions[j], function (result) {
-                                actionsArr.push(result)
-                            })
-                        }
-                        callback(actionsArr)
-                    }
-
+        setScriptStates(evt).then(() => {
+            evt.branch_name = selectedScript.branch_name;
+            sendToServer(evt)
+            if (evt.actions.length > 0) {
+                for (var j = 0; j < evt.actions.length; j++) {
+                    findAction(evt.actions[j]).then((act) => {
+                        playAction(act, function (result) {
+                            actionsArr.push(result);
+                        })
+                    })
                 }
-            })
-        }
+                callback(actionsArr)
+            }
+        })
 
 
     })
 }
+
+
+// exports.forceEvent = function (packet, callback) {
+//     selectedScript = memoryManager.getSelectedScript();
+//     var actionsArr = new Array()
+//     findEvent(packet, true).then(evt => {
+//         log("script_state: ", script_state)
+//         log("non_repeatable_actions: ", non_repeatable_actions)
+//         /*dependencies are met or skipped if fromServer (http request)*/
+//         if (dependenciesCheck(evt)) {
+//             /*Dependencies are met, check if the event is in the script_state*/
+//             scriptStateValidation(evt, (result) => {
+//                 if (result) {
+//                     evt.branch_name = selectedScript.branch_name;
+//                     sendToServer(evt)
+//                     eventStateSpecialActions(evt); //TODO: use triggers instead!!!!
+//                     if (evt.actions.length > 0) {
+//                         for (var j = 0; j < evt.actions.length; j++) {
+//                             playAction(evt.actions[j], function (result) {
+//                                 actionsArr.push(result)
+//                             })
+//                         }
+//                         callback(actionsArr)
+//                     }
+
+//                 }
+//             })
+//         }
+
+
+//     })
+// }
 
 /** find the action */
 exports.parseAction = function (packet, callback) {
@@ -93,7 +151,7 @@ exports.parseAction = function (packet, callback) {
     log(packet.fromId, packet.action, packet.actionType, packet.data)
     //find the matching action
     //maybe just send the action name from the server and parse it here....
-    findAction(packet).then((act) => {
+    findAction(packet.action).then((act) => {
         log(act.message)
         if (act.dependencies.length != 0) {
             forceAction(act, function (result) {
@@ -103,8 +161,8 @@ exports.parseAction = function (packet, callback) {
                 callback(actions_arr)
             })
         } else {
-            playAction(act.name, function (result) {
-                actions_arr = result
+            playAction(act, function (result) {
+                actions_arr.push(result);
                 callback(actions_arr)
             })
         }
@@ -127,14 +185,30 @@ function forceAction(obj, callback) {
     for (var i = 0; i < obj.dependencies.length; i++) {
         var dep = obj.dependencies[i]
         if (!non_repeatable_actions.includes(dep)) {
-            log("dependencey name: ", dep)
-            playAction(dep, function (data) {
-                actions_to_complete.push(data)
+            findAction(dep).then((act) => {
+                log("dependencey name: ", dep)
+                playAction(act, function (result) {
+                    actions_to_complete.push(result);
+                })
             })
         }
     }
     callback(actions_to_complete)
 }
+
+function forceActionFromServer(actionName, bridgeId) {
+    var actArr = new Array();
+    findAction(actionName).then((act) => {
+        // forceAction(act, (actions_arr)=>{
+        //     addActionsToMasterQueue(actions_arr, bridgeId);
+        // })
+        playAction(act, function (result) {
+            actArr.push(result);
+            addActionsToMasterQueue(actArr, bridgeId);
+        })
+    })
+}
+exports.forceActionFromServer = forceActionFromServer;
 
 
 /**
@@ -143,63 +217,120 @@ function forceAction(obj, callback) {
  * @param {*} callback callback
  */
 function playAction(action, callback) {
-    var act = selectedScript.actions;
     log("======= play_action() ===========")
     log("=======Checking Action Dependencies ======")
     log(action)
-    for (var i = 0; i < act.length; i++) {
-        if (act[i].name == action) {
-            if (act[i].dependencies.length > 0) {
-                if (!dependenciesCheck(act[i])) {
-                    callback("Dependencies not met")
-                    return log("Dependencies not met for acitons..")
-                }
-            }
-            //TODO: make this a class model if it is cleaner later on
-            let result = {
-                toId: Number(act[i].device_id),
-                state: {
-                    type: "action",
-                    message: {
-                        toId: Number(act[i].device_id),
-                        wait: act[i].wait,
-                        event: act[i].event,
-                        eventType: act[i].eventType,
-                        action: act[i].action,
-                        actionType: act[i].actionType,
-                        data: act[i].data
-                    }
-                }
-            }
-            let result_old = {
-                "messageType": "eventAction",
-                "fromId": Number(selectedScript.masterId),
-                "toId": Number(act[i].device_id),
-                "wait": act[i].wait,
-                "event": act[i].event,
-                "eventType": act[i].eventType,
-                "action": act[i].action,
-                "actionType": act[i].actionType,
-                "data": act[i].data
-            }
-            if (act[i].repeatable == "true") {
-                callback(result)
-                return
-            }
+    let result = makeActionPacket(action);
 
-            if (non_repeatable_actions.includes(act[i].name)) {
-                callback("Cannot Repeat")
-                return
-            }
-            if (act[i].repeatable == "false" && !non_repeatable_actions.includes(act[i].name)) {
-                non_repeatable_actions.push(act[i].name)
-                log("pushed non_repeatable_actions()")
-                callback(result)
-                return
+    if (action.repeatable == true) {
+        callback(result)
+        return
+    }
+    if(!action.hasOwnProperty("repeatable")){
+        callback(result)
+        return
+    }
+
+    if (non_repeatable_actions.includes(action.name)) {
+        callback("Cannot Repeat")
+        return
+    }
+    if (action.repeatable == false && !non_repeatable_actions.includes(action.name)) {
+        non_repeatable_actions.push(action.name)
+        log("pushed non_repeatable_actions()")
+        callback(result)
+        return
+    }
+    log("play_action ===CANNOT FIND===")
+}
+
+
+// function playAction(action, callback) {
+//     var act = selectedScript.actions;
+//     log("======= play_action() ===========")
+//     log("=======Checking Action Dependencies ======")
+//     log(action)
+//     for (var i = 0; i < act.length; i++) {
+//         if (act[i].name == action) {
+//             if (act[i].dependencies.length > 0) {
+//                 checkStateDependencies(act[i]).then((result)=>{
+//                     if(!result){
+//                         callback("Dependencies not met")
+//                         return log("Dependencies not met for acitons..")    
+//                     }
+//                 })
+//                 // if (!dependenciesCheck(act[i])) {
+//                 //     callback("Dependencies not met")
+//                 //     return log("Dependencies not met for acitons..")
+//                 // }
+//             }
+//             //TODO: make this a class model if it is cleaner later on
+//             let result = makeActionPacket(act[i]);
+//             // let result = {
+//             //     toId: Number(act[i].device_id),
+//             //     state: {
+//             //         type: "action",
+//             //         message: {
+//             //             toId: Number(act[i].device_id),
+//             //             wait: act[i].wait,
+//             //             event: act[i].event,
+//             //             eventType: act[i].eventType,
+//             //             action: act[i].action,
+//             //             actionType: act[i].actionType,
+//             //             data: act[i].data
+//             //         }
+//             //     }
+//             // }
+
+
+//             // let result_old = {
+//             //     "messageType": "eventAction",
+//             //     "fromId": Number(selectedScript.masterId),
+//             //     "toId": Number(act[i].device_id),
+//             //     "wait": act[i].wait,
+//             //     "event": act[i].event,
+//             //     "eventType": act[i].eventType,
+//             //     "action": act[i].action,
+//             //     "actionType": act[i].actionType,
+//             //     "data": act[i].data
+//             // }
+//             if (act[i].repeatable == "true") {
+//                 callback(result)
+//                 return
+//             }
+
+//             if (non_repeatable_actions.includes(act[i].name)) {
+//                 callback("Cannot Repeat")
+//                 return
+//             }
+//             if (act[i].repeatable == "false" && !non_repeatable_actions.includes(act[i].name)) {
+//                 non_repeatable_actions.push(act[i].name)
+//                 log("pushed non_repeatable_actions()")
+//                 callback(result)
+//                 return
+//             }
+//         }
+//     }
+//     log("play_action ===CANNOT FIND===")
+// }
+
+function makeActionPacket(action) {
+    let result = {
+        toId: Number(action.device_id),
+        state: {
+            type: "action",
+            message: {
+                toId: Number(action.device_id),
+                wait: action.wait,
+                event: action.event,
+                eventType: action.eventType,
+                action: action.action,
+                actionType: action.actionType,
+                data: action.data
             }
         }
     }
-    log("play_action ===CANNOT FIND===")
+    return result;
 }
 
 /**
@@ -240,7 +371,7 @@ function scriptStateValidation(evt, cb) {
 
 
 /**
- * Checks for states in the config, ie end_script, start_script
+ * Checks for states in the config, ie end_script, start_script [DEPRECATED]
  * @param {*} evt 
  */
 function eventStateSpecialActions(evt) { //TODO:make it check config
@@ -278,9 +409,9 @@ function dependenciesCheck(obj) {
 }
 
 
-    // =======================================================
-    // ========= SEARCH EVENT ACTION =========================
-    // =======================================================
+// =======================================================
+// ========= SEARCH EVENT ACTION =========================
+// =======================================================
 
 
 
@@ -296,7 +427,8 @@ function findEvent(packet, findByName = false) {
         if (findByName) {
             selectedScript.events.forEach(evt => {
                 if (evt.name == packet.name) {
-                    resolve(evt)
+                    resolve(evt);
+                    return;
                 }
             });
         } else {
@@ -306,6 +438,7 @@ function findEvent(packet, findByName = false) {
                     log("script state: ", script_state)
                     log("non_repeatable_actions: ", non_repeatable_actions)
                     resolve(evt);
+                    return;
                 }
             }
         }
@@ -320,10 +453,13 @@ function findEvent(packet, findByName = false) {
  * @param {*} actionName 
  */
 function findAction(actionName) {
+    selectedScript = memoryManager.getSelectedScript();
     return new Promise((resolve, reject) => {
         selectedScript.actions.forEach(act => {
-            if (act.name = actionName) {
+            if (act.name == actionName) {
+                log("=====FIND ACTION===", act)
                 resolve(act)
+                return;
             }
         });
     })
@@ -339,6 +475,15 @@ function arraysEqual(a, b) {
     return JSON.stringify(a) == JSON.stringify(b);
 
 }
+
+function getSelectedScript() {
+    return new Promise((res, rej) => {
+        selectedScript = memoryManager.getSelectedScript();
+        res(selectedScript);
+        return;
+    })
+}
+exports.getSelectedScript = getSelectedScript;
 
 // =======================================================
 // ========= STATES ======================================
@@ -364,6 +509,7 @@ function resetStates() {
         state.active = false;
     })
 }
+exports.resetStates = resetStates;
 
 function toggleState(stateName) {
     findState(stateName).then(state => {
@@ -376,6 +522,7 @@ function findState(stateName) {
         selectedScript.forEach(state => {
             if (state.name == stateName) {
                 resolve(state);
+                return;
             }
         })
     })
@@ -384,17 +531,16 @@ function findState(stateName) {
 
 
 
-function setScriptStates(evt){
-    return new Promise((resolve, reject)=>{
+function setScriptStates(evt) {
+    return new Promise((resolve, reject) => {
         var result = false;
         evt.states.forEach(evtState => {
-            findState(evtState.name).then(state =>{
-                // Change the function of can_toggle to flip states
-                if(state.active == evtState.active && evt.can_toggle == "true"){
+            findState(evtState.name).then(state => {
+                //if the state has not been set, set it to the event state
+                if (state.active != evtState.active) {
+                    updateState(state.name, evtState.active);
+                } else if (state.active == evtState.active && evt.can_toggle == "true") {
                     toggleState(state);
-                }
-                else{
-                    state.active = evtState.active;
                 }
             })
         });
@@ -402,18 +548,36 @@ function setScriptStates(evt){
     })
 }
 
-function checkStateDependencies(evt){
-    return new Promise((resolve, reject)=>{
+//TODO: check event can toggle
+
+
+function checkStateDependencies(event_action) {
+    return new Promise((resolve, reject) => {
         var result = false;
-        evt.states.forEach(evtState => {
-            findState(evtState.name).then(state =>{
-                // Change the function of can_toggle to flip states
-                if(state.active != evtState.active){
+        event_action.dependencies.forEach(dep => {
+            findState(dep).then(state => {
+                if (!state.active) {
                     result = false;
                     resolve(result);
+                    return;
                 }
             })
         });
         resolve(true);
     })
 }
+
+
+
+function addActionsToMasterQueue(actionsArray, deviceId) {
+    log("====SENDING ACTION TO MASTER====", actionsArray)
+    DeviceManager.nodeDeviceList.forEach(device => {
+        if (device.id == deviceId) {
+            actionsArray.forEach(action => {
+                device.actionsArray.push(action)
+                DeviceManager.setDeviceReady(device.id);
+            });
+        }
+    })
+}
+exports.addActionsToMasterQueue = addActionsToMasterQueue;

@@ -29,7 +29,11 @@ router.get("/info", sysInfo.getSystemInfo)
 router.get("/scripts", memoryManager.showScripts)
 router.post('/scripts', scriptReader.newScript)
 
-router.get('/scripts/selected/:scriptName', httpManager.updateSelectedScript);
+router.get('/scripts/selected', httpManager.getSelectedEventActionScript);
+router.get('/scripts/selected/set/:scriptName', httpManager.updateSelectedScript);
+router.get('/scripts/selected/reset', httpManager.resetEventActionStates);
+
+router.get('/scripts/update', httpManager.forceEventActionScriptUpdate);
 
 
 /**
@@ -38,7 +42,7 @@ router.get('/scripts/selected/:scriptName', httpManager.updateSelectedScript);
  * - Used for sending events/actions to the nodes
  */
 router.post("/server/event", httpManager.serverEvent);
-router.post("/server/action", httpManager.serverEvent);
+router.post("/server/action", httpManager.serverAction);
 
 
 

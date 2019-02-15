@@ -14,6 +14,7 @@ const HttpManager = require('./httpManager');
 var eventActionScriptList = new Array();
 readScriptsInDirectory(); //TODO: put this in an init file or something
 updateScriptsFromRootServer();
+exports.updateScriptsFromRootServer = updateScriptsFromRootServer;
 
 
 /** Create new script from http request */

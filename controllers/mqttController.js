@@ -31,8 +31,8 @@ server.on('clientConnected', function (client) {
 
 // fired when a message is received
 server.on('published', function (packet, client) {
-  log(packet.toString())
-  console.log('Published : ', packet.payload.toString());
+  // log(packet.toString())
+  // console.log('Published : ', packet.payload.toString());
   if (client != undefined) {
     parsePacket(packet, client.id);
   }
@@ -117,8 +117,8 @@ function parsePacket(packet, nodeId = undefined) {
   client.subscribe('root');
 
   client.on('message', function (topic, message) {
-    console.log(message.toString());
-    console.log("from subscribed");
+    // console.log(message.toString());
+    // console.log("from subscribed");
   });
 
   client.on('connect', function () {

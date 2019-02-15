@@ -1,257 +1,205 @@
 {
   "name": "Christmas",
   "id": "0",
-  "masterId": "255",
+  "branch_address": "http://192.168.0.180:4400",
+  "masterId": "10",
   "time": {
     "hours": "0",
     "minutes": "30",
-    "seconds": "0"
+    "seconds": "35"
   },
-  "states": [
-    {
-      "name": "start_game",
-      "active": false
-    },
-    {
-      "name": "end_game",
-      "active": false
-    },
-    {
-      "name": "open_doo",
-      "active": true
-    },
-    {
-      "name": "cnu5yncy",
-      "active": false
-    }
-  ],
+  "states": [],
   "events": [
     {
       "id": "1",
-      "name": "start_Christmas_game",
-      "device_id": "10",
-      "event": "toggle",
-      "eventType": "button",
-      "data": "0",
+      "name": "start_relay1",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "111111",
       "description": "the beginning of the game, code typed or something",
       "dependencies": [],
       "actions": [
-        "chest_door_start"
+        "relay1"
       ],
       "message": "started the game",
       "states": [
         {
           "name": "start_game",
           "active": true
-        },
-        {
-          "name": "the_mighty_one",
-          "active": true
-        },
-        {
-          "name": "open_doorcftbtrrtx",
-          "active": true
         }
       ]
     },
     {
-      "id": "10",
-      "name": "tetris",
-      "device_id": "25",
-      "event": "toggle",
-      "eventType": "magnetSwitch",
-      "data": [
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1
-      ],
-      "description": "tetris0",
-      "dependencies": [],
-      "actions": [
-        "top_drawer_toggle"
-      ],
-      "can_toggle": "true",
-      "message": "Tetris",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
-    },
-    {
-      "id": "12",
-      "name": "phone_continue",
-      "device_id": "12",
-      "event": "callOut",
-      "eventType": "phoneET",
-      "data": "1#",
-      "description": "phone call",
-      "dependencies": [
-        "phone1"
-      ],
-      "actions": [
-        "continue_phone"
-      ],
-      "can_toggle": "true",
-      "message": "phone out",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
-    },
-    {
-      "id": "15",
-      "name": "end_open_door",
+      "states": [],
+      "id": "",
+      "name": "start_relay2",
       "device_id": "13",
-      "event": "toggle",
-      "eventType": "magnetSwitch",
-      "data": [
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
-      ],
-      "description": "players opened door after phone call",
-      "dependencies": [
-        "phone1"
-      ],
-      "actions": [
-        "second_drawer_toggle"
-      ],
-      "can_toggle": "true",
-      "message": "opened jack_in_the_box",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
-    },
-    {
-      "states": [
-        {
-          "name": "open_door",
-          "active": true
-        }
-      ],
-      "id": "111",
-      "name": "the blockes@#@#",
-      "device_id": "dsfewf",
       "event": "code",
       "eventType": "keypad",
-      "data": "fefaewf",
-      "description": "aesfaef",
-      "dependencies": [
-        "end_game"
+      "data": "222222",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "realy2"
       ],
-      "actions": [],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "start_relay3",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "333333",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay3"
+      ],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "stop_relay1",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "444444",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay1_off"
+      ],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "stop_relay2",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "555555",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay2_off"
+      ],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "stop_relay2 ",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "666666",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay3_off"
+      ],
       "message": ""
     }
   ],
   "actions": [
     {
       "id": "7",
-      "name": "chest_door_toggle",
-      "device_id": "31",
+      "name": "relay1",
+      "device_id": "12",
       "event": "noneE",
       "eventType": "noneET",
       "wait": 0,
-      "action": "toggleA",
+      "action": "start",
       "actionType": "relay",
-      "data": "4",
+      "data": "15",
       "description": "LED off",
-      "repeatable": "true",
+      "repeatable": true,
       "dependencies": [],
       "actions": [],
       "message": "chest_door_on",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
+      "states": [],
+      "status": "complete"
     },
     {
-      "id": "8",
-      "name": "top_drawer_toggle",
-      "device_id": "22",
-      "event": "noneE",
-      "eventType": "noneET",
-      "wait": 0,
-      "action": "toggleA",
+      "id": "",
+      "name": "realy2",
+      "device_id": "12",
+      "action": "start",
       "actionType": "relay",
-      "data": "5",
-      "description": "LED off",
-      "repeatable": "true",
+      "data": "2",
+      "description": "",
       "dependencies": [],
       "actions": [],
-      "message": "Top drawer open",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
+      "message": "",
+      "repeatable": true,
+      "states": [],
+      "wait": 0
     },
     {
-      "id": "9",
-      "name": "second_drawer_toggle",
-      "device_id": "22",
-      "event": "noneE",
-      "eventType": "noneET",
-      "wait": 0,
-      "action": "toggleA",
+      "id": "",
+      "name": "relay3",
+      "device_id": "12",
+      "action": "start",
       "actionType": "relay",
       "data": "4",
-      "description": "LED off",
-      "repeatable": "true",
+      "description": "",
       "dependencies": [],
       "actions": [],
-      "message": "second_drawer_on",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
+      "repeatable": true,
+      "message": "",
+      "states": [],
+      "wait": 0
     },
     {
-      "id": "10",
-      "name": "vent_latch_toggle",
-      "device_id": "21",
-      "event": "noneE",
-      "eventType": "noneET",
-      "wait": 0,
-      "action": "toggleA",
+      "id": "",
+      "name": "relay1_off",
+      "device_id": "12",
+      "action": "stop",
       "actionType": "relay",
-      "data": "4",
-      "description": "LED off",
-      "repeatable": "true",
+      "data": "15",
+      "description": "",
       "dependencies": [],
       "actions": [],
-      "message": "vent_latch_on",
-      "states": [
-        {
-          "name": "start_game",
-          "active": true
-        }
-      ]
+      "repeatable": true,
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "status": "complete"
+    },
+    {
+      "id": "",
+      "name": "relay2_off",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "2",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "repeatable": true,
+      "message": "",
+      "states": [],
+      "wait": 0
+    },
+    {
+      "id": "",
+      "name": "relay3_off",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "4",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "repeatable": true,
+      "message": "",
+      "states": [],
+      "wait": 0
     }
   ],
   "triggers": [
@@ -285,5 +233,11 @@
       "name": "end hint",
       "hint": "waughhhh"
     }
-  ]
+  ],
+  "timeUpdate": {
+    "hours": 0,
+    "minutes": 29,
+    "seconds": 53
+  },
+  "ended": false
 }

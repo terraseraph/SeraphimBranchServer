@@ -44,10 +44,6 @@ exports.setSelectedScript = function(script){
     scriptName = script //TODO: add this to config as well
 }
 
-exports.getSelectedScriptModule = function(){
-    return getSelectedScript()
-}
-
 
 
 
