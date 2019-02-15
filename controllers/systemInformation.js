@@ -5,12 +5,12 @@ var os = si.osInfo()
 var system = si.system()
 var cpu = si.cpu()
 var networkInterfaces = si.networkInterfaces()
+var ConfigManager = require("../managers/configManager");
 
 exports.getSystemInfo = function(req, res){
     getInfo().then(data => res.send(data))
 }
 
-//TODO: print the config too 
 //Gets OS, system & cpu
 function getInfo(){
     var result = {}
@@ -18,7 +18,8 @@ function getInfo(){
         os.then(data => result.os = data),
         system.then(data => result.system = data),
         cpu.then(data => result.cpu = data),
-        networkInterfaces.then(data=> result.networkInterfaces = data)
+        networkInterfaces.then(data=> result.networkInterfaces = data),
+        ConfigManager.getConfig().then(data => result.config = data)
     ]).then(values => {
         return result
     })

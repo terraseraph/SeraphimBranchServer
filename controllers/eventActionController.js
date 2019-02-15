@@ -55,10 +55,10 @@ exports.parseEvent = function (packet, callback) {
 }
 
 /** Force event by name */
-exports.forceEvent = function(packet, callback){
+exports.forceEvent = function (packet, callback) {
     selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
-    findEvent(packet, true).then(evt =>{
+    findEvent(packet, true).then(evt => {
         log("script_state: ", script_state)
         log("non_repeatable_actions: ", non_repeatable_actions)
         /*dependencies are met or skipped if fromServer (http request)*/
@@ -68,7 +68,7 @@ exports.forceEvent = function(packet, callback){
                 if (result) {
                     evt.branch_name = selectedScript.branch_name;
                     sendToServer(evt)
-                    eventStateSpecialActions(evt);  //TODO: use triggers instead!!!!
+                    eventStateSpecialActions(evt); //TODO: use triggers instead!!!!
                     if (evt.actions.length > 0) {
                         for (var j = 0; j < evt.actions.length; j++) {
                             playAction(evt.actions[j], function (result) {
@@ -157,17 +157,17 @@ function playAction(action, callback) {
             }
             //TODO: make this a class model if it is cleaner later on
             let result = {
-                toId : Number(act[i].device_id),
-                state : {
-                    type : "action",
-                    message : {
-                        toId : Number(act[i].device_id),
-                        wait : act[i].wait,
-                        event : act[i].event,
-                        eventType : act[i].eventType,
-                        action : act[i].action,
-                        actionType : act[i].actionType,
-                        data : act[i].data
+                toId: Number(act[i].device_id),
+                state: {
+                    type: "action",
+                    message: {
+                        toId: Number(act[i].device_id),
+                        wait: act[i].wait,
+                        event: act[i].event,
+                        eventType: act[i].eventType,
+                        action: act[i].action,
+                        actionType: act[i].actionType,
+                        data: act[i].data
                     }
                 }
             }
@@ -216,7 +216,7 @@ function sendToServer(obj) {
 }
 
 /**
- * Check of the script has been added
+ * Check if the script state has been added
  * @param {*} evt 
  * @param {*} cb 
  */
@@ -235,6 +235,9 @@ function scriptStateValidation(evt, cb) {
         cb(result)
     }
 }
+
+
+
 
 /**
  * Checks for states in the config, ie end_script, start_script
@@ -273,6 +276,13 @@ function dependenciesCheck(obj) {
     if (dependencies_ok) log("===== All Dependencies met ====");
     return dependencies_ok
 }
+
+
+    // =======================================================
+    // ========= SEARCH EVENT ACTION =========================
+    // =======================================================
+
+
 
 /**
  * Find event by name, Returns a promise
@@ -328,4 +338,82 @@ function arraysEqual(a, b) {
     log("array comapre")
     return JSON.stringify(a) == JSON.stringify(b);
 
+}
+
+// =======================================================
+// ========= STATES ======================================
+// =======================================================
+
+
+function updateState(stateName, activate) {
+    findState(stateName).then(state => {
+        state.active = activate;
+    })
+}
+
+function getState(stateName) {
+    return new Promise((resolve, reject) => {
+        findState(stateName).then(state => {
+            resolve(state.active);
+        })
+    })
+}
+
+function resetStates() {
+    selectedScript.forEach(state => {
+        state.active = false;
+    })
+}
+
+function toggleState(stateName) {
+    findState(stateName).then(state => {
+        state.active = !state.active;
+    })
+}
+
+function findState(stateName) {
+    return new Promise((resolve, reject) => {
+        selectedScript.forEach(state => {
+            if (state.name == stateName) {
+                resolve(state);
+            }
+        })
+    })
+}
+
+
+
+
+function setScriptStates(evt){
+    return new Promise((resolve, reject)=>{
+        var result = false;
+        evt.states.forEach(evtState => {
+            findState(evtState.name).then(state =>{
+                // Change the function of can_toggle to flip states
+                if(state.active == evtState.active && evt.can_toggle == "true"){
+                    toggleState(state);
+                }
+                else{
+                    state.active = evtState.active;
+                }
+            })
+        });
+        resolve()
+    })
+}
+
+function checkStateDependencies(evt){
+    return new Promise((resolve, reject)=>{
+        var result = false;
+        evt.states.forEach(evtState => {
+            findState(evtState.name).then(state =>{
+                // Change the function of can_toggle to flip states
+                if(state.active != evtState.active){
+                    result = false;
+                    resolve(result);
+                }
+            })
+        });
+        resolve(true);
+    })
 }

@@ -19,7 +19,6 @@ updateScriptsFromRootServer();
 /** Create new script from http request */
 exports.newScript = function(req, res){
     var script = req.body
-    // createScriptModel(script)
     createLocalScript(script);
     res.send({"message":script})
 }
@@ -34,7 +33,6 @@ function readScriptsInDirectory() {
             return log('Unable to scan directory: ' + err);
         }
         files.forEach(function (file) {
-            // generateScriptObjects(file)
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
             var pScript = JSON.parse(script)
             eventActionScriptList.push(pScript);
@@ -56,6 +54,14 @@ function updateScriptsFromRootServer(){
         }
     })
 }
+
+function updateSelectedScript(scriptName, cb){
+    var config = configManager.configJson;
+    config.selected_script = scriptName+".json";
+    configManager.updateConfig(config);
+    cb("scriptUpdated");
+};
+exports.updateSelectedScript = updateSelectedScript;
 
 
 /**

@@ -318,8 +318,6 @@ class NodeDevice {
     }
 
     updateBridgeStatus(packet){
-        log("=====UPDATING BRIDGE STATUS======");
-        log(packet);
         this.bridgeStatus = packet;
     }
 

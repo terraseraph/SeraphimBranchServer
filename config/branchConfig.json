@@ -1,10 +1,13 @@
 {
-    "server_url"    :   "http://192.168.0.180:4300",
-    "port"          : 4400,
-    "localUrl"      : "0.0.0.0",
-    "branch_name"     :   "ex-revenge",
-    "selected_script" : "game_script.json",
-    "start_script_command" : "",
-    "end_script_command" : "",
-    "branch_scripts" : ["Christmas", "Dragon"]
+  "server_url": "http://192.168.0.180:4300",
+  "port": 4400,
+  "localUrl": "0.0.0.0",
+  "branch_name": "ex-revenge",
+  "selected_script": "Christmas.json",
+  "start_script_command": "wqeqweqwe",
+  "end_script_command": "",
+  "branch_scripts": [
+    "Christmas",
+    "Dragon"
+  ]
 }

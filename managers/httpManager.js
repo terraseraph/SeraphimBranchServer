@@ -9,6 +9,7 @@ var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController').log;
 var EventActionController = require("../controllers/eventActionController");
 var DeviceManager = require('./deviceManager');
+var ScriptManager = require('./scriptManager');
 
 var serverRoutes = {
     script : `/script`,
@@ -191,4 +192,16 @@ exports.deviceManager_directHTTPMessage = function(req,res){
 exports.serialController_refresh = function(req, res){
     serialController.generateSerialDevices();
     res.send("Refreshed");
+}
+
+
+
+// =============================================================================== //
+// ========================= HTTP from Script manager =========================== //
+// ============================================================================= //
+exports.updateSelectedScript = function(req, res){
+    var scriptName = req.params.scriptName;
+    ScriptManager.updateSelectedScript(scriptName, (result)=>{
+        res.send(result);
+    });
 }

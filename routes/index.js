@@ -29,6 +29,7 @@ router.get("/info", sysInfo.getSystemInfo)
 router.get("/scripts", memoryManager.showScripts)
 router.post('/scripts', scriptReader.newScript)
 
+router.get('/scripts/selected/:scriptName', httpManager.updateSelectedScript);
 
 
 /**

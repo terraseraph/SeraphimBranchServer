@@ -8,23 +8,27 @@ const fs = require('fs');
 var configManager = require("./configManager");
 var log = require('../controllers/loggingController').log;
 var jsonfile = require("jsonfile");
-var selectedScript, config, selectedS;
+var scriptName, config, selectedScript;
 var currentScript;
 
 configManager.getConfig().then(c =>{
     config = c;
-    selectedScript = config.selected_script;
-    selectedS = require(`../EventActionScripts/${selectedScript}`);
-    currentScript = jsonfile.readFileSync(path.join(__dirname, `../EventActionScripts/${selectedScript}`));
+    scriptName = config.selected_script;
+    selectedScript = require(`../EventActionScripts/${scriptName}`);
+    currentScript = jsonfile.readFileSync(path.join(__dirname, `../EventActionScripts/${scriptName}`));
 })
 
 
 /** for local functions accessing the script */
 function getSelectedScript(){
-    return selectedS
+    return selectedScript
 }
 exports.getSelectedScript = getSelectedScript;
 
+function updateSelectedScriptByName(scriptName){
+    scriptName = scriptName;
+    selectedScript = require(`../EventActionScripts/${scriptName}`);
+}
 /** 
  * 
  * 
@@ -37,7 +41,7 @@ exports.addEventActionToScript = function(script){
 
 /** sets the event action script to use */
 exports.setSelectedScript = function(script){
-    selectedScript = script //TODO: add this to config as well
+    scriptName = script //TODO: add this to config as well
 }
 
 exports.getSelectedScriptModule = function(){

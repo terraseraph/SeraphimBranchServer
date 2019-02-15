@@ -36,3 +36,5 @@ exports.updateConfig = function(configUpdate){
     configJson = configUpdate;
     jsonfile.writeFileSync(configPath, configUpdate, {spaces: 2})
 }
+
+//TODO: ADD config http routes!
