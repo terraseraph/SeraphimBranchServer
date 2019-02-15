@@ -27,11 +27,12 @@ var serverRoutes = {
 exports.serverEvent = function(req, res){
     var packet = {
         scriptName : req.body.scriptName,
-        name : req.body.eventName
+        name : req.body.eventName,
+        masterId : req.body.masterId
     }
     EventActionController.setEventFromServer();
-    EventActionController.forceEvent(packet, function(actions){
-        serialController.addActionsToMasterQueue(actions);
+    EventActionController.forceEventFromServer(packet, (result)=>{
+        res.send(result);
     });
 }
 

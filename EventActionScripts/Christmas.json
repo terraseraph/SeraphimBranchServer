@@ -16,7 +16,7 @@
       "device_id": "13",
       "event": "code",
       "eventType": "keypad",
-      "data": "111111",
+      "data": 111111,
       "description": "the beginning of the game, code typed or something",
       "dependencies": [],
       "actions": [
@@ -28,7 +28,13 @@
           "name": "start_game",
           "active": true
         }
-      ]
+      ],
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     },
     {
       "states": [],
@@ -43,7 +49,13 @@
       "actions": [
         "realy2"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     },
     {
       "states": [],
@@ -58,7 +70,13 @@
       "actions": [
         "relay3"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     },
     {
       "states": [],
@@ -67,13 +85,19 @@
       "device_id": "13",
       "event": "code",
       "eventType": "keypad",
-      "data": "444444",
+      "data": 444444,
       "description": "",
       "dependencies": [],
       "actions": [
         "relay1_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     },
     {
       "states": [],
@@ -88,7 +112,13 @@
       "actions": [
         "relay2_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     },
     {
       "states": [],
@@ -103,7 +133,13 @@
       "actions": [
         "relay3_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 30
+      }
     }
   ],
   "actions": [
@@ -184,7 +220,8 @@
       "repeatable": true,
       "message": "",
       "states": [],
-      "wait": 0
+      "wait": 0,
+      "status": "complete"
     },
     {
       "id": "",
@@ -236,8 +273,8 @@
   ],
   "timeUpdate": {
     "hours": 0,
-    "minutes": 29,
-    "seconds": 53
+    "minutes": 30,
+    "seconds": 30
   },
   "ended": false
 }

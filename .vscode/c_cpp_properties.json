@@ -6,7 +6,9 @@
                 "D:\\Documents\\Arduino\\tools\\**",
                 "D:\\Documents\\Arduino\\hardware\\espressif\\esp32\\**"
             ],
-            "forcedInclude": []
+            "forcedInclude": [],
+            "intelliSenseMode": "msvc-x64"
         }
-    ]
+    ],
+    "version": 4
 }

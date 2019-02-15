@@ -16,6 +16,7 @@ var script_state = new Array(); //for dependencey updating
 var completed_actions = new Array();
 var non_repeatable_actions = new Array();
 var fromServer = false; // if the request was from the server //TODO: rename to skip dependencies
+getSelectedScript();
 
 /** Skip dependencey check */
 exports.setEventFromServer = function () {
@@ -42,13 +43,12 @@ exports.parseEvent = function (packet, callback) {
                             findAction(evt.actions[j]).then((act) => {
                                 playAction(act, function (result) {
                                     actionsArr.push(result);
+                                    if(j == evt.actions.length){
+                                        callback(actionsArr)
+                                    }
                                 })
                             })
-                            // playAction(evt.actions[j], function (result) {
-                            //     actionsArr.push(result)
-                            // })
                         }
-                        callback(actionsArr)
                     }
                 })
             })
@@ -56,43 +56,12 @@ exports.parseEvent = function (packet, callback) {
 }
 
 
-// exports.parseEvent = function (packet, callback) {
-//     selectedScript = memoryManager.getSelectedScript();
-//     var actionsArr = new Array()
-//     findEvent(packet, false)
-//         .then((evt) => {
-//             log("script_state: ", script_state)
-//             log("non_repeatable_actions: ", non_repeatable_actions)
-//             /*dependencies are met or skipped if fromServer (http request)*/
-//             if (dependenciesCheck(evt)) {
-//                 /*Dependencies are met, check if the event is in the script_state*/
-//                 scriptStateValidation(evt, (result) => {
-//                     if (result) {
-//                         evt.branch_name = selectedScript.branch_name;
-//                         sendToServer(evt)
-//                         eventStateSpecialActions(evt);
-//                         if (evt.actions.length > 0) {
-//                             for (var j = 0; j < evt.actions.length; j++) {
-//                                 playAction(evt.actions[j], function (result) {
-//                                     actionsArr.push(result)
-//                                 })
-//                             }
-//                             callback(actionsArr)
-//                         }
-
-//                     }
-//                 })
-//             }
-
-
-//         })
-// }
 
 /** Force event by name */
-exports.forceEvent = function (packet, callback) {
+exports.forceEvent = function (eventName, callback) {
     selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
-    findEvent(packet, true).then(evt => {
+    findEvent(eventName, true).then(evt => {
         setScriptStates(evt).then(() => {
             evt.branch_name = selectedScript.branch_name;
             sendToServer(evt)
@@ -101,10 +70,12 @@ exports.forceEvent = function (packet, callback) {
                     findAction(evt.actions[j]).then((act) => {
                         playAction(act, function (result) {
                             actionsArr.push(result);
+                            if(j == evt.actions.length){
+                                callback(actionsArr)
+                            }
                         })
                     })
                 }
-                callback(actionsArr)
             }
         })
 
@@ -113,36 +84,16 @@ exports.forceEvent = function (packet, callback) {
 }
 
 
-// exports.forceEvent = function (packet, callback) {
-//     selectedScript = memoryManager.getSelectedScript();
-//     var actionsArr = new Array()
-//     findEvent(packet, true).then(evt => {
-//         log("script_state: ", script_state)
-//         log("non_repeatable_actions: ", non_repeatable_actions)
-//         /*dependencies are met or skipped if fromServer (http request)*/
-//         if (dependenciesCheck(evt)) {
-//             /*Dependencies are met, check if the event is in the script_state*/
-//             scriptStateValidation(evt, (result) => {
-//                 if (result) {
-//                     evt.branch_name = selectedScript.branch_name;
-//                     sendToServer(evt)
-//                     eventStateSpecialActions(evt); //TODO: use triggers instead!!!!
-//                     if (evt.actions.length > 0) {
-//                         for (var j = 0; j < evt.actions.length; j++) {
-//                             playAction(evt.actions[j], function (result) {
-//                                 actionsArr.push(result)
-//                             })
-//                         }
-//                         callback(actionsArr)
-//                     }
+exports.forceEventFromServer = function(eventPacket, callback){
+    let bridgeId = eventPacket.masterId;
+    let evtName = eventPacket.name;
+    let ScriptName = eventPacket.scriptName;
+    this.forceEvent(evtName, (actions)=>{
+        addActionsToMasterQueue(actions, bridgeId);
+        callback({actions : actions})
+    })
 
-//                 }
-//             })
-//         }
-
-
-//     })
-// }
+}
 
 /** find the action */
 exports.parseAction = function (packet, callback) {
@@ -199,9 +150,6 @@ function forceAction(obj, callback) {
 function forceActionFromServer(actionName, bridgeId) {
     var actArr = new Array();
     findAction(actionName).then((act) => {
-        // forceAction(act, (actions_arr)=>{
-        //     addActionsToMasterQueue(actions_arr, bridgeId);
-        // })
         playAction(act, function (result) {
             actArr.push(result);
             addActionsToMasterQueue(actArr, bridgeId);
@@ -244,75 +192,6 @@ function playAction(action, callback) {
     log("play_action ===CANNOT FIND===")
 }
 
-
-// function playAction(action, callback) {
-//     var act = selectedScript.actions;
-//     log("======= play_action() ===========")
-//     log("=======Checking Action Dependencies ======")
-//     log(action)
-//     for (var i = 0; i < act.length; i++) {
-//         if (act[i].name == action) {
-//             if (act[i].dependencies.length > 0) {
-//                 checkStateDependencies(act[i]).then((result)=>{
-//                     if(!result){
-//                         callback("Dependencies not met")
-//                         return log("Dependencies not met for acitons..")    
-//                     }
-//                 })
-//                 // if (!dependenciesCheck(act[i])) {
-//                 //     callback("Dependencies not met")
-//                 //     return log("Dependencies not met for acitons..")
-//                 // }
-//             }
-//             //TODO: make this a class model if it is cleaner later on
-//             let result = makeActionPacket(act[i]);
-//             // let result = {
-//             //     toId: Number(act[i].device_id),
-//             //     state: {
-//             //         type: "action",
-//             //         message: {
-//             //             toId: Number(act[i].device_id),
-//             //             wait: act[i].wait,
-//             //             event: act[i].event,
-//             //             eventType: act[i].eventType,
-//             //             action: act[i].action,
-//             //             actionType: act[i].actionType,
-//             //             data: act[i].data
-//             //         }
-//             //     }
-//             // }
-
-
-//             // let result_old = {
-//             //     "messageType": "eventAction",
-//             //     "fromId": Number(selectedScript.masterId),
-//             //     "toId": Number(act[i].device_id),
-//             //     "wait": act[i].wait,
-//             //     "event": act[i].event,
-//             //     "eventType": act[i].eventType,
-//             //     "action": act[i].action,
-//             //     "actionType": act[i].actionType,
-//             //     "data": act[i].data
-//             // }
-//             if (act[i].repeatable == "true") {
-//                 callback(result)
-//                 return
-//             }
-
-//             if (non_repeatable_actions.includes(act[i].name)) {
-//                 callback("Cannot Repeat")
-//                 return
-//             }
-//             if (act[i].repeatable == "false" && !non_repeatable_actions.includes(act[i].name)) {
-//                 non_repeatable_actions.push(act[i].name)
-//                 log("pushed non_repeatable_actions()")
-//                 callback(result)
-//                 return
-//             }
-//         }
-//     }
-//     log("play_action ===CANNOT FIND===")
-// }
 
 function makeActionPacket(action) {
     let result = {
@@ -425,9 +304,9 @@ function findEvent(packet, findByName = false) {
     var evt;
     return new Promise((resolve, reject) => {
         if (findByName) {
-            selectedScript.events.forEach(evt => {
-                if (evt.name == packet.name) {
-                    resolve(evt);
+            selectedScript.events.forEach(event => {
+                if (event.name == packet) {
+                    resolve(event);
                     return;
                 }
             });
@@ -519,7 +398,8 @@ function toggleState(stateName) {
 
 function findState(stateName) {
     return new Promise((resolve, reject) => {
-        selectedScript.forEach(state => {
+        selectedScript = memoryManager.getSelectedScript();
+        selectedScript.states.forEach(state => {
             if (state.name == stateName) {
                 resolve(state);
                 return;
