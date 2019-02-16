@@ -440,7 +440,6 @@ class NodeDevice {
             log(data)
             log('======= time taken to send ==========')
             log(Date.now() - this.timer, "ms")
-            this.ready = false
             callback("data written")
         })
     }
@@ -499,7 +498,7 @@ class NodeDevice {
             log(data)
             log('======= time taken to send ==========')
             log(Date.now() - this.timer, "ms")
-            this.ready = false
+            // this.ready = false
             callback("data written")
         });
     }
@@ -507,10 +506,10 @@ class NodeDevice {
 
     http_playAction(callback) {
         if (this.actionsArray.length != undefined) {
-            if (!this.ready) {
-                callback(`${this.details.name} Not ready`)
-                return
-            }
+            // if (!this.ready) {
+            //     callback(`${this.details.name} Not ready`)
+            //     return
+            // }
             if (this.actionsArray[0] == "") {
                 callback("no action");
                 return
@@ -523,7 +522,7 @@ class NodeDevice {
             this.http_write(this.actionsArray[0], (data) => {
                 log(data);
                 this.actionsArray.shift();
-                this.ready = false;
+                // this.ready = false;
             })
         }
     }

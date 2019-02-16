@@ -28,7 +28,13 @@
           "name": "start_game",
           "active": true
         }
-      ]
+      ],
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 33
+      }
     },
     {
       "states": [],
@@ -39,11 +45,19 @@
       "eventType": "keypad",
       "data": "222222",
       "description": "",
-      "dependencies": [],
+      "dependencies": [
+        "start_game"
+      ],
       "actions": [
         "realy2"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 33
+      }
     },
     {
       "states": [],
@@ -73,7 +87,13 @@
       "actions": [
         "relay1_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 33
+      }
     },
     {
       "states": [],
@@ -88,7 +108,13 @@
       "actions": [
         "relay2_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 33
+      }
     },
     {
       "states": [],
@@ -104,6 +130,55 @@
         "relay3_off"
       ],
       "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "relay4_toggle",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "777777",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "6off_2_on"
+      ],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "relay6 off2on",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "888888",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "6 on 1 off",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "999999",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay6_on_1_off"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 33
+      }
     }
   ],
   "actions": [
@@ -200,6 +275,55 @@
       "message": "",
       "states": [],
       "wait": 0
+    },
+    {
+      "id": "",
+      "name": "relay4_toggle",
+      "device_id": "12",
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "5",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "relay6_on_1_off",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "27",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay1_off"
+      ],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "6off_2_on",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "27",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay2_off"
+      ],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
     }
   ],
   "triggers": [
@@ -236,8 +360,8 @@
   ],
   "timeUpdate": {
     "hours": 0,
-    "minutes": 29,
-    "seconds": 53
+    "minutes": 30,
+    "seconds": 33
   },
   "ended": false
 }
