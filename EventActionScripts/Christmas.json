@@ -33,7 +33,7 @@
       "completed_time": {
         "hours": 0,
         "minutes": 30,
-        "seconds": 33
+        "seconds": 32
       }
     },
     {
@@ -51,13 +51,7 @@
       "actions": [
         "realy2"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 33
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -92,7 +86,7 @@
       "completed_time": {
         "hours": 0,
         "minutes": 30,
-        "seconds": 33
+        "seconds": 32
       }
     },
     {
@@ -108,13 +102,7 @@
       "actions": [
         "relay2_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 33
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -149,20 +137,22 @@
     {
       "states": [],
       "id": "",
-      "name": "relay6 off2on",
+      "name": "relay27on",
       "device_id": "13",
       "event": "code",
       "eventType": "keypad",
       "data": "888888",
       "description": "",
       "dependencies": [],
-      "actions": [],
+      "actions": [
+        "27on"
+      ],
       "message": ""
     },
     {
       "states": [],
       "id": "",
-      "name": "6 on 1 off",
+      "name": "27off",
       "device_id": "13",
       "event": "code",
       "eventType": "keypad",
@@ -170,14 +160,14 @@
       "description": "",
       "dependencies": [],
       "actions": [
-        "relay6_on_1_off"
+        "27off"
       ],
       "message": "",
       "status": "complete",
       "completed_time": {
         "hours": 0,
         "minutes": 30,
-        "seconds": 33
+        "seconds": 32
       }
     }
   ],
@@ -213,7 +203,8 @@
       "message": "",
       "repeatable": true,
       "states": [],
-      "wait": 0
+      "wait": 0,
+      "status": "complete"
     },
     {
       "id": "",
@@ -228,7 +219,8 @@
       "repeatable": true,
       "message": "",
       "states": [],
-      "wait": 0
+      "wait": 0,
+      "status": "complete"
     },
     {
       "id": "",
@@ -293,37 +285,35 @@
     },
     {
       "id": "",
-      "name": "relay6_on_1_off",
-      "device_id": "12",
-      "action": "start",
-      "actionType": "relay",
-      "data": "27",
-      "description": "",
-      "dependencies": [],
-      "actions": [
-        "relay1_off"
-      ],
-      "message": "",
-      "states": [],
-      "wait": 0,
-      "repeatable": true
-    },
-    {
-      "id": "",
-      "name": "6off_2_on",
+      "name": "27off",
       "device_id": "12",
       "action": "stop",
       "actionType": "relay",
       "data": "27",
       "description": "",
       "dependencies": [],
-      "actions": [
-        "relay2_off"
-      ],
+      "actions": [],
       "message": "",
       "states": [],
       "wait": 0,
-      "repeatable": true
+      "repeatable": true,
+      "status": "complete"
+    },
+    {
+      "id": "",
+      "name": "27on",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "27",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true,
+      "status": "complete"
     }
   ],
   "triggers": [
@@ -361,7 +351,7 @@
   "timeUpdate": {
     "hours": 0,
     "minutes": 30,
-    "seconds": 33
+    "seconds": 31
   },
   "ended": false
 }

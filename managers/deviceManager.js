@@ -31,10 +31,10 @@ function addNewDevice(details, type, overwrite = false) {
 }
 
 function nodeExists(id) {
-    if(nodeDeviceList.length == 0){
+    if (nodeDeviceList.length == 0) {
         return false;
     }
-    for(let node of nodeDeviceList){
+    for (let node of nodeDeviceList) {
         if (node.id == id) {
             return (true);
         }
@@ -132,16 +132,16 @@ exports.getNodeInfo = getNodeInfo;
 
 
 
-function updateMeshHeartbeat(nodeId, heartbeatPacket){
-    getNodeInfo(nodeId).then(node =>{
+function updateMeshHeartbeat(nodeId, heartbeatPacket) {
+    getNodeInfo(nodeId).then(node => {
         node.updateHeartbeat(heartbeatPacket);
     })
 }
 exports.updateMeshHeartbeat = updateMeshHeartbeat;
 
 
-function updateBridgeMemory(nodeId, packet){
-    getNodeInfo(nodeId).then(node =>{
+function updateBridgeMemory(nodeId, packet) {
+    getNodeInfo(nodeId).then(node => {
         node.updateBridgeStatus(packet);
     })
 }
@@ -313,11 +313,13 @@ class NodeDevice {
         }
     }
 
-    updateHeartbeat(heartbeatPacket){
+    updateHeartbeat(heartbeatPacket) {
+        var timeNow = new Date().getTime();
+        heartbeatPacket.heartbeat.lastUpdated = timeNow;
         this.meshNodes[`${heartbeatPacket.heartbeat.hardwareId}`] = heartbeatPacket.heartbeat;
     }
 
-    updateBridgeStatus(packet){
+    updateBridgeStatus(packet) {
         this.bridgeStatus = packet;
     }
 

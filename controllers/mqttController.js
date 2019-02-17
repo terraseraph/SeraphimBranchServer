@@ -32,8 +32,10 @@ server.on('clientConnected', function (client) {
 // fired when a message is received
 server.on('published', function (packet, client) {
   // log(packet.toString())
-  // console.log('Published : ', packet.payload.toString());
+  log('Published : ', packet.payload.toString());
   if (client != undefined) {
+    log("Client id:");
+    log(client.id.toString());
     parsePacket(packet, client.id);
   }
 });
@@ -83,76 +85,76 @@ function parsePacket(packet, nodeId = undefined) {
   }
 }
 
-  exports.addActionsToMasterQueue = addActionsToMasterQueue;
+exports.addActionsToMasterQueue = addActionsToMasterQueue;
 
-  /**
-   * Add actions to masters queue
-   * @param {*} actionsArray The actions to add to queue
-   */
-  function addActionsToMasterQueue(actionsArray) {
-    DeviceManager.nodeDeviceList.forEach(device => {
-      if (device.id == tempNodeId) {
-        actionsArray.forEach(action => {
-          device.actionsArray.push(action)
-          DeviceManager.setDeviceReady(device.id);
-        });
-      }
-    })
-  }
-
-
-  function createMqttNode(details) {
-    DeviceManager.addNewDevice(details, DeviceManager.NodeType.MQTT, true);
-  }
-
-  function int2ip(ipInt) {
-    ipInt = parseInt(ipInt);
-    return ((ipInt & 255) + '.' + (ipInt >> 8 & 255) + '.' + (ipInt >> 16 & 255) + '.' + (ipInt >>> 24));
-  }
-
-
-
-  var client = mqtt.connect('http://localhost');
-
-  client.subscribe('root');
-
-  client.on('message', function (topic, message) {
-    // console.log(message.toString());
-    // console.log("from subscribed");
-  });
-
-  client.on('connect', function () {
-    client.subscribe('root', function (err) {
-      if (!err) {
-        client.publish('root', 'Hello mqtt')
-      }
-    })
+/**
+ * Add actions to masters queue
+ * @param {*} actionsArray The actions to add to queue
+ */
+function addActionsToMasterQueue(actionsArray) {
+  DeviceManager.nodeDeviceList.forEach(device => {
+    if (device.id == tempNodeId) {
+      actionsArray.forEach(action => {
+        device.actionsArray.push(action)
+        DeviceManager.setDeviceReady(device.id);
+      });
+    }
   })
+}
 
-  exports.publishtMqtt = function (req, res) {
-    var topic = req.params.topic;
-    var packet = JSON.stringify(req.body);
-    client.publish(topic, packet, (result) => {
-      log(result);
-      res.send(result);
-    });
-  }
 
-  exports.getNodeList = function (req, res) {
-    res.send(nodeDeviceList);
-  }
+function createMqttNode(details) {
+  DeviceManager.addNewDevice(details, DeviceManager.NodeType.MQTT, true);
+}
+
+function int2ip(ipInt) {
+  ipInt = parseInt(ipInt);
+  return ((ipInt & 255) + '.' + (ipInt >> 8 & 255) + '.' + (ipInt >> 16 & 255) + '.' + (ipInt >>> 24));
+}
 
 
 
-  // ============================
-  // ==== Helpers ===============
-  // ============================
+var client = mqtt.connect('http://localhost');
 
-  function isJSON(str) {
-    if (/^\s*$/.test(str)) return false;
-    str = str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@');
-    str = str.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']');
-    str = str.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
-    return (/^[\],:{}\s]*$/).test(str);
+client.subscribe('root');
 
-  }
+client.on('message', function (topic, message) {
+  // console.log(message.toString());
+  // console.log("from subscribed");
+});
+
+client.on('connect', function () {
+  client.subscribe('root', function (err) {
+    if (!err) {
+      client.publish('root', 'Hello mqtt')
+    }
+  })
+})
+
+exports.publishtMqtt = function (req, res) {
+  var topic = req.params.topic;
+  var packet = JSON.stringify(req.body);
+  client.publish(topic, packet, (result) => {
+    log(result);
+    res.send(result);
+  });
+}
+
+exports.getNodeList = function (req, res) {
+  res.send(nodeDeviceList);
+}
+
+
+
+// ============================
+// ==== Helpers ===============
+// ============================
+
+function isJSON(str) {
+  if (/^\s*$/.test(str)) return false;
+  str = str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@');
+  str = str.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, ']');
+  str = str.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
+  return (/^[\],:{}\s]*$/).test(str);
+
+}
