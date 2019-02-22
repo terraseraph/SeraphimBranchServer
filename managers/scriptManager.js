@@ -13,15 +13,18 @@ const HttpManager = require('./httpManager');
 
 var eventActionScriptList = new Array();
 readScriptsInDirectory(); //TODO: put this in an init file or something
+
 updateScriptsFromRootServer();
-exports.updateScriptsFromRootServer = updateScriptsFromRootServer;
+
 
 
 /** Create new script from http request */
-exports.newScript = function(req, res){
+exports.newScript = function (req, res) {
     var script = req.body
     createLocalScript(script);
-    res.send({"message":script})
+    res.send({
+        "message": script
+    })
 }
 
 //TODO: make script updator function to fetch new scripts on startup
@@ -40,25 +43,29 @@ function readScriptsInDirectory() {
         });
     });
 }
+exports.readScriptsInDirectory = readScriptsInDirectory;
 
 /**
  *Update scripts from root server.
  *Scripts are defined in config.json
  */
-function updateScriptsFromRootServer(){
-    configManager.getConfig().then(config =>{
-        for(var scriptName of config.branch_scripts){
-            HttpManager.getRootServerScript(scriptName).then(script =>{
+function updateScriptsFromRootServer() {
+    eventActionScriptList = [];
+    configManager.getConfig().then(config => {
+        for (var scriptName of config.branch_scripts) {
+            HttpManager.getRootServerScript(scriptName).then(script => {
                 createLocalScript(script);
+                eventActionScriptList.push(JSON.parse(script));
                 log(script);
             })
         }
     })
 }
+exports.updateScriptsFromRootServer = updateScriptsFromRootServer;
 
-function updateSelectedScript(scriptName, cb){
+function updateSelectedScript(scriptName, cb) {
     var config = configManager.configJson;
-    config.selected_script = scriptName+".json";
+    config.selected_script = scriptName + ".json";
     configManager.updateConfig(config);
     cb("scriptUpdated");
 };
@@ -70,9 +77,11 @@ exports.updateSelectedScript = updateSelectedScript;
  *
  * @param {*} script
  */
-function createLocalScript(script){
+function createLocalScript(script) {
     script = JSON.parse(script);
-    jsonfile.writeFileSync(directoryPath + `/${script.name}.json`, script, {spaces: 2});
+    jsonfile.writeFileSync(directoryPath + `/${script.name}.json`, script, {
+        spaces: 2
+    });
 }
 
 
@@ -100,7 +109,7 @@ function generateScriptObjects(file) {
 }
 
 /** Create script from json object */
-function createScriptModel(script){
+function createScriptModel(script) {
     memoryManager.addEventActionToScript(script) //add to memory manager
     var eventActionScript = new EventActionScriptModel(script.name, script.id, script.masterId)
     script.events.forEach(event => {

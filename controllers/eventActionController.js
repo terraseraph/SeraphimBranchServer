@@ -32,18 +32,24 @@ exports.parseEvent = function (packet, callback) {
             log("script_state: ", script_state)
             log("non_repeatable_actions: ", non_repeatable_actions)
             /*dependencies are met or skipped if fromServer (http request)*/
-            checkStateDependencies(evt).then(result => {
+            checkStateDependencies(evt).then(depMet => {
+                if (!depMet) {
+                    callback(actionsArr)
+                    return;
+                }
                 /*Dependencies are met, check if the event is in the script_state*/
                 setScriptStates(evt).then(() => {
-                    evt.branch_name = selectedScript.branch_name;
-                    sendToServer(evt)
+                    evt.branch_name = selectedScript.name; //Attach the branch name
+                    sendToServer(evt, selectedScript.states).then(result => {
+                        // log(result);
+                    });
                     eventStateSpecialActions(evt);
                     if (evt.actions.length > 0) {
                         for (var j = 0; j < evt.actions.length; j++) {
                             findAction(evt.actions[j]).then((act) => {
                                 playAction(act, function (result) {
                                     actionsArr.push(result);
-                                    if(j == evt.actions.length){
+                                    if (j == evt.actions.length) {
                                         callback(actionsArr)
                                     }
                                 })
@@ -63,14 +69,16 @@ exports.forceEvent = function (eventName, callback) {
     var actionsArr = new Array()
     findEvent(eventName, true).then(evt => {
         setScriptStates(evt).then(() => {
-            evt.branch_name = selectedScript.branch_name;
-            sendToServer(evt)
+            evt.branch_name = selectedScript.name; //Attach the branch name
+            sendToServer(evt, selectedScript.states).then(result => {
+                log(result);
+            });
             if (evt.actions.length > 0) {
                 for (var j = 0; j < evt.actions.length; j++) {
                     findAction(evt.actions[j]).then((act) => {
                         playAction(act, function (result) {
                             actionsArr.push(result);
-                            if(j == evt.actions.length){
+                            if (j == evt.actions.length) {
                                 callback(actionsArr)
                             }
                         })
@@ -84,13 +92,15 @@ exports.forceEvent = function (eventName, callback) {
 }
 
 
-exports.forceEventFromServer = function(eventPacket, callback){
+exports.forceEventFromServer = function (eventPacket, callback) {
     let bridgeId = eventPacket.masterId;
     let evtName = eventPacket.name;
     let ScriptName = eventPacket.scriptName;
-    this.forceEvent(evtName, (actions)=>{
+    this.forceEvent(evtName, (actions) => {
         addActionsToMasterQueue(actions, bridgeId);
-        callback({actions : actions})
+        callback({
+            actions: actions
+        })
     })
 
 }
@@ -174,7 +184,7 @@ function playAction(action, callback) {
         callback(result)
         return
     }
-    if(!action.hasOwnProperty("repeatable")){
+    if (!action.hasOwnProperty("repeatable")) {
         callback(result)
         return
     }
@@ -214,11 +224,16 @@ function makeActionPacket(action) {
 
 /**
  * Send the Master server the object too for logging
- * @param {*} obj 
+ * @param {*} event 
  */
-function sendToServer(obj) {
+function sendToServer(event, states) {
     return new Promise((resolve, reject) => {
-        httpManager.sendEventsToServer(obj)
+        var packet = {
+            event: event,
+            states: states
+        }
+        log("===Sending packet to server ===", packet);
+        httpManager.sendEventsToServer(packet)
             .then((data) => {
                 resolve(data)
             })
@@ -384,7 +399,8 @@ function getState(stateName) {
 }
 
 function resetStates() {
-    selectedScript.forEach(state => {
+    selectedScript = memoryManager.getSelectedScript();
+    selectedScript.states.forEach(state => {
         state.active = false;
     })
 }
@@ -422,6 +438,7 @@ function setScriptStates(evt) {
                 } else if (state.active == evtState.active && evt.can_toggle == "true") {
                     toggleState(state);
                 }
+                log(memoryManager.getSelectedScript().states);
             })
         });
         resolve()
@@ -433,17 +450,39 @@ function setScriptStates(evt) {
 
 function checkStateDependencies(event_action) {
     return new Promise((resolve, reject) => {
-        var result = false;
+        var met = "false";
+        // for (let i = 0; i < event_action.dependencies.length; i++) {
+        //     var dep = event_action.dependencies[i];
+        //     findState(dep).then(state => {
+        //         if (!state.active) {
+        //             result = false;
+        //             resolve(result);
+        //             return;
+        //         }
+        //     })
+        //     if (i == event_action.dependencies.length) {
+        //         resolve(true);
+        //     }
+        // }
+        if (event_action.dependencies.length == 0) {
+            resolve(true);
+        }
+        let i = 0;
         event_action.dependencies.forEach(dep => {
             findState(dep).then(state => {
                 if (!state.active) {
-                    result = false;
-                    resolve(result);
-                    return;
+                    log("===== All Dependencies not met ====")
+                    met = "false";
+                    resolve(false);
+                    // return;
                 }
             })
+            if (i == event_action.dependencies.length) {
+                resolve(true);
+            }
+            i++;
         });
-        resolve(true);
+        // resolve(true);
     })
 }
 
@@ -451,13 +490,15 @@ function checkStateDependencies(event_action) {
 
 function addActionsToMasterQueue(actionsArray, deviceId) {
     log("====SENDING ACTION TO MASTER====", actionsArray)
-    DeviceManager.nodeDeviceList.forEach(device => {
-        if (device.id == deviceId) {
-            actionsArray.forEach(action => {
-                device.actionsArray.push(action)
-                DeviceManager.setDeviceReady(device.id);
-            });
-        }
-    })
+    DeviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
+    // for (var i = 0; i < actionsArray.length; i++) {}
+    // DeviceManager.nodeDeviceList.forEach(device => {
+    //     if (device.id == deviceId) {
+    //         actionsArray.forEach(action => {
+    //             device.actionsArray.push(action)
+    //             DeviceManager.setDeviceReady(device.id);
+    //         });
+    //     }
+    // })
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;

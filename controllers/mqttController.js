@@ -81,6 +81,9 @@ function parsePacket(packet, nodeId = undefined) {
       DeviceManager.updateMeshHeartbeat(tempNodeId, msg);
     } else if (msg.hasOwnProperty("bridgeMemory")) {
       DeviceManager.updateBridgeMemory(tempNodeId, msg);
+    } else if (msg.hasOwnProperty("ready")) {
+      log("SETTING READY", tempNodeId)
+      DeviceManager.setDeviceReady(tempNodeId);
     }
   }
 }

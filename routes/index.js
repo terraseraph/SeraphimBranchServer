@@ -9,8 +9,10 @@ const httpManager = require('../managers/httpManager')
 const mqttController = require('../controllers/mqttController');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('home', { title: 'Branch Server' });
+router.get('/', function (req, res, next) {
+  res.render('home', {
+    title: 'Branch Server'
+  });
 });
 
 /** System status */

@@ -6,9 +6,18 @@
   "time": {
     "hours": "0",
     "minutes": "30",
-    "seconds": "35"
+    "seconds": "55"
   },
-  "states": [],
+  "states": [
+    {
+      "name": "Relay1",
+      "active": false
+    },
+    {
+      "name": "Relay2",
+      "active": false
+    }
+  ],
   "events": [
     {
       "id": "1",
@@ -25,19 +34,18 @@
       "message": "started the game",
       "states": [
         {
-          "name": "start_game",
+          "name": "Relay1",
+          "active": true
+        }
+      ]
+    },
+    {
+      "states": [
+        {
+          "name": "Relay2",
           "active": true
         }
       ],
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 32
-      }
-    },
-    {
-      "states": [],
       "id": "",
       "name": "start_relay2",
       "device_id": "13",
@@ -46,12 +54,18 @@
       "data": "222222",
       "description": "",
       "dependencies": [
-        "start_game"
+        "Relay1"
       ],
       "actions": [
         "realy2"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 26,
+        "seconds": 14
+      }
     },
     {
       "states": [],
@@ -69,7 +83,12 @@
       "message": ""
     },
     {
-      "states": [],
+      "states": [
+        {
+          "name": "Relay1",
+          "active": false
+        }
+      ],
       "id": "",
       "name": "stop_relay1",
       "device_id": "13",
@@ -80,17 +99,15 @@
       "dependencies": [],
       "actions": [
         "relay1_off"
-      ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 32
-      }
+      ]
     },
     {
-      "states": [],
+      "states": [
+        {
+          "name": "Relay2",
+          "active": false
+        }
+      ],
       "id": "",
       "name": "stop_relay2",
       "device_id": "13",
@@ -102,10 +119,21 @@
       "actions": [
         "relay2_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 25,
+        "seconds": 50
+      }
     },
     {
-      "states": [],
+      "states": [
+        {
+          "name": "Relay2",
+          "active": false
+        }
+      ],
       "id": "",
       "name": "stop_relay2 ",
       "device_id": "13",
@@ -161,14 +189,43 @@
       "dependencies": [],
       "actions": [
         "27off"
+      ]
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "ALL RELAYS ON",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "DDDDDD",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay1",
+        "realy2",
+        "relay3",
+        "27off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 32
-      }
+      "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "ALL RELAYS OFF",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "CCCCCC",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "relay1_off",
+        "relay2_off",
+        "relay3_off",
+        "27on"
+      ],
+      "message": ""
     }
   ],
   "actions": [
@@ -187,8 +244,7 @@
       "dependencies": [],
       "actions": [],
       "message": "chest_door_on",
-      "states": [],
-      "status": "complete"
+      "states": []
     },
     {
       "id": "",
@@ -203,8 +259,7 @@
       "message": "",
       "repeatable": true,
       "states": [],
-      "wait": 0,
-      "status": "complete"
+      "wait": 0
     },
     {
       "id": "",
@@ -219,8 +274,7 @@
       "repeatable": true,
       "message": "",
       "states": [],
-      "wait": 0,
-      "status": "complete"
+      "wait": 0
     },
     {
       "id": "",
@@ -235,8 +289,7 @@
       "repeatable": true,
       "message": "",
       "states": [],
-      "wait": 0,
-      "status": "complete"
+      "wait": 0
     },
     {
       "id": "",
@@ -296,8 +349,7 @@
       "message": "",
       "states": [],
       "wait": 0,
-      "repeatable": true,
-      "status": "complete"
+      "repeatable": true
     },
     {
       "id": "",
@@ -312,8 +364,7 @@
       "message": "",
       "states": [],
       "wait": 0,
-      "repeatable": true,
-      "status": "complete"
+      "repeatable": true
     }
   ],
   "triggers": [
@@ -348,10 +399,10 @@
       "hint": "waughhhh"
     }
   ],
+  "ended": false,
   "timeUpdate": {
     "hours": 0,
-    "minutes": 30,
-    "seconds": 31
-  },
-  "ended": false
+    "minutes": 25,
+    "seconds": 22
+  }
 }

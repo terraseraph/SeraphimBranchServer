@@ -1,5 +1,6 @@
 //@ts-check
 const SerialPort = require('serialport');
+const EventEmitter = require('events').EventEmitter;
 var Readline = SerialPort.parsers.Readline;
 const log = require('../controllers/loggingController').log;
 const SerialController = require('../controllers/serialController');
@@ -82,8 +83,10 @@ exports.removeDevice = removeDevice;
 function setDeviceReady(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
-            device.ready = true
-            device.playAction();
+            // device.ready = true
+            device.setReady();
+            // device.readyEvent.emit('ready');
+            // device.playAction();
         }
     });
 }
@@ -102,6 +105,25 @@ function sendAction(deviceName) {
     });
 }
 exports.sendAction = sendAction;
+
+
+function addActionsToDeviceQueue(deviceName, actionsArray) {
+    nodeDeviceList.forEach(device => {
+        if (device.name == deviceName) {
+            for (let i = 0; i < actionsArray.length; i++) {
+                // device.actionsArray.unshift(actionsArray[i]);
+                device.actionsArray.push(actionsArray[i]);
+                if (i == actionsArray.length - 1) {
+                    setDeviceReady(deviceName);
+                }
+            }
+            // actionsArray.forEach(action => {
+            //     device.actionsArray.push(action);
+            // })
+        }
+    });
+}
+exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
 
 // Replacement for an enum;
 const NodeType = {
@@ -226,9 +248,12 @@ class NodeDevice {
         this.name = ""; //the topic to publish to
         this.ipAddress = ""; // the nodes ip address probably
         this.id = null;
-        this.ready = false;
+        this.ready = true;
         this.actionsArray = new Array();
         this.writeCount = 0;
+
+        // this.readyEvent = new EventEmitter;
+        // this.readyEvent.on('ready', this.setReady);
         // ==============
 
 
@@ -266,6 +291,8 @@ class NodeDevice {
         }
     }
 
+
+
     write(message, callback) {
         switch (this.nodeType) {
             case NodeType.MQTT:
@@ -287,10 +314,6 @@ class NodeDevice {
         }
     }
 
-    setReady() {
-        this.ready = true;
-        this.playAction();
-    }
 
     playAction() {
         switch (this.nodeType) {
@@ -311,6 +334,12 @@ class NodeDevice {
                 break;
             default:
         }
+    }
+
+    setReady() {
+        this.ready = true;
+        this.playAction();
+        log("===Ready===")
     }
 
     updateHeartbeat(heartbeatPacket) {
@@ -430,11 +459,13 @@ class NodeDevice {
 
     mqtt_write(data, callback) {
         this.writeCount += 1
+        // this.actionsArray.shift();
+        // this.actionsArray.pop();
         log("Total writes to this node: ", this.writeCount)
 
         MqttController.server.publish({
             topic: this.details.name,
-            payload: new Buffer(JSON.stringify(data)),
+            payload: Buffer.from(JSON.stringify(data)),
             qos: 1,
             retain: false
         }, () => {
@@ -449,6 +480,10 @@ class NodeDevice {
 
     mqtt_playAction(callback) {
         if (this.actionsArray.length != undefined) {
+            if (this.actionsArray.length == 0) {
+                callback("No actions");
+                return;
+            }
             if (!this.ready) {
                 callback(`${this.details.name} Not ready`)
                 return
@@ -462,8 +497,14 @@ class NodeDevice {
                 return
             }
 
+            // this.mqtt_write(this.actionsArray[this.actionsArray.length], (data) => {
+            //     log(data);
+            //     // this.actionsArray.shift();
+            //     this.ready = false;
+            // })
             this.mqtt_write(this.actionsArray[0], (data) => {
                 log(data);
+                // this.actionsArray = this.actionsArray.splice(0, 1);
                 this.actionsArray.shift();
                 this.ready = false;
             })
