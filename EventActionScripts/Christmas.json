@@ -59,13 +59,7 @@
       "actions": [
         "realy2"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 26,
-        "seconds": 14
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -119,13 +113,7 @@
       "actions": [
         "relay2_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 25,
-        "seconds": 50
-      }
+      "message": ""
     },
     {
       "states": [
@@ -372,7 +360,7 @@
       "name": "end video",
       "trigger": "end_game",
       "audio": "anoptherfile.mp3",
-      "video": "another video.mp4",
+      "video": "http://localhost:4400/video",
       "hint": "",
       "can_toggle": "true"
     },
@@ -380,7 +368,7 @@
       "name": "Best trigger",
       "trigger": "start_game",
       "audio": "audio.mp3",
-      "video": "movie.mp4",
+      "video": "https://www.youtube.com/watch?v=hp97GjuULX8",
       "hint": "sopme hint",
       "can_toggle": "true"
     }
@@ -402,7 +390,7 @@
   "ended": false,
   "timeUpdate": {
     "hours": 0,
-    "minutes": 25,
-    "seconds": 22
+    "minutes": 27,
+    "seconds": 34
   }
 }

@@ -1,6 +1,7 @@
 //@ts-check
 var express = require('express');
 var router = express.Router();
+var path = require('path');
 
 const sysInfo = require('../controllers/systemInformation')
 const scriptReader = require('../managers/scriptManager')
@@ -18,6 +19,11 @@ router.get('/', function (req, res, next) {
 /** System status */
 router.get("/info", sysInfo.getSystemInfo)
 
+
+//TODO: make other video test routes
+router.get("/video", (req, res) => {
+  res.sendFile(path.resolve(__dirname, `../public/files/video/static_small.mp4`));
+})
 
 
 /**
