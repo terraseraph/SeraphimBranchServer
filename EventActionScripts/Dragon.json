@@ -245,11 +245,5 @@
       "name": "end hint",
       "hint": "waughhhh"
     }
-  ],
-  "timeUpdate": {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 0
-  },
-  "ended": false
+  ]
 }

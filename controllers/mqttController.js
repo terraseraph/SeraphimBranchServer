@@ -73,9 +73,9 @@ function parsePacket(packet, nodeId = undefined) {
     } else if (msg.hasOwnProperty("state")) {
       // is an event from a node device
       if (msg.state.type == "event") {
-        EventActionController.parseEvent(msg.state.message, addActionsToMasterQueue)
+        EventActionController.parseEvent(msg.state.message, nodeId, actionsAddedToNode)
       } else if (msg.state.type == "action") {
-        EventActionController.parseAction(msg.state.message, addActionsToMasterQueue)
+        EventActionController.parseAction(msg.state.message, actionsAddedToNode)
       }
     } else if (msg.hasOwnProperty("heartbeat")) {
       DeviceManager.updateMeshHeartbeat(tempNodeId, msg);
@@ -88,22 +88,15 @@ function parsePacket(packet, nodeId = undefined) {
   }
 }
 
-exports.addActionsToMasterQueue = addActionsToMasterQueue;
 
 /**
  * Add actions to masters queue
  * @param {*} actionsArray The actions to add to queue
  */
-function addActionsToMasterQueue(actionsArray) {
-  DeviceManager.nodeDeviceList.forEach(device => {
-    if (device.id == tempNodeId) {
-      actionsArray.forEach(action => {
-        device.actionsArray.push(action)
-        DeviceManager.setDeviceReady(device.id);
-      });
-    }
-  })
+function actionsAddedToNode(actionsArray) {
+  log("== Actions added to node ==", actionsArray);
 }
+exports.actionsAddedToNode = actionsAddedToNode;
 
 
 function createMqttNode(details) {

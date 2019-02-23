@@ -24,7 +24,7 @@ exports.setEventFromServer = function () {
 }
 
 /** Find the event */
-exports.parseEvent = function (packet, callback) {
+exports.parseEvent = function (packet, bridgeId, callback) {
     selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
     findEvent(packet, false)
@@ -43,7 +43,8 @@ exports.parseEvent = function (packet, callback) {
                     sendToServer(evt, selectedScript.states).then(result => {
                         // log(result);
                     });
-                    processActionsArray(evt.actions, (actArr) => {
+                    processActionsArray(evt.actions, bridgeId, (actArr) => {
+                        addActionsToMasterQueue(actArr, bridgeId);
                         callback(actArr);
                     })
                 })
@@ -54,9 +55,21 @@ exports.parseEvent = function (packet, callback) {
 
 
 
+exports.forceEventFromServer = function (eventPacket, callback) {
+    let bridgeId = eventPacket.masterId;
+    let evtName = eventPacket.name;
+    let ScriptName = eventPacket.scriptName;
+    this.forceEvent(evtName, bridgeId, (actions) => {
+        // addActionsToMasterQueue(actions, bridgeId);
+        callback({
+            actions: actions
+        })
+    })
+
+}
 
 /** Force event by name */
-exports.forceEvent = function (eventName, callback) {
+exports.forceEvent = function (eventName, bridgeId, callback) {
     selectedScript = memoryManager.getSelectedScript();
     var actionsArr = new Array()
     findEvent(eventName, true).then(evt => {
@@ -65,7 +78,8 @@ exports.forceEvent = function (eventName, callback) {
             sendToServer(evt, selectedScript.states).then(result => {
                 // log(result);
             });
-            processActionsArray(evt.actions, (actArr) => {
+            processActionsArray(evt.actions, bridgeId, (actArr) => {
+                addActionsToMasterQueue(actArr, bridgeId);
                 callback(actArr);
             })
         })
@@ -75,7 +89,7 @@ exports.forceEvent = function (eventName, callback) {
 }
 
 
-function processActionsArray(actions, callback) {
+function processActionsArray(actions, bridgeId, callback) {
     let actionsArr = new Array();
     if (actions.length > 0) {
         for (var j = 0; j < actions.length; j++) {
@@ -83,6 +97,7 @@ function processActionsArray(actions, callback) {
                 playAction(act, function (result) {
                     actionsArr.push(result);
                     if (j == actions.length) {
+                        // addActionsToMasterQueue(actions, bridgeId);
                         callback(actionsArr)
                     }
                 })
@@ -92,18 +107,6 @@ function processActionsArray(actions, callback) {
 }
 
 
-exports.forceEventFromServer = function (eventPacket, callback) {
-    let bridgeId = eventPacket.masterId;
-    let evtName = eventPacket.name;
-    let ScriptName = eventPacket.scriptName;
-    this.forceEvent(evtName, (actions) => {
-        addActionsToMasterQueue(actions, bridgeId);
-        callback({
-            actions: actions
-        })
-    })
-
-}
 
 /** find the action */
 exports.parseAction = function (packet, callback) {
@@ -450,39 +453,24 @@ function setScriptStates(evt) {
 
 function checkStateDependencies(event_action) {
     return new Promise((resolve, reject) => {
-        var met = "false";
-        // for (let i = 0; i < event_action.dependencies.length; i++) {
-        //     var dep = event_action.dependencies[i];
-        //     findState(dep).then(state => {
-        //         if (!state.active) {
-        //             result = false;
-        //             resolve(result);
-        //             return;
-        //         }
-        //     })
-        //     if (i == event_action.dependencies.length) {
-        //         resolve(true);
-        //     }
-        // }
+        // var met = "false";
+        for (let i = 0; i < event_action.dependencies.length; i++) {
+            var dep = event_action.dependencies[i];
+            findState(dep).then(state => {
+                if (!state.active) {
+                    resolve(false);
+                    log("===== Dependencies not met ====", state.name);
+                    return;
+                }
+                if (i == event_action.dependencies.length - 1) {
+                    resolve(true);
+                    return;
+                }
+            })
+        }
         if (event_action.dependencies.length == 0) {
             resolve(true);
         }
-        let i = 0;
-        event_action.dependencies.forEach(dep => {
-            findState(dep).then(state => {
-                if (!state.active) {
-                    log("===== All Dependencies not met ====")
-                    met = "false";
-                    resolve(false);
-                    // return;
-                }
-            })
-            if (i == event_action.dependencies.length) {
-                resolve(true);
-            }
-            i++;
-        });
-        // resolve(true);
     })
 }
 
@@ -491,14 +479,5 @@ function checkStateDependencies(event_action) {
 function addActionsToMasterQueue(actionsArray, deviceId) {
     log("====SENDING ACTION TO MASTER====", actionsArray)
     DeviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
-    // for (var i = 0; i < actionsArray.length; i++) {}
-    // DeviceManager.nodeDeviceList.forEach(device => {
-    //     if (device.id == deviceId) {
-    //         actionsArray.forEach(action => {
-    //             device.actionsArray.push(action)
-    //             DeviceManager.setDeviceReady(device.id);
-    //         });
-    //     }
-    // })
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;

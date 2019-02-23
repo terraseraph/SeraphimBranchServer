@@ -37,7 +37,13 @@
           "name": "Relay1",
           "active": true
         }
-      ]
+      ],
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 45
+      }
     },
     {
       "states": [
@@ -59,7 +65,13 @@
       "actions": [
         "realy2"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 20
+      }
     },
     {
       "states": [],
@@ -74,7 +86,13 @@
       "actions": [
         "relay3"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 23
+      }
     },
     {
       "states": [
@@ -93,7 +111,13 @@
       "dependencies": [],
       "actions": [
         "relay1_off"
-      ]
+      ],
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 13
+      }
     },
     {
       "states": [
@@ -113,7 +137,13 @@
       "actions": [
         "relay2_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 10
+      }
     },
     {
       "states": [
@@ -133,7 +163,13 @@
       "actions": [
         "relay3_off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 30,
+        "seconds": 7
+      }
     },
     {
       "states": [],
@@ -199,8 +235,8 @@
       "status": "complete",
       "completed_time": {
         "hours": 0,
-        "minutes": 28,
-        "seconds": 11
+        "minutes": 29,
+        "seconds": 40
       }
     },
     {
@@ -219,13 +255,7 @@
         "relay3_off",
         "27on"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 28,
-        "seconds": 4
-      }
+      "message": ""
     }
   ],
   "actions": [
@@ -402,7 +432,7 @@
   "ended": false,
   "timeUpdate": {
     "hours": 0,
-    "minutes": 27,
-    "seconds": 19
+    "minutes": 29,
+    "seconds": 3
   }
 }
