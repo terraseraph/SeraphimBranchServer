@@ -43,23 +43,15 @@ exports.parseEvent = function (packet, callback) {
                     sendToServer(evt, selectedScript.states).then(result => {
                         // log(result);
                     });
-                    eventStateSpecialActions(evt);
-                    if (evt.actions.length > 0) {
-                        for (var j = 0; j < evt.actions.length; j++) {
-                            findAction(evt.actions[j]).then((act) => {
-                                playAction(act, function (result) {
-                                    actionsArr.push(result);
-                                    if (j == evt.actions.length) {
-                                        callback(actionsArr)
-                                    }
-                                })
-                            })
-                        }
-                    }
+                    processActionsArray(evt.actions, (actArr) => {
+                        callback(actArr);
+                    })
                 })
             })
         })
 }
+
+
 
 
 
@@ -71,24 +63,32 @@ exports.forceEvent = function (eventName, callback) {
         setScriptStates(evt).then(() => {
             evt.branch_name = selectedScript.name; //Attach the branch name
             sendToServer(evt, selectedScript.states).then(result => {
-                log(result);
+                // log(result);
             });
-            if (evt.actions.length > 0) {
-                for (var j = 0; j < evt.actions.length; j++) {
-                    findAction(evt.actions[j]).then((act) => {
-                        playAction(act, function (result) {
-                            actionsArr.push(result);
-                            if (j == evt.actions.length) {
-                                callback(actionsArr)
-                            }
-                        })
-                    })
-                }
-            }
+            processActionsArray(evt.actions, (actArr) => {
+                callback(actArr);
+            })
         })
 
 
     })
+}
+
+
+function processActionsArray(actions, callback) {
+    let actionsArr = new Array();
+    if (actions.length > 0) {
+        for (var j = 0; j < actions.length; j++) {
+            findAction(actions[j]).then((act) => {
+                playAction(act, function (result) {
+                    actionsArr.push(result);
+                    if (j == actions.length) {
+                        callback(actionsArr)
+                    }
+                })
+            })
+        }
+    }
 }
 
 

@@ -21,10 +21,15 @@ router.get("/info", sysInfo.getSystemInfo)
 
 
 //TODO: make other video test routes
-router.get("/video", (req, res) => {
-  res.sendFile(path.resolve(__dirname, `../public/files/video/static_small.mp4`));
+router.get("/video/:path", (req, res) => {
+  var file = req.params.path;
+  res.sendFile(path.resolve(__dirname, `../public/files/video/${file}`));
 })
 
+router.get("/audio/:path", (req, res) => {
+  var file = req.params.path;
+  res.sendFile(path.resolve(__dirname, `../public/files/audio/${file}`));
+})
 
 /**
  * 

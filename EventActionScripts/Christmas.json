@@ -195,7 +195,13 @@
         "relay3",
         "27off"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 28,
+        "seconds": 11
+      }
     },
     {
       "states": [],
@@ -213,7 +219,13 @@
         "relay3_off",
         "27on"
       ],
-      "message": ""
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 28,
+        "seconds": 4
+      }
     }
   ],
   "actions": [
@@ -358,17 +370,17 @@
   "triggers": [
     {
       "name": "end video",
-      "trigger": "end_game",
-      "audio": "anoptherfile.mp3",
-      "video": "http://localhost:4400/video",
-      "hint": "",
+      "trigger": "Relay1",
+      "audio": "audio/congrats.mp3",
+      "video": "video/static_small.mp4",
+      "hint": "the end hintdsfsfsd",
       "can_toggle": "true"
     },
     {
       "name": "Best trigger",
       "trigger": "start_game",
-      "audio": "audio.mp3",
-      "video": "https://www.youtube.com/watch?v=hp97GjuULX8",
+      "audio": "audio/win_audio.mp3",
+      "video": "",
       "hint": "sopme hint",
       "can_toggle": "true"
     }
@@ -391,6 +403,6 @@
   "timeUpdate": {
     "hours": 0,
     "minutes": 27,
-    "seconds": 34
+    "seconds": 19
   }
 }
