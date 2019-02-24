@@ -6,7 +6,7 @@
   "time": {
     "hours": "0",
     "minutes": "30",
-    "seconds": "55"
+    "seconds": "0"
   },
   "states": [
     {
@@ -16,9 +16,31 @@
     {
       "name": "Relay2",
       "active": false
+    },
+    {
+      "name": "start_instance",
+      "active": false
     }
   ],
   "events": [
+    {
+      "id": "1",
+      "name": "start_instance",
+      "device_id": "11",
+      "event": "toggle",
+      "eventType": "button",
+      "data": 1,
+      "description": "start instnace",
+      "dependencies": [],
+      "actions": [],
+      "message": "started the instnace",
+      "states": [
+        {
+          "name": "start_instance",
+          "active": true
+        }
+      ]
+    },
     {
       "id": "1",
       "name": "start_relay1",
@@ -37,13 +59,7 @@
           "name": "Relay1",
           "active": true
         }
-      ],
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 45
-      }
+      ]
     },
     {
       "states": [
@@ -65,13 +81,7 @@
       "actions": [
         "realy2"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 20
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -86,13 +96,7 @@
       "actions": [
         "relay3"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 23
-      }
+      "message": ""
     },
     {
       "states": [
@@ -111,13 +115,7 @@
       "dependencies": [],
       "actions": [
         "relay1_off"
-      ],
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 13
-      }
+      ]
     },
     {
       "states": [
@@ -137,13 +135,7 @@
       "actions": [
         "relay2_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 10
-      }
+      "message": ""
     },
     {
       "states": [
@@ -163,13 +155,7 @@
       "actions": [
         "relay3_off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 30,
-        "seconds": 7
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -231,13 +217,7 @@
         "relay3",
         "27off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 29,
-        "seconds": 40
-      }
+      "message": ""
     },
     {
       "states": [],
@@ -399,19 +379,31 @@
   ],
   "triggers": [
     {
-      "name": "end video",
+      "name": "Begin background",
       "trigger": "Relay1",
       "audio": "audio/congrats.mp3",
+      "loop_audio": false,
+      "audio_type": "custom",
       "video": "video/static_small.mp4",
+      "loop_video": true,
+      "video_type": "background",
+      "pause_timer": false,
+      "play_timer": true,
       "hint": "the end hintdsfsfsd",
       "can_toggle": "true"
     },
     {
       "name": "Best trigger",
-      "trigger": "start_game",
+      "trigger": "start_instance",
       "audio": "audio/win_audio.mp3",
-      "video": "",
+      "loop_audio": false,
+      "audio_type": "start",
+      "video": "video/redline.mp4",
+      "loop_video": false,
+      "video_type": "custom",
       "hint": "sopme hint",
+      "pause_timer": false,
+      "play_timer": true,
       "can_toggle": "true"
     }
   ],
@@ -429,10 +421,5 @@
       "hint": "waughhhh"
     }
   ],
-  "ended": false,
-  "timeUpdate": {
-    "hours": 0,
-    "minutes": 29,
-    "seconds": 3
-  }
+  "ended": false
 }
