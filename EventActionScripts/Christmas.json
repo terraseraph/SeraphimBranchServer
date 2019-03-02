@@ -15,10 +15,18 @@
     },
     {
       "name": "Relay2",
-      "active": false
+      "active": true
     },
     {
       "name": "start_instance",
+      "active": true
+    },
+    {
+      "name": "end_instance",
+      "active": true
+    },
+    {
+      "name": "timer_complete",
       "active": false
     }
   ],
@@ -236,6 +244,44 @@
         "27on"
       ],
       "message": ""
+    },
+    {
+      "states": [
+        {
+          "name": "end_instance",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "end_instance",
+      "device_id": "13",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "AAAAAA",
+      "description": "end the game",
+      "dependencies": [],
+      "actions": [],
+      "message": ""
+    },
+    {
+      "states": [
+        {
+          "name": "end_instance",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "RFID card",
+      "device_id": "16",
+      "event": "code",
+      "eventType": "rfid",
+      "data": "31 11 05 83",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "realy2"
+      ],
+      "message": ""
     }
   ],
   "actions": [
@@ -398,13 +444,32 @@
       "audio": "audio/win_audio.mp3",
       "loop_audio": false,
       "audio_type": "start",
-      "video": "video/redline.mp4",
+      "video": "video/alex.mp4",
       "loop_video": false,
       "video_type": "custom",
-      "hint": "sopme hint",
-      "pause_timer": false,
+      "hint": "Some message here.....",
+      "pause_timer": true,
       "play_timer": true,
       "can_toggle": "true"
+    },
+    {
+      "name": "end trigger",
+      "trigger": "end_instance",
+      "audio": "audio/congrats.mp3",
+      "video": "video/redline.mp4",
+      "hint": "You won!",
+      "can_toggle": "",
+      "video_type": "custom",
+      "audio_type": "end"
+    },
+    {
+      "name": "timer complete",
+      "trigger": "timer_complete",
+      "audio": "audio/congrats.mp3",
+      "video": "",
+      "hint": "YOU LOSE!",
+      "can_toggle": "",
+      "audio_type": "end"
     }
   ],
   "hints": [
@@ -419,6 +484,10 @@
     {
       "name": "end hint",
       "hint": "waughhhh"
+    },
+    {
+      "name": "The new hint",
+      "hint": "Wee waughhhh"
     }
   ],
   "ended": false
