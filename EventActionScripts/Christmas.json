@@ -153,7 +153,7 @@
         }
       ],
       "id": "",
-      "name": "stop_relay2 ",
+      "name": "stop_relay3",
       "device_id": "13",
       "event": "code",
       "eventType": "keypad",

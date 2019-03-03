@@ -84,6 +84,20 @@ function createLocalScript(script) {
     });
 }
 
+function getScriptBymasterId(masterId) {
+    return new Promise((resolve, reject) => {
+
+        for (let i = 0; i < eventActionScriptList.length; i++) {
+            const script = eventActionScriptList[i];
+            if (script.masterId == masterId) {
+                resolve(script)
+            }
+
+        }
+    })
+}
+exports.getScriptBymasterId = getScriptBymasterId;
+
 
 
 

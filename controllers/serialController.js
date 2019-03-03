@@ -28,10 +28,10 @@ exports.parseMessage = parseMessage;
  * @returns
  */
 function parseMessage(packet, masterDeviceName) {
-    if(!isJSON(packet)){
+    if (!isJSON(packet)) {
         return;
     }
-    log("parsing message from: ",masterDeviceName)
+    log("parsing message from: ", masterDeviceName)
     tempMasterName = masterDeviceName; // to call in the following functions
     packet = JSON.parse(packet)
     if (packet.ready == "true") {
@@ -39,15 +39,14 @@ function parseMessage(packet, masterDeviceName) {
         playAction(masterDeviceName);
         return;
     }
-    if(packet.hasOwnProperty("heartbeat")){
+    if (packet.hasOwnProperty("heartbeat")) {
         log(packet);
         return
     }
     if (packet.eventType != "noneET" && packet.hasOwnProperty("event")) { //if is event
         eventActionController.parseEvent(packet, addActionsToMasterQueue)
-    }
-    else if(packet.actionType != "noneAT" && packet.hasOwnProperty("action")){ //is action
-        eventActionController.parseAction(packet, addActionsToMasterQueue)
+    } else if (packet.actionType != "noneAT" && packet.hasOwnProperty("action")) { //is action
+        eventActionController.parseAction(packet, masterDeviceName, addActionsToMasterQueue)
     }
 }
 
@@ -119,16 +118,13 @@ function isJSON(str) {
     str = str.replace(/(?:^|:|,)(?:\s*\[)+/g, '');
     return (/^[\],:{}\s]*$/).test(str);
 
-  }
-
-
-/** Get all master devices connected to serial */
-exports.masterDeviceInfo = function(){
-    var result = {
-        nodeDevices : nodeDeviceList
-    }
-    return result;
 }
 
 
-
+/** Get all master devices connected to serial */
+exports.masterDeviceInfo = function () {
+    var result = {
+        nodeDevices: nodeDeviceList
+    }
+    return result;
+}

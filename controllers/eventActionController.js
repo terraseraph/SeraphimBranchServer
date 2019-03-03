@@ -1,10 +1,11 @@
 //@ts-check
 // const $ = require('jquery');
 var memoryManager = require('../managers/memoryManager');
+var ScriptManager = require('../managers/scriptManager');
 var httpManager = require('../managers/httpManager')
 var log = require('./loggingController').log;
 var DeviceManager = require('../managers/deviceManager');
-var selectedScript;
+var script;
 
 var actions_array = new Array()
 /**
@@ -25,31 +26,35 @@ exports.setEventFromServer = function () {
 
 /** Find the event */
 exports.parseEvent = function (packet, bridgeId, callback) {
-    selectedScript = memoryManager.getSelectedScript();
-    var actionsArr = new Array()
-    findEvent(packet, false)
-        .then((evt) => {
-            log("script_state: ", script_state)
-            log("non_repeatable_actions: ", non_repeatable_actions)
-            /*dependencies are met or skipped if fromServer (http request)*/
-            checkStateDependencies(evt).then(depMet => {
-                if (!depMet) {
-                    callback(actionsArr)
-                    return;
-                }
-                /*Dependencies are met, check if the event is in the script_state*/
-                setScriptStates(evt).then(() => {
-                    evt.branch_name = selectedScript.name; //Attach the branch name
-                    sendToServer(evt, selectedScript.states).then(result => {
-                        // log(result);
-                    });
-                    processActionsArray(evt.actions, bridgeId, (actArr) => {
-                        addActionsToMasterQueue(actArr, bridgeId);
-                        callback(actArr);
+    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+
+        // TODO: get bridge id and compare it to the script it is supposed to read
+        // selectedScript = memoryManager.getSelectedScript();
+        var actionsArr = new Array()
+        findEvent(packet, selectedScript, false)
+            .then((evt) => {
+                log("script_state: ", script_state)
+                log("non_repeatable_actions: ", non_repeatable_actions)
+                /*dependencies are met or skipped if fromServer (http request)*/
+                checkStateDependencies(evt).then(depMet => {
+                    if (!depMet) {
+                        callback(actionsArr)
+                        return;
+                    }
+                    /*Dependencies are met, check if the event is in the script_state*/
+                    setScriptStates(evt).then(() => {
+                        evt.branch_name = selectedScript.name; //Attach the branch name
+                        sendToServer(evt, selectedScript.states).then(result => {
+                            // log(result);
+                        });
+                        processActionsArray(evt.actions, bridgeId, (actArr) => {
+                            addActionsToMasterQueue(actArr, bridgeId);
+                            callback(actArr);
+                        })
                     })
                 })
             })
-        })
+    })
 }
 
 
@@ -70,21 +75,24 @@ exports.forceEventFromServer = function (eventPacket, callback) {
 
 /** Force event by name */
 exports.forceEvent = function (eventName, bridgeId, callback) {
-    selectedScript = memoryManager.getSelectedScript();
-    var actionsArr = new Array()
-    findEvent(eventName, true).then(evt => {
-        setScriptStates(evt).then(() => {
-            evt.branch_name = selectedScript.name; //Attach the branch name
-            sendToServer(evt, selectedScript.states).then(result => {
-                // log(result);
-            });
-            processActionsArray(evt.actions, bridgeId, (actArr) => {
-                addActionsToMasterQueue(actArr, bridgeId);
-                callback(actArr);
+    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+
+        // selectedScript = memoryManager.getSelectedScript();
+        var actionsArr = new Array()
+        findEvent(eventName, selectedScript, true).then(evt => {
+            setScriptStates(evt).then(() => {
+                evt.branch_name = selectedScript.name; //Attach the branch name
+                sendToServer(evt, selectedScript.states).then(result => {
+                    // log(result);
+                });
+                processActionsArray(evt.actions, bridgeId, (actArr) => {
+                    addActionsToMasterQueue(actArr, bridgeId);
+                    callback(actArr);
+                })
             })
+
+
         })
-
-
     })
 }
 
@@ -93,7 +101,7 @@ function processActionsArray(actions, bridgeId, callback) {
     let actionsArr = new Array();
     if (actions.length > 0) {
         for (var j = 0; j < actions.length; j++) {
-            findAction(actions[j]).then((act) => {
+            findAction(actions[j], bridgeId).then((act) => {
                 playAction(act, function (result) {
                     actionsArr.push(result);
                     if (j == actions.length) {
@@ -109,16 +117,16 @@ function processActionsArray(actions, bridgeId, callback) {
 
 
 /** find the action */
-exports.parseAction = function (packet, callback) {
+exports.parseAction = function (packet, bridgeId, callback) {
     var actions_arr
     log("============ACTION=================")
     log(packet.fromId, packet.action, packet.actionType, packet.data)
     //find the matching action
     //maybe just send the action name from the server and parse it here....
-    findAction(packet.action).then((act) => {
+    findAction(packet.action, bridgeId).then((act) => {
         log(act.message)
         if (act.dependencies.length != 0) {
-            forceAction(act, function (result) {
+            forceAction(act, bridgeId, function (result) {
                 actions_arr = result
                 log("====Forced actions=====")
                 log("actions_arr= ", actions_arr)
@@ -139,7 +147,7 @@ exports.parseAction = function (packet, callback) {
  * @param {*} obj json object 
  * @param {*} callback array of actions as callback
  */
-function forceAction(obj, callback) {
+function forceAction(obj, bridgeId, callback) {
     var actions_to_complete = new Array();
     log("DEPECNDENCIES : ", obj.dependencies)
     if (obj.dependencies.length < 1 || !obj.dependencies) {
@@ -149,7 +157,7 @@ function forceAction(obj, callback) {
     for (var i = 0; i < obj.dependencies.length; i++) {
         var dep = obj.dependencies[i]
         if (!non_repeatable_actions.includes(dep)) {
-            findAction(dep).then((act) => {
+            findAction(dep, bridgeId).then((act) => {
                 log("dependencey name: ", dep)
                 playAction(act, function (result) {
                     actions_to_complete.push(result);
@@ -161,11 +169,13 @@ function forceAction(obj, callback) {
 }
 
 function forceActionFromServer(actionName, bridgeId) {
-    var actArr = new Array();
-    findAction(actionName).then((act) => {
-        playAction(act, function (result) {
-            actArr.push(result);
-            addActionsToMasterQueue(actArr, bridgeId);
+    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+        var actArr = new Array();
+        findAction(actionName, bridgeId).then((act) => {
+            playAction(act, function (result) {
+                actArr.push(result);
+                addActionsToMasterQueue(actArr, bridgeId);
+            })
         })
     })
 }
@@ -316,21 +326,21 @@ function dependenciesCheck(obj) {
  * Find event by name, Returns a promise
  * @param {*} packet Event name to find
  */
-function findEvent(packet, findByName = false) {
+function findEvent(packet, script, findByName = false) {
     log("============== Searching Selected Script =============");
-    log(selectedScript.name);
+    log(script.name);
     var evt;
     return new Promise((resolve, reject) => {
         if (findByName) {
-            selectedScript.events.forEach(event => {
+            script.events.forEach(event => {
                 if (event.name == packet) {
                     resolve(event);
                     return;
                 }
             });
         } else {
-            for (var i = 0; i < selectedScript.events.length; i++) {
-                evt = selectedScript.events[i]
+            for (var i = 0; i < script.events.length; i++) {
+                evt = script.events[i]
                 if ((evt.device_id == packet.fromId) && (evt.event == packet.event) && (arraysEqual(evt.data, packet.data) || evt.data == packet.data)) {
                     log("script state: ", script_state)
                     log("non_repeatable_actions: ", non_repeatable_actions)
@@ -349,16 +359,19 @@ function findEvent(packet, findByName = false) {
  * Find action
  * @param {*} actionName 
  */
-function findAction(actionName) {
-    selectedScript = memoryManager.getSelectedScript();
+function findAction(actionName, masterId) {
     return new Promise((resolve, reject) => {
-        selectedScript.actions.forEach(act => {
-            if (act.name == actionName) {
-                log("=====FIND ACTION===", act)
-                resolve(act)
-                return;
-            }
-        });
+        ScriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
+
+            // selectedScript = memoryManager.getSelectedScript();
+            selectedScript.actions.forEach(act => {
+                if (act.name == actionName) {
+                    log("=====FIND ACTION===", act)
+                    resolve(act)
+                    return;
+                }
+            });
+        })
     })
 }
 
@@ -375,8 +388,8 @@ function arraysEqual(a, b) {
 
 function getSelectedScript() {
     return new Promise((res, rej) => {
-        selectedScript = memoryManager.getSelectedScript();
-        res(selectedScript);
+        script = memoryManager.getSelectedScript();
+        res(script);
         return;
     })
 }
@@ -404,8 +417,8 @@ function getState(stateName) {
 }
 
 function resetStates() {
-    selectedScript = memoryManager.getSelectedScript();
-    selectedScript.states.forEach(state => {
+    script = memoryManager.getSelectedScript();
+    script.states.forEach(state => {
         state.active = false;
     })
 }
@@ -419,8 +432,8 @@ function toggleState(stateName) {
 
 function findState(stateName) {
     return new Promise((resolve, reject) => {
-        selectedScript = memoryManager.getSelectedScript();
-        selectedScript.states.forEach(state => {
+        script = memoryManager.getSelectedScript();
+        script.states.forEach(state => {
             if (state.name == stateName) {
                 resolve(state);
                 return;

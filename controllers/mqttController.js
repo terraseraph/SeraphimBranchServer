@@ -75,7 +75,7 @@ function parsePacket(packet, nodeId = undefined) {
       if (msg.state.type == "event") {
         EventActionController.parseEvent(msg.state.message, nodeId, actionsAddedToNode)
       } else if (msg.state.type == "action") {
-        EventActionController.parseAction(msg.state.message, actionsAddedToNode)
+        EventActionController.parseAction(msg.state.message, nodeId, actionsAddedToNode)
       }
     } else if (msg.hasOwnProperty("heartbeat")) {
       DeviceManager.updateMeshHeartbeat(tempNodeId, msg);
