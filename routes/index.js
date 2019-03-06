@@ -10,7 +10,7 @@ const httpManager = require("../managers/httpManager");
 const mqttController = require("../controllers/mqttController");
 
 /* GET home page. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
   res.render("home", {
     title: "Branch Server"
   });
@@ -45,9 +45,10 @@ router.get(
   "/scripts/selected/set/:scriptName",
   httpManager.updateSelectedScript
 );
-router.get("/scripts/selected/reset", httpManager.resetEventActionStates);
+router.get("/scripts/selected/reset/:scriptName", httpManager.resetEventActionStates);
 
 router.get("/scripts/update", httpManager.forceEventActionScriptUpdate);
+router.delete("/scripts/:scriptName", httpManager.deleteEventActionScript)
 
 /**
  *

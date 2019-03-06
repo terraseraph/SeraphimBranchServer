@@ -416,10 +416,12 @@ function getState(stateName) {
     })
 }
 
-function resetStates() {
-    script = memoryManager.getSelectedScript();
-    script.states.forEach(state => {
-        state.active = false;
+function resetStates(scriptName) {
+    // script = memoryManager.getSelectedScript();
+    ScriptManager.getScriptByName(scriptName).then(script => {
+        script.states.forEach(state => {
+            state.active = false;
+        })
     })
 }
 exports.resetStates = resetStates;

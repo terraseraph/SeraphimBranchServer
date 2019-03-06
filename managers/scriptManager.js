@@ -96,6 +96,32 @@ function getScriptBymasterId(masterId) {
         }
     })
 }
+
+
+function getScriptByName(scriptName) {
+    return new Promise((resolve, reject) => {
+
+        for (let i = 0; i < eventActionScriptList.length; i++) {
+            const script = eventActionScriptList[i];
+            if (script.name == scriptName) {
+                resolve(script)
+            }
+
+        }
+    })
+}
+exports.getScriptByName = getScriptByName
+
+function deleteScript(scriptName, callback) {
+    fs.unlink(directoryPath + `/${scriptName}.json`, (e) => {
+        log("complete")
+        callback({
+            "success": `Deleted ${scriptName}`
+        });
+    })
+}
+exports.deleteScript = deleteScript;
+
 exports.getScriptBymasterId = getScriptBymasterId;
 
 

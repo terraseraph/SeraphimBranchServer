@@ -11,7 +11,7 @@ var jsonfile = require("jsonfile");
 var scriptName, config, selectedScript;
 var currentScript;
 
-configManager.getConfig().then(c =>{
+configManager.getConfig().then(c => {
     config = c;
     scriptName = config.selected_script;
     selectedScript = require(`../EventActionScripts/${scriptName}`);
@@ -20,12 +20,12 @@ configManager.getConfig().then(c =>{
 
 
 /** for local functions accessing the script */
-function getSelectedScript(){
+function getSelectedScript() {
     return selectedScript
 }
 exports.getSelectedScript = getSelectedScript;
 
-function updateSelectedScriptByName(scriptName){
+function updateSelectedScriptByName(scriptName) {
     scriptName = scriptName;
     selectedScript = require(`../EventActionScripts/${scriptName}`);
 }
@@ -35,12 +35,12 @@ function updateSelectedScriptByName(scriptName){
  * Exports functions 
  * 
  */
-exports.addEventActionToScript = function(script){
+exports.addEventActionToScript = function (script) {
     eventActionScripts.push(script)
 }
 
 /** sets the event action script to use */
-exports.setSelectedScript = function(script){
+exports.setSelectedScript = function (script) {
     scriptName = script //TODO: add this to config as well
 }
 
@@ -54,7 +54,7 @@ exports.setSelectedScript = function(script){
  */
 
 /** Used for http requests */
-exports.showScripts = function(req, res){
+exports.showScripts = function (req, res) {
     res.send(eventActionScripts)
     console.log(eventActionScripts)
 }

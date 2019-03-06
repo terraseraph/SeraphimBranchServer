@@ -101,7 +101,7 @@ exports.getRootServerScript = function (scriptName) {
 }
 
 exports.resetEventActionStates = (req, res) => {
-    EventActionController.resetStates();
+    EventActionController.resetStates(req.params.scriptName);
     res.send("States reset");
 }
 
@@ -115,6 +115,13 @@ exports.getSelectedEventActionScript = (req, res) => {
 exports.forceEventActionScriptUpdate = function (req, res) {
     ScriptManager.updateScriptsFromRootServer();
     res.send("Updated");
+}
+
+exports.deleteEventActionScript = function (req, res) {
+    var script = req.params.scriptName;
+    ScriptManager.deleteScript(script, (m) => {
+        res.send(m)
+    });
 }
 
 

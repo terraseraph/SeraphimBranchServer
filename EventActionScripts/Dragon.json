@@ -245,5 +245,27 @@
       "name": "end hint",
       "hint": "waughhhh"
     }
+  ],
+  "screenConfigs": [
+    {
+      "name": "Screen1",
+      "backgroundType": "Video",
+      "backgroundPath": "video/static_small.mp4",
+      "font": "'Times New Roman', Times, serif",
+      "font_colour": "white",
+      "audio": "",
+      "showTimer": true,
+      "showHints": true
+    },
+    {
+      "name": "screen2",
+      "backgroundType": "Video",
+      "backgroundPath": "video/christmas_background.mp4",
+      "font": "Impact, Charcoal, sans-serif",
+      "font_colour": "BlueViolet",
+      "audio": "",
+      "showTimer": false,
+      "showHints": false
+    }
   ]
 }
