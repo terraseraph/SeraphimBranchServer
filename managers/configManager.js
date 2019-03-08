@@ -2,9 +2,9 @@
 //@ts-check
 // @ts-ignore
 var configJson = require("../config/branchConfig.json");
-const jsonfile = require("jsonfile");
-const path = require('path');
-const fs = require('fs');
+var jsonfile = require("jsonfile");
+var path = require('path');
+var fs = require('fs');
 var configPath = path.join(__dirname, '../config/branchConfig.json');
 var config = {}; // local config file;
 
