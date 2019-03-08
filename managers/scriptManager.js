@@ -54,6 +54,7 @@ function updateScriptsFromRootServer() {
     configManager.getConfig().then(config => {
         for (var scriptName of config.branch_scripts) {
             HttpManager.getRootServerScript(scriptName).then(script => {
+                if (script == undefined) return;
                 createLocalScript(script);
                 eventActionScriptList.push(JSON.parse(script));
                 log(script);
