@@ -351,6 +351,7 @@ class NodeDevice {
 
     updateBridgeStatus(packet) {
         this.bridgeStatus = packet;
+        HttpManager.deviceManager_sendHeartbeats(this)
     }
 
     // =======================================================
