@@ -1,3 +1,4 @@
+"use strict";
 //@ts-check
 // @ts-ignore
 var configJson = require("../config/branchConfig.json");
@@ -14,8 +15,8 @@ exports.config = config;
 exports.configJson = configJson;
 
 
-function configInit(){
-    return new Promise((resolve, reject)=>{
+function configInit() {
+    return new Promise((resolve, reject) => {
         config = fs.readFileSync(`${configPath}`, 'utf8');
         resolve(config);
     })
@@ -25,16 +26,18 @@ function configInit(){
 /**
  * Gets the config file.
  */
-exports.getConfig = function(){
-    return new Promise((resolve, reject)=>{
+exports.getConfig = function () {
+    return new Promise((resolve, reject) => {
         resolve(configJson);
     })
 }
 
-exports.updateConfig = function(configUpdate){
+exports.updateConfig = function (configUpdate) {
     config = configUpdate;
     configJson = configUpdate;
-    jsonfile.writeFileSync(configPath, configUpdate, {spaces: 2})
+    jsonfile.writeFileSync(configPath, configUpdate, {
+        spaces: 2
+    })
 }
 
 //TODO: ADD config http routes!
