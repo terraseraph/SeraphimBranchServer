@@ -346,6 +346,7 @@ class NodeDevice {
         var timeNow = new Date().getTime();
         heartbeatPacket.heartbeat.lastUpdated = timeNow;
         this.meshNodes[`${heartbeatPacket.heartbeat.hardwareId}`] = heartbeatPacket.heartbeat;
+        HttpManager.deviceManager_sendHeartbeats(this)
     }
 
     updateBridgeStatus(packet) {

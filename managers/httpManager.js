@@ -152,6 +152,23 @@ exports.deviceManager_sendHttp = function (address, message, type = "GET", callb
 }
 
 
+exports.deviceManager_sendHeartbeats = function (node) {
+    var msg = {
+        branchId: config.branchId,
+        node: node
+    }
+    var options = {
+        method: 'post',
+        body: msg,
+        json: true,
+        url: config.server_url + "/branch/nodeUpdate"
+    }
+    request(options, (err, res, body) => {
+        // callback(res)
+    })
+}
+
+
 
 
 
