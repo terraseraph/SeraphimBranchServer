@@ -4,7 +4,8 @@
 
 // var $ = require('jQuery')
 var request = require('request');
-var config = require("./configManager").configJson;
+var ConfigManager = require("./configManager");
+var config = ConfigManager.configJson;
 var serialController = require('../controllers/serialController')
 var log = require('../controllers/loggingController');
 var EventActionController = require("../controllers/eventActionController");
@@ -16,7 +17,23 @@ var serverRoutes = {
 }
 
 
+// =============================================================================== //
+// ========================= Config Manager ===================================== //
+// ============================================================================= //
+exports.getConfig = function (req, res) {
+    ConfigManager.getConfig().then(c => {
+        res.send(c);
+    })
+}
 
+exports.updateConfig = function (req, res) {
+    var newConfig = req.params.config
+    ConfigManager.updateConfig(newConfig)
+    res.send({
+        "success": true,
+        "config": newConfig
+    })
+}
 
 
 
