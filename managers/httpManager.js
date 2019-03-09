@@ -6,7 +6,7 @@
 var request = require('request');
 var config = require("./configManager").configJson;
 var serialController = require('../controllers/serialController')
-var log = require('../controllers/loggingController').log;
+var log = require('../controllers/loggingController');
 var EventActionController = require("../controllers/eventActionController");
 var DeviceManager = require('./deviceManager');
 var ScriptManager = require('./scriptManager');
@@ -32,7 +32,7 @@ exports.serverEvent = function (req, res) {
     }
     EventActionController.setEventFromServer();
     EventActionController.forceEventFromServer(packet, (result) => {
-        log(result);
+        log.log(result);
     });
     res.send({
         success: true
@@ -132,7 +132,7 @@ exports.deleteEventActionScript = function (req, res) {
 exports.deviceManager_sendHttp = function (address, message, type = "GET", callback) {
     if (type == "GET") {
         var url = encodeURI(`${address}/?BROADCAST=${JSON.stringify(message)}`);
-        log(url);
+        log.log(url);
         request
             .get(url)
             .on('response', function (response) {

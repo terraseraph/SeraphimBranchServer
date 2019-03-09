@@ -6,7 +6,7 @@ var eventActionScripts = new Array()
 const path = require('path');
 const fs = require('fs');
 var configManager = require("./configManager");
-var log = require('../controllers/loggingController').log;
+var log = require('../controllers/loggingController');
 var jsonfile = require("jsonfile");
 var scriptName, config, selectedScript;
 var currentScript;

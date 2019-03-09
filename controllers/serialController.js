@@ -2,7 +2,7 @@
 const SerialPort = require('serialport');
 // const Readline = require('parser-readline')
 var Readline = SerialPort.parsers.Readline;
-const log = require('./loggingController').log;
+const log = require('./loggingController');
 const eventActionController = require('./eventActionController')
 const DeviceManager = require('../managers/deviceManager');
 
@@ -31,7 +31,7 @@ function parseMessage(packet, masterDeviceName) {
     if (!isJSON(packet)) {
         return;
     }
-    log("parsing message from: ", masterDeviceName)
+    log.log("parsing message from: ", masterDeviceName)
     tempMasterName = masterDeviceName; // to call in the following functions
     packet = JSON.parse(packet)
     if (packet.ready == "true") {
@@ -40,7 +40,7 @@ function parseMessage(packet, masterDeviceName) {
         return;
     }
     if (packet.hasOwnProperty("heartbeat")) {
-        log(packet);
+        log.log(packet);
         return
     }
     if (packet.eventType != "noneET" && packet.hasOwnProperty("event")) { //if is event
@@ -98,9 +98,9 @@ function playAction(masterName) {
  */
 function generateSerialDevices() {
     SerialPort.list(function (err, result) {
-        log(result)
+        log.log(result)
         result.forEach(device => {
-            log(device)
+            log.log(device)
             // var dev = new SerialMasterNode(device)
             // nodeDeviceList.push(dev)
             device.id = device.comName;

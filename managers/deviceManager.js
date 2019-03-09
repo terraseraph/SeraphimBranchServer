@@ -2,7 +2,7 @@
 const SerialPort = require('serialport');
 const EventEmitter = require('events').EventEmitter;
 var Readline = SerialPort.parsers.Readline;
-const log = require('../controllers/loggingController').log;
+const log = require('../controllers/loggingController');
 const SerialController = require('../controllers/serialController');
 const MqttController = require('../controllers/mqttController');
 const HttpManager = require('./httpManager');
@@ -64,7 +64,7 @@ function removeDevice(deviceId) {
         if (device.id == deviceId) {
             if (device.nodeType == NodeType.SERIAL) {
                 device.serial_disconnect(cb => {
-                    log(cb);
+                    log.log(cb);
                     nodeDeviceList.splice(nodeDeviceList.indexOf(device), 1);
                 })
             }
@@ -319,17 +319,17 @@ class NodeDevice {
         switch (this.nodeType) {
             case NodeType.MQTT:
                 this.mqtt_playAction((cb) => {
-                    log(cb)
+                    log.log(cb)
                 });
                 break;
             case NodeType.SERIAL:
                 this.serial_playAction((cb) => {
-                    log(cb)
+                    log.log(cb)
                 });
                 break;
             case NodeType.HTTP:
                 this.http_playAction((cb) => {
-                    log(cb)
+                    log.log(cb)
                 });
                 break;
             default:
@@ -339,7 +339,7 @@ class NodeDevice {
     setReady() {
         this.ready = true;
         this.playAction();
-        log("===Ready===")
+        log.log("===Ready===")
     }
 
     updateHeartbeat(heartbeatPacket) {
@@ -359,7 +359,7 @@ class NodeDevice {
     // =======================================================
 
     serial_initialise() {
-        log("==================== Creating Node ====================", this.details)
+        log.log("==================== Creating Node ====================", this.details)
         var masterDeviceName = this.details.comName;
         this.id = this.details.id;
         this.name = masterDeviceName;
@@ -369,7 +369,7 @@ class NodeDevice {
             lock: true,
         });
         this.port.on('error', function (err) {
-            log('Error: ', err.message);
+            log.log('Error: ', err.message);
         })
         this.parser = this.port.pipe(new Readline({
             delimiter: '\n'
@@ -378,30 +378,30 @@ class NodeDevice {
             var str = data;
             str = str.toString(); //Convert to string
             str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-            log(`msg_${masterDeviceName}`, str)
+            log.log(`msg_${masterDeviceName}`, str)
             try {
                 SerialController.parseMessage(str, this.name)
             } catch (err) {
-                log(err)
+                log.log(err)
             }
         })
     }
 
     serial_write(data, callback) {
         this.writeCount += 1
-        log("Total writes to port: ", this.writeCount)
-        log("===== Data to be written to serial ===== ", data)
+        log.log("Total writes to port: ", this.writeCount)
+        log.log("===== Data to be written to serial ===== ", data)
 
         data = JSON.stringify(data)
         this.port.write(data + "\n", function (err) {
             if (err) {
-                log('Error on write: ', err.message);
+                log.log('Error on write: ', err.message);
                 return
             }
-            log('======= message written to serial==========');
-            log(data)
-            log('======= time taken to send ==========')
-            log(Date.now() - this.timer, "ms")
+            log.log('======= message written to serial==========');
+            log.log(data)
+            log.log('======= time taken to send ==========')
+            log.log(Date.now() - this.timer, "ms")
             this.ready = false
             callback("data written")
         });
@@ -423,7 +423,7 @@ class NodeDevice {
             }
 
             this.serial_write(this.actionsArray[0], (data) => {
-                log(data);
+                log.log(data);
                 this.actionsArray.shift();
                 this.ready = false;
             })
@@ -456,14 +456,14 @@ class NodeDevice {
             qos: 1,
             retain: false
         }, () => {})
-        log("================ created node =================")
+        log.log("================ created node =================")
     }
 
     mqtt_write(data, callback) {
         this.writeCount += 1
         // this.actionsArray.shift();
         // this.actionsArray.pop();
-        log("Total writes to this node: ", this.writeCount)
+        log.log("Total writes to this node: ", this.writeCount)
 
         MqttController.server.publish({
             topic: this.details.name,
@@ -471,10 +471,10 @@ class NodeDevice {
             qos: 1,
             retain: false
         }, () => {
-            log('======= message written to mqtt ==========');
-            log(data)
-            log('======= time taken to send ==========')
-            log(Date.now() - this.timer, "ms")
+            log.log('======= message written to mqtt ==========');
+            log.log(data)
+            log.log('======= time taken to send ==========')
+            log.log(Date.now() - this.timer, "ms")
             callback("data written")
         })
     }
@@ -505,7 +505,7 @@ class NodeDevice {
             //     this.ready = false;
             // })
             this.mqtt_write(this.actionsArray[0], (data) => {
-                log(data);
+                log.log(data);
                 // this.actionsArray = this.actionsArray.splice(0, 1);
                 this.actionsArray.shift();
                 this.ready = false;
@@ -528,21 +528,21 @@ class NodeDevice {
         }
         // publish branch details to the node
         HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, JSON.stringify(branchDetails), "GET", (data) => {
-            log("================ created node =================")
-            log(data);
+            log.log("================ created node =================")
+            log.log(data);
         });
     }
 
     http_write(data, callback) {
         this.writeCount += 1
-        log("Total writes to this node: ", this.writeCount)
+        log.log("Total writes to this node: ", this.writeCount)
 
         HttpManager.deviceManager_sendHttp("http://" + this.ipAddress, data, "GET", (data) => {
 
-            log('======= message written to http ==========');
-            log(data)
-            log('======= time taken to send ==========')
-            log(Date.now() - this.timer, "ms")
+            log.log('======= message written to http ==========');
+            log.log(data)
+            log.log('======= time taken to send ==========')
+            log.log(Date.now() - this.timer, "ms")
             // this.ready = false
             callback("data written")
         });
@@ -565,7 +565,7 @@ class NodeDevice {
             }
 
             this.http_write(this.actionsArray[0], (data) => {
-                log(data);
+                log.log(data);
                 this.actionsArray.shift();
                 // this.ready = false;
             })
