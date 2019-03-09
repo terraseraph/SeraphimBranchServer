@@ -34,7 +34,7 @@ exports.newScript = function (req, res) {
 function readScriptsInDirectory() {
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
-            return log.log('Unable to scan directory: ' + err);
+            return log.logError('Unable to scan directory: ' + err);
         }
         files.forEach(function (file) {
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
@@ -57,7 +57,7 @@ function updateScriptsFromRootServer() {
                 if (script == undefined) return;
                 createLocalScript(script);
                 eventActionScriptList.push(JSON.parse(script));
-                log.log(script);
+                console.log(script);
             })
         }
     })
@@ -115,7 +115,7 @@ exports.getScriptByName = getScriptByName
 
 function deleteScript(scriptName, callback) {
     fs.unlink(directoryPath + `/${scriptName}.json`, (e) => {
-        log.log("complete")
+        console.log("complete")
         callback({
             "success": `Deleted ${scriptName}`
         });

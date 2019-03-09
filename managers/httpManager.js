@@ -132,7 +132,6 @@ exports.deleteEventActionScript = function (req, res) {
 exports.deviceManager_sendHttp = function (address, message, type = "GET", callback) {
     if (type == "GET") {
         var url = encodeURI(`${address}/?BROADCAST=${JSON.stringify(message)}`);
-        log.log(url);
         request
             .get(url)
             .on('response', function (response) {

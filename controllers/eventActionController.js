@@ -33,8 +33,8 @@ exports.parseEvent = function (packet, bridgeId, callback) {
         var actionsArr = new Array()
         findEvent(packet, selectedScript, false)
             .then((evt) => {
-                log.log("script_state: ", script_state)
-                log.log("non_repeatable_actions: ", non_repeatable_actions)
+                console.log("script_state: ", script_state)
+                console.log("non_repeatable_actions: ", non_repeatable_actions)
                 /*dependencies are met or skipped if fromServer (http request)*/
                 checkStateDependencies(evt).then(depMet => {
                     if (!depMet) {
@@ -119,17 +119,17 @@ function processActionsArray(actions, bridgeId, callback) {
 /** find the action */
 exports.parseAction = function (packet, bridgeId, callback) {
     var actions_arr
-    log.log("============ACTION=================")
-    log.log(packet.fromId, packet.action, packet.actionType, packet.data)
+    console.log("============ACTION=================")
+    console.log(packet.fromId, packet.action, packet.actionType, packet.data)
     //find the matching action
     //maybe just send the action name from the server and parse it here....
     findAction(packet.action, bridgeId).then((act) => {
-        log.log(act.message)
+        console.log(act.message)
         if (act.dependencies.length != 0) {
             forceAction(act, bridgeId, function (result) {
                 actions_arr = result
-                log.log("====Forced actions=====")
-                log.log("actions_arr= ", actions_arr)
+                console.log("====Forced actions=====")
+                console.log("actions_arr= ", actions_arr)
                 callback(actions_arr)
             })
         } else {
@@ -149,7 +149,7 @@ exports.parseAction = function (packet, bridgeId, callback) {
  */
 function forceAction(obj, bridgeId, callback) {
     var actions_to_complete = new Array();
-    log.log("DEPECNDENCIES : ", obj.dependencies)
+    console.log("DEPECNDENCIES : ", obj.dependencies)
     if (obj.dependencies.length < 1 || !obj.dependencies) {
         callback("no dependencies")
         return
@@ -158,7 +158,7 @@ function forceAction(obj, bridgeId, callback) {
         var dep = obj.dependencies[i]
         if (!non_repeatable_actions.includes(dep)) {
             findAction(dep, bridgeId).then((act) => {
-                log.log("dependencey name: ", dep)
+                console.log("dependencey name: ", dep)
                 playAction(act, function (result) {
                     actions_to_complete.push(result);
                 })
@@ -188,9 +188,9 @@ exports.forceActionFromServer = forceActionFromServer;
  * @param {*} callback callback
  */
 function playAction(action, callback) {
-    log.log("======= play_action() ===========")
-    log.log("=======Checking Action Dependencies ======")
-    log.log(action)
+    console.log("======= play_action() ===========")
+    console.log("=======Checking Action Dependencies ======")
+    console.log(action)
     let result = makeActionPacket(action);
 
     if (action.repeatable == true) {
@@ -208,11 +208,11 @@ function playAction(action, callback) {
     }
     if (action.repeatable == false && !non_repeatable_actions.includes(action.name)) {
         non_repeatable_actions.push(action.name)
-        log.log("pushed non_repeatable_actions()")
+        console.log("pushed non_repeatable_actions()")
         callback(result)
         return
     }
-    log.log("play_action ===CANNOT FIND===")
+    console.log("play_action ===CANNOT FIND===")
 }
 
 
@@ -245,7 +245,7 @@ function sendToServer(event, states) {
             event: event,
             states: states
         }
-        log.log("===Sending packet to server ===", packet);
+        console.log("===Sending packet to server ===", packet);
         httpManager.sendEventsToServer(packet)
             .then((data) => {
                 resolve(data)
@@ -284,7 +284,7 @@ function scriptStateValidation(evt, cb) {
 function eventStateSpecialActions(evt) { //TODO:make it check config
     if (evt.state == "end_script") {
         script_state = new Array();
-        log.log("ENDING Script script_state:", script_state)
+        log.logInfo("ENDING Script script_state:", script_state)
     }
 }
 
@@ -295,23 +295,23 @@ function eventStateSpecialActions(evt) { //TODO:make it check config
  * @param {*} obj 
  */
 function dependenciesCheck(obj) {
-    log.log("======== dependencies_check() ========")
+    console.log("======== dependencies_check() ========")
     var dependencies_ok;
     if (obj.dependencies.length > 0) {
         for (var x = 0; x < obj.dependencies.length; x++) {
             if (script_state.indexOf(obj.dependencies[x]) !== -1) {
                 dependencies_ok = true;
-                log.log("dependencies met: ", obj.dependencies[x])
+                console.log("dependencies met: ", obj.dependencies[x])
             } else {
                 dependencies_ok = false;
-                log.log("===== All Dependencies not met ====")
+                console.log("===== All Dependencies not met ====")
                 break;
             }
         }
     } else {
         dependencies_ok = true;
     }
-    if (dependencies_ok) log.log("===== All Dependencies met ====");
+    if (dependencies_ok) console.log("===== All Dependencies met ====");
     return dependencies_ok
 }
 
@@ -327,8 +327,8 @@ function dependenciesCheck(obj) {
  * @param {*} packet Event name to find
  */
 function findEvent(packet, script, findByName = false) {
-    log.log("============== Searching Selected Script =============");
-    log.log(script.name);
+    console.log("============== Searching Selected Script =============");
+    console.log(script.name);
     var evt;
     return new Promise((resolve, reject) => {
         if (findByName) {
@@ -342,14 +342,14 @@ function findEvent(packet, script, findByName = false) {
             for (var i = 0; i < script.events.length; i++) {
                 evt = script.events[i]
                 if ((evt.device_id == packet.fromId) && (evt.event == packet.event) && (arraysEqual(evt.data, packet.data) || evt.data == packet.data)) {
-                    log.log("script state: ", script_state)
-                    log.log("non_repeatable_actions: ", non_repeatable_actions)
+                    console.log("script state: ", script_state)
+                    console.log("non_repeatable_actions: ", non_repeatable_actions)
                     resolve(evt);
                     return;
                 }
             }
         }
-        log.log("====== Cannot find matching event ========")
+        console.log("====== Cannot find matching event ========")
     })
 }
 
@@ -366,7 +366,7 @@ function findAction(actionName, masterId) {
             // selectedScript = memoryManager.getSelectedScript();
             selectedScript.actions.forEach(act => {
                 if (act.name == actionName) {
-                    log.log("=====FIND ACTION===", act)
+                    console.log("=====FIND ACTION===", act)
                     resolve(act)
                     return;
                 }
@@ -381,7 +381,7 @@ function findAction(actionName, masterId) {
  * @param {Array} b 
  */
 function arraysEqual(a, b) {
-    log.log("array comapre")
+    console.log("array comapre")
     return JSON.stringify(a) == JSON.stringify(b);
 
 }
@@ -458,7 +458,7 @@ function setScriptStates(evt) {
                 } else if (state.active == evtState.active && evt.can_toggle == "true") {
                     toggleState(state);
                 }
-                log.log(memoryManager.getSelectedScript().states);
+                console.log(memoryManager.getSelectedScript().states);
             })
         });
         resolve()
@@ -476,7 +476,7 @@ function checkStateDependencies(event_action) {
             findState(dep).then(state => {
                 if (!state.active) {
                     resolve(false);
-                    log.log("===== Dependencies not met ====", state.name);
+                    console.log("===== Dependencies not met ====", state.name);
                     return;
                 }
                 if (i == event_action.dependencies.length - 1) {
@@ -494,7 +494,7 @@ function checkStateDependencies(event_action) {
 
 
 function addActionsToMasterQueue(actionsArray, deviceId) {
-    log.log("====SENDING ACTION TO MASTER====", actionsArray)
+    console.log("====SENDING ACTION TO MASTER====", actionsArray)
     DeviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;

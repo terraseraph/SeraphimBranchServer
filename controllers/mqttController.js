@@ -94,7 +94,7 @@ function parsePacket(packet, nodeId = undefined) {
  * @param {*} actionsArray The actions to add to queue
  */
 function actionsAddedToNode(actionsArray) {
-  log.log("== Actions added to node ==", actionsArray);
+  log.logInfo("== Actions added to node ==", actionsArray);
 }
 exports.actionsAddedToNode = actionsAddedToNode;
 
