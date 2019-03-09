@@ -252,3 +252,21 @@ exports.updateSelectedScript = function (req, res) {
         res.send(result);
     });
 }
+
+
+
+
+// =============================================================================== //
+// ========================= HTTP from Logging Controller ======================= //
+// ============================================================================= //
+exports.sendLogToRoot = function (msg) {
+    var options = {
+        method: 'post',
+        body: msg,
+        json: true,
+        url: config.server_url + "/log"
+    }
+    request(options, (err, res, body) => {
+        // callback(res)
+    })
+}
