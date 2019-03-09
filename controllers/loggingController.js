@@ -1,7 +1,6 @@
 //@ts-check
 var config = require("../managers/configManager").config;
 var httpManager = require('../managers/httpManager')
-exports.log = log
 
 function log(...args) {
     try {
@@ -18,3 +17,4 @@ function log(...args) {
     httpManager.sendLogToRoot(msg)
 
 }
+exports.log = log
