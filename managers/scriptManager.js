@@ -5,7 +5,7 @@ var memoryManager = require('./memoryManager');
 var EventActionScriptModel = require('../models/eventActionScriptModel');
 const path = require('path');
 const fs = require('fs');
-var log = require('../controllers/loggingController').log;
+const log = require('../controllers/loggingController');
 const directoryPath = path.join(__dirname, '../EventActionScripts');
 const jsonfile = require("jsonfile");
 var configManager = require("./configManager");
@@ -34,7 +34,7 @@ exports.newScript = function (req, res) {
 function readScriptsInDirectory() {
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
-            return log('Unable to scan directory: ' + err);
+            return log.log('Unable to scan directory: ' + err);
         }
         files.forEach(function (file) {
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
@@ -57,7 +57,7 @@ function updateScriptsFromRootServer() {
                 if (script == undefined) return;
                 createLocalScript(script);
                 eventActionScriptList.push(JSON.parse(script));
-                log(script);
+                log.log(script);
             })
         }
     })
@@ -115,7 +115,7 @@ exports.getScriptByName = getScriptByName
 
 function deleteScript(scriptName, callback) {
     fs.unlink(directoryPath + `/${scriptName}.json`, (e) => {
-        log("complete")
+        log.log("complete")
         callback({
             "success": `Deleted ${scriptName}`
         });
