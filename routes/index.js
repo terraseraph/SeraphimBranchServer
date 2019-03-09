@@ -30,6 +30,23 @@ router.get("/audio/:path", (req, res) => {
   res.sendFile(path.resolve(__dirname, `../public/files/audio/${file}`));
 });
 
+
+/**
+ *
+ * Config manager routes
+ *
+ */
+
+/** EventAction scripts */
+router.get("/config", httpManager.getConfig);
+router.post("/config", httpManager.updateConfig);
+
+
+
+
+
+
+
 /**
  *
  * Memory manager routes
