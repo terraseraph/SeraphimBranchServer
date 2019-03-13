@@ -8,6 +8,7 @@ const scriptReader = require("../managers/scriptManager");
 const memoryManager = require("../managers/memoryManager");
 const httpManager = require("../managers/httpManager");
 const mqttController = require("../controllers/mqttController");
+const mediaManager = require("../managers/mediaManager")
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -29,6 +30,9 @@ router.get("/audio/:path", (req, res) => {
   var file = req.params.path;
   res.sendFile(path.resolve(__dirname, `../public/files/audio/${file}`));
 });
+
+router.post("/audio", mediaManager.saveAudio);
+router.post("/video", mediaManager.saveVideo);
 
 
 /**

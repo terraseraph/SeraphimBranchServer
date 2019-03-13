@@ -428,51 +428,60 @@
       "name": "Begin background",
       "trigger": "Relay1",
       "screenName": "screen1",
-      "audio": "audio/congrats.mp3",
+      "audio": "http://192.168.0.180:4400/audio/congrats.mp3",
       "loop_audio": false,
       "audio_type": "custom",
-      "video": "video/static_small.mp4",
+      "video": "http://192.168.0.180:4400/video/static_small.mp4",
       "loop_video": true,
       "video_type": "background",
       "pause_timer": false,
       "play_timer": true,
       "hint": "the end hintdsfsfsd",
-      "can_toggle": "true"
+      "can_toggle": "true",
+      "httpRequestType": "GET",
+      "httpRequestUrl": "https://webhook.site/bbe0c8fe-573d-44c7-9939-b8baea15f62c"
     },
     {
       "name": "Best trigger",
       "trigger": "start_instance",
       "screenName": "screen2",
-      "audio": "audio/win_audio.mp3",
+      "audio": "http://192.168.0.180:4400/audio/win_audio.mp3",
       "loop_audio": false,
       "audio_type": "start",
-      "video": "video/alex.mp4",
+      "video": "http://192.168.0.180:4400/video/alex.mp4",
       "loop_video": false,
       "video_type": "custom",
       "hint": "Some message here.....",
       "pause_timer": true,
       "play_timer": true,
-      "can_toggle": "true"
+      "can_toggle": "true",
+      "httpRequestType": "POST",
+      "httpRequestUrl": "https://webhook.site/bbe0c8fe-573d-44c7-9939-b8baea15f62c",
+      "httpRequestBody": "{\"id\":12312312312312}"
     },
     {
       "name": "end trigger",
       "trigger": "end_instance",
-      "audio": "audio/congrats.mp3",
-      "video": "video/redline.mp4",
+      "audio": "http://192.168.0.180:4400/audio/congrats.mp3",
+      "video": "http://192.168.0.180:4400/video/redline.mp4",
       "hint": "You won!",
       "can_toggle": "",
       "video_type": "custom",
       "audio_type": "end",
-      "screenName": "Screen1"
+      "screenName": "Screen1",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "https://webhook.site/bbe0c8fe-573d-44c7-9939-b8baea15f62c"
     },
     {
       "name": "timer complete",
       "trigger": "timer_complete",
-      "audio": "audio/congrats.mp3",
+      "audio": "http://192.168.0.180:4400/audio/congrats.mp3",
       "video": "",
       "hint": "YOU LOSE!",
       "can_toggle": "",
-      "audio_type": "end"
+      "audio_type": "end",
+      "httpRequestType": "DELETE",
+      "httpRequestUrl": "https://webhook.site/bbe0c8fe-573d-44c7-9939-b8baea15f62c"
     }
   ],
   "hints": [
@@ -497,7 +506,7 @@
     {
       "name": "Screen1",
       "backgroundType": "Video",
-      "backgroundPath": "video/static_small.mp4",
+      "backgroundPath": "http://192.168.0.180:4400/video/static_small.mp4",
       "font": "Arial, Helvetica, sans-serif",
       "font_colour": "DarkSlateBlue",
       "audio": "",
@@ -507,7 +516,7 @@
     {
       "name": "screen2",
       "backgroundType": "Video",
-      "backgroundPath": "video/christmas_background.mp4",
+      "backgroundPath": "http://192.168.0.180:4400/video/christmas_background.mp4",
       "font": "'Times New Roman', Times, serif",
       "font_colour": "DarkGreen",
       "audio": "",

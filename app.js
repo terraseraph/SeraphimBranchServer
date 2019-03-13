@@ -3,6 +3,7 @@
 var config = require('./managers/configManager');
 var express = require('express');
 var exphbs = require('express-handlebars');
+const fileUpload = require('express-fileupload');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser')
@@ -21,6 +22,7 @@ var indexRouter = require('./routes/index');
 /** Express settings */
 var app = express();
 app.use(logger('dev'));
+app.use(fileUpload());
 app.use(express.json());
 app.use(express.urlencoded({
     extended: false
