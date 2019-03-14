@@ -12,6 +12,7 @@ var EventActionController = require("../controllers/eventActionController");
 var DeviceManager = require('./deviceManager');
 var ScriptManager = require('./scriptManager');
 const mediaManager = require("../managers/mediaManager");
+const systemInformation = require("../controllers/systemInformation");
 
 var serverRoutes = {
     script: `/script`,
@@ -24,11 +25,14 @@ var serverRoutes = {
 exports.getConfig = function (req, res) {
     let conf = {}
     ConfigManager.getConfig().then(c => {
-        // res.send(c);
         conf = c;
     }).then(() => {
         mediaManager.getAllMedia().then(media => {
             conf.media = media
+        })
+    }).then(() => {
+        systemInformation.getInfo().then(data => {
+            conf.systemInformation = data
             res.send(conf)
         })
     })

@@ -1,8 +1,8 @@
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
-const audioPath = path.join(__dirname, '../public/files/video');
-const videoPath = path.join(__dirname, '../public/files/audio');
+const audioPath = path.join(__dirname, '../public/files/audio');
+const videoPath = path.join(__dirname, '../public/files/video');
 os.tmpDir = os.tmpdir;
 
 
