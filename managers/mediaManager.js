@@ -1,6 +1,7 @@
 var fs = require('fs');
 var os = require('os');
 var path = require('path');
+const directoryPath = path.join(__dirname, '../public/files');
 const audioPath = path.join(__dirname, '../public/files/audio');
 const videoPath = path.join(__dirname, '../public/files/video');
 os.tmpDir = os.tmpdir;
@@ -122,6 +123,15 @@ exports.getAllAudio = function (req, res) {
     readMediaDirectory(audioPath).then(audioArr => {
         result["audio"] = audioArr
         res.send(result);
+    })
+}
+
+
+exports.deleteMedia = function (req, res) {
+    fs.unlink(directoryPath + `/${req.params.type}/${req.params.name}`, (e) => {
+        res.send({
+            "success": `Deleted ${req.params.name}`
+        });
     })
 }
 

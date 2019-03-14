@@ -32,6 +32,7 @@ router.get("/audio", mediaManager.getAllAudio);
 router.get("/media", mediaManager.httpGetAllMedia);
 router.post("/audio", mediaManager.saveAudio);
 router.post("/video", mediaManager.saveVideo);
+router.delete("/media/:type/:name", mediaManager.deleteMedia);
 
 
 /**
