@@ -3,7 +3,7 @@ var express = require("express");
 var router = express.Router();
 var path = require("path");
 
-const sysInfo = require("../controllers/systemInformation");
+// const sysInfo = require("../controllers/systemInformation");
 const scriptReader = require("../managers/scriptManager");
 const memoryManager = require("../managers/memoryManager");
 const httpManager = require("../managers/httpManager");
@@ -18,7 +18,7 @@ router.get("/", function (req, res, next) {
 });
 
 /** System status */
-router.get("/info", sysInfo.getSystemInfo);
+// router.get("/info", sysInfo.getSystemInfo);
 
 
 /**

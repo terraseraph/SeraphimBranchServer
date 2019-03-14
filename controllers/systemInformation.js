@@ -18,8 +18,7 @@ function getInfo() {
         os.then(data => result.os = data),
         system.then(data => result.system = data),
         cpu.then(data => result.cpu = data),
-        networkInterfaces.then(data => result.networkInterfaces = data),
-        ConfigManager.getConfig().then(data => result.config = data)
+        networkInterfaces.then(data => result.networkInterfaces = data)
     ]).then(values => {
         return result
     })
