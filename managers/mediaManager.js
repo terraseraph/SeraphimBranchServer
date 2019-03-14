@@ -1,8 +1,8 @@
 var fs = require('fs');
-// var util = require('util');
-// var mv = require('mv');
 var os = require('os');
 var path = require('path');
+const audioPath = path.join(__dirname, '../public/files/video');
+const videoPath = path.join(__dirname, '../public/files/audio');
 os.tmpDir = os.tmpdir;
 
 
@@ -14,6 +14,11 @@ exports.getAudio = function (req, res) {
     res.sendFile(path.resolve(__dirname, `../public/files/video/${audioPath}`));
 }
 
+exports.getVideo = function (req, res) {
+    var videoPath = req.params.videoFile
+    console.log('sending video', video)
+    res.sendFile(path.resolve(__dirname, `../public/files/video/${videoPath}`));
+}
 
 
 // Note form field name must be file....
@@ -38,15 +43,6 @@ exports.saveAudio = function (req, res) {
 }
 
 
-
-exports.getVideo = function (req, res) {
-    var videoPath = req.params.videoFile
-    console.log('sending video', video)
-    res.sendFile(path.resolve(__dirname, `../public/files/video/${videoPath}`));
-}
-
-
-
 // Note form field name must be file....
 exports.saveVideo = function (req, res) {
     if (Object.keys(req.files).length == 0) {
@@ -66,6 +62,67 @@ exports.saveVideo = function (req, res) {
             }
         })
     });
+}
+
+
+function readMediaDirectory(path) {
+    return new Promise((resolve, reject) => {
+        let result = [];
+        fs.readdir(path, function (err, files) {
+            if (err) {
+                resolve(log.logError('Unable to scan directory: ' + err));
+            }
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                result.push(file)
+                if (i == files.length - 1) {
+                    resolve(result)
+                }
+            }
+        });
+    })
+}
+
+exports.httpGetAllMedia = function (req, res) {
+    let result = {}
+    readMediaDirectory(audioPath).then(audioArr => {
+        result["audio"] = audioArr
+        readMediaDirectory(videoPath).then(videoArr => {
+            result["video"] = videoArr
+            res.send(result);
+        })
+    })
+}
+
+function getAllMedia() {
+    return new Promise((resolve, reject) => {
+        result = {};
+        readMediaDirectory(audioPath).then(audioArr => {
+            result["audio"] = audioArr
+            readMediaDirectory(videoPath).then(videoArr => {
+                result["video"] = videoArr
+                resolve(result);
+            })
+        })
+    })
+}
+exports.getAllMedia = getAllMedia;
+
+exports.getAllVideo = function (req, res) {
+    let result = {}
+    readMediaDirectory(videoPath).then(videoArr => {
+        result["video"] = videoArr
+        res.send(result);
+    })
+}
+
+
+exports.getAllAudio = function (req, res) {
+    let result = {}
+    readMediaDirectory(audioPath).then(audioArr => {
+        result["audio"] = audioArr
+        res.send(result);
+    })
 }
 
 

@@ -11,6 +11,7 @@ var log = require('../controllers/loggingController');
 var EventActionController = require("../controllers/eventActionController");
 var DeviceManager = require('./deviceManager');
 var ScriptManager = require('./scriptManager');
+const mediaManager = require("../managers/mediaManager");
 
 var serverRoutes = {
     script: `/script`,
@@ -21,8 +22,15 @@ var serverRoutes = {
 // ========================= Config Manager ===================================== //
 // ============================================================================= //
 exports.getConfig = function (req, res) {
+    let conf = {}
     ConfigManager.getConfig().then(c => {
-        res.send(c);
+        // res.send(c);
+        conf = c;
+    }).then(() => {
+        mediaManager.getAllMedia().then(media => {
+            conf.media = media
+            res.send(conf)
+        })
     })
 }
 

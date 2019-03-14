@@ -8,7 +8,7 @@ const scriptReader = require("../managers/scriptManager");
 const memoryManager = require("../managers/memoryManager");
 const httpManager = require("../managers/httpManager");
 const mqttController = require("../controllers/mqttController");
-const mediaManager = require("../managers/mediaManager")
+const mediaManager = require("../managers/mediaManager");
 
 /* GET home page. */
 router.get("/", function (req, res, next) {
@@ -20,17 +20,16 @@ router.get("/", function (req, res, next) {
 /** System status */
 router.get("/info", sysInfo.getSystemInfo);
 
-//TODO: make other video test routes
-router.get("/video/:path", (req, res) => {
-  var file = req.params.path;
-  res.sendFile(path.resolve(__dirname, `../public/files/video/${file}`));
-});
 
-router.get("/audio/:path", (req, res) => {
-  var file = req.params.path;
-  res.sendFile(path.resolve(__dirname, `../public/files/audio/${file}`));
-});
-
+/**
+ * 
+ * Media management
+ */
+router.get("/video/:path", mediaManager.getVideo);
+router.get("/audio/:path", mediaManager.getAudio);
+router.get("/video", mediaManager.getAllVideo);
+router.get("/audio", mediaManager.getAllAudio);
+router.get("/media", mediaManager.httpGetAllMedia);
 router.post("/audio", mediaManager.saveAudio);
 router.post("/video", mediaManager.saveVideo);
 
