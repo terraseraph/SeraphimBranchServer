@@ -49,7 +49,7 @@ exports.saveVideo = function (req, res) {
     if (Object.keys(req.files).length == 0) {
         return res.status(400).send('No files were uploaded.');
     }
-    console.log("FILES===", req.files)
+    console.log("FILES===", req.files.file)
     let videoFile = req.files.file;
     videoFile.mv(path.resolve(__dirname, `../public/files/video/${videoFile.name}`), function (err) {
         if (err)

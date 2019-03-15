@@ -419,9 +419,11 @@ function getState(stateName) {
 function resetStates(scriptName) {
     // script = memoryManager.getSelectedScript();
     ScriptManager.getScriptByName(scriptName).then(script => {
-        script.states.forEach(state => {
-            state.active = false;
-        })
+        if (script.states != undefined) {
+            script.states.forEach(state => {
+                state.active = false;
+            })
+        }
     })
 }
 exports.resetStates = resetStates;
