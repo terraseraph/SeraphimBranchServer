@@ -47,6 +47,13 @@ exports.updateConfig = function (req, res) {
     })
 }
 
+exports.updateRootApi = function (req, res) {
+    var newApi = req.body.api
+    ConfigManager.getConfig().then(currentConfig => {
+        currentConfig.server_url = newApi;
+        ConfigManager.updateConfig(currentConfig);
+    })
+}
 
 
 // =============================================================================== //

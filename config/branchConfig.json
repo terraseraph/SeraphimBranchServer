@@ -10,5 +10,94 @@
   "branch_scripts": [
     "Christmas",
     "Dragon"
-  ]
+  ],
+  "systemInformation": {
+    "os": {
+      "platform": "win32",
+      "distro": "Microsoft Windows 10 Education",
+      "release": "10.0.17763",
+      "codename": "",
+      "kernel": "10.0.17763",
+      "arch": "x64",
+      "hostname": "DESKTOP-OHQ72AI",
+      "codepage": " 437",
+      "logofile": "windows",
+      "serial": "00328-00254-65584-AA664",
+      "build": "17763"
+    },
+    "system": {
+      "manufacturer": "System manufacturer",
+      "model": "System Product Name",
+      "version": "System Version",
+      "serial": "System Serial Number",
+      "uuid": "A4FF2291-A53D-83DA-3F48-0492264AE379",
+      "sku": "SKU"
+    },
+    "cpu": {
+      "manufacturer": "AMD",
+      "brand": "Ryzen 5 2600 Six-Core Processor",
+      "vendor": "AuthenticAMD",
+      "family": "23",
+      "model": "8",
+      "stepping": "2",
+      "revision": "2050",
+      "voltage": "",
+      "speed": "3.40",
+      "speedmin": "",
+      "speedmax": "3.40",
+      "cores": 12,
+      "physicalCores": 6,
+      "processors": 1,
+      "socket": "AM4",
+      "cache": {
+        "l1d": 0,
+        "l1i": 0,
+        "l2": 3145728,
+        "l3": 16777216
+      }
+    },
+    "networkInterfaces": [
+      {
+        "iface": "vEthernet (DockerNAT)",
+        "ip4": "10.0.75.1",
+        "ip6": "fe80::ad46:350f:52e:bd51",
+        "mac": "00:15:5d:00:b4:00",
+        "internal": false
+      },
+      {
+        "iface": "Ethernet",
+        "ip4": "192.168.0.180",
+        "ip6": "fd93:66d4:e4ef:1:2039:8ee3:e681:afa3",
+        "mac": "04:92:26:4a:e3:79",
+        "internal": false
+      },
+      {
+        "iface": "Loopback Pseudo-Interface 1",
+        "ip4": "127.0.0.1",
+        "ip6": "::1",
+        "mac": "00:00:00:00:00:00",
+        "internal": true
+      },
+      {
+        "iface": "vEthernet (Default Switch)",
+        "ip4": "172.18.28.1",
+        "ip6": "fe80::bdb2:e0aa:5c6a:bd87",
+        "mac": "7a:15:46:73:d1:e1",
+        "internal": false
+      }
+    ]
+  },
+  "media": {
+    "audio": [
+      "congrats.mp3",
+      "silence.mp3",
+      "win_audio.mp3"
+    ],
+    "video": [
+      "alex.mp4",
+      "christmas_background.mp4",
+      "redline.mp4",
+      "static_small.mp4"
+    ]
+  }
 }

@@ -34,6 +34,7 @@ exports.getConfig = function () {
 
 exports.updateConfig = function (configUpdate) {
     config = configUpdate;
+    console.log("======UPDATING ", config)
     configJson = configUpdate;
     jsonfile.writeFileSync(configPath, configUpdate, {
         spaces: 2

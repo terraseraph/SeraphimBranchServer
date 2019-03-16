@@ -15,19 +15,19 @@
     },
     {
       "name": "Relay2",
-      "active": false
+      "active": true
     },
     {
       "name": "start_instance",
-      "active": false
+      "active": true
     },
     {
       "name": "end_instance",
-      "active": false
+      "active": true
     },
     {
       "name": "timer_complete",
-      "active": true
+      "active": false
     }
   ],
   "events": [
@@ -555,10 +555,5 @@
       "showHints": false
     }
   ],
-  "ended": false,
-  "timeUpdate": {
-    "hours": 0,
-    "minutes": 0,
-    "seconds": 0
-  }
+  "ended": false
 }

@@ -40,10 +40,9 @@ router.delete("/media/:type/:name", mediaManager.deleteMedia);
  * Config manager routes
  *
  */
-
-/** EventAction scripts */
 router.get("/config", httpManager.getConfig);
 router.post("/config", httpManager.updateConfig);
+router.put("/config/api", httpManager.updateRootApi)
 
 
 
