@@ -1,7 +1,7 @@
 {
   "name": "seraphimbranchserver",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "nodemon ./bin/www --config nodemon.json"
   },
@@ -21,9 +21,9 @@
     "mosca": "^2.8.3",
     "mqtt": "^2.18.8",
     "nodemon": "^1.18.5",
-    "parser-readline": "^1.0.2",
+    "parser-readline": "1.0.2",
     "request": "^2.88.0",
-    "serialport": "^7.0.2",
+    "serialport": "7.0.2",
     "shelljs": "^0.8.2",
     "sqlite3": "^4.0.3",
     "systeminformation": "^3.45.10"

@@ -10,14 +10,14 @@ os.tmpDir = os.tmpdir;
 
 
 exports.getAudio = function (req, res) {
-    var audioPath = req.params.audioFile
-    console.log('sending audio')
-    res.sendFile(path.resolve(__dirname, `../public/files/video/${audioPath}`));
+    var audioPath = req.params.path
+    console.log('sending audio', audioPath)
+    res.sendFile(path.resolve(__dirname, `../public/files/audio/${audioPath}`));
 }
 
 exports.getVideo = function (req, res) {
-    var videoPath = req.params.videoFile
-    console.log('sending video', video)
+    var videoPath = req.params.path
+    console.log('sending video', videoPath)
     res.sendFile(path.resolve(__dirname, `../public/files/video/${videoPath}`));
 }
 

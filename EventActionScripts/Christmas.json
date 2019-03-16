@@ -1,7 +1,7 @@
 {
   "name": "Christmas",
   "id": "0",
-  "branch_address": "http://192.168.0.180:4400",
+  "branch_address": "http://192.168.0.52:4400",
   "masterId": "10",
   "time": {
     "hours": "0",
@@ -15,19 +15,19 @@
     },
     {
       "name": "Relay2",
-      "active": true
+      "active": false
     },
     {
       "name": "start_instance",
-      "active": true
+      "active": false
     },
     {
       "name": "end_instance",
-      "active": true
+      "active": false
     },
     {
       "name": "timer_complete",
-      "active": false
+      "active": true
     }
   ],
   "events": [
@@ -282,6 +282,21 @@
         "realy2"
       ],
       "message": ""
+    },
+    {
+      "states": [],
+      "id": "",
+      "name": "play mp3",
+      "device_id": "13",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "1",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "mp3 play 01 01"
+      ],
+      "message": ""
     }
   ],
   "actions": [
@@ -421,6 +436,21 @@
       "states": [],
       "wait": 0,
       "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "mp3 play 01 01",
+      "device_id": "17",
+      "action": "play",
+      "actionType": "mp3",
+      "data": "{\"folder\":01, \"file\":5}",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
     }
   ],
   "triggers": [
@@ -438,8 +468,9 @@
       "play_timer": true,
       "hint": "the end hintdsfsfsd",
       "can_toggle": "true",
-      "httpRequestType": "GET",
-      "httpRequestUrl": "https://webhook.site/bbe0c8fe-573d-44c7-9939-b8baea15f62c"
+      "httpRequestType": "POST",
+      "httpRequestUrl": "192.168.0.52:4400/node/mqtt/10",
+      "httpRequestBody": "{\"id\":\"10\", \"message\":{  \"state\": {    \"type\": \"action\",    \"message\": {      \"action\": \"play\",      \"actionType\": mp3\",      \"data\": {\"folder\":1, \"file\":5}    }  },   \"toId\":\"17\"}}"
     },
     {
       "name": "Best trigger",
@@ -524,5 +555,10 @@
       "showHints": false
     }
   ],
-  "ended": false
+  "ended": false,
+  "timeUpdate": {
+    "hours": 0,
+    "minutes": 0,
+    "seconds": 0
+  }
 }
