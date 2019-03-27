@@ -1,5 +1,5 @@
 {
-  "server_url": "http://192.168.0.180:4300",
+  "server_url": "http://127.0.0.1:4300",
   "port": 4400,
   "branchId": 1,
   "localUrl": "0.0.0.0",
@@ -8,8 +8,12 @@
   "start_script_command": "wqeqweqwe",
   "end_script_command": "",
   "branch_scripts": [
-    "Christmas",
-    "Dragon"
+    "Christmas.json",
+    "Dragon.json",
+    "game_script.1.json",
+    "game_script.2.json",
+    "game_script.3.json",
+    "game_script.json"
   ],
   "systemInformation": {
     "os": {
@@ -67,7 +71,7 @@
       {
         "iface": "Ethernet",
         "ip4": "192.168.0.180",
-        "ip6": "fd93:66d4:e4ef:1:2039:8ee3:e681:afa3",
+        "ip6": "fd08:27e3:ddc8:1:2039:8ee3:e681:afa3",
         "mac": "04:92:26:4a:e3:79",
         "internal": false
       },
@@ -80,9 +84,9 @@
       },
       {
         "iface": "vEthernet (Default Switch)",
-        "ip4": "172.18.28.1",
-        "ip6": "fe80::bdb2:e0aa:5c6a:bd87",
-        "mac": "7a:15:46:73:d1:e1",
+        "ip4": "192.168.202.193",
+        "ip6": "fe80::8474:cb96:f723:bc51",
+        "mac": "7a:15:46:3e:9d:43",
         "internal": false
       }
     ]

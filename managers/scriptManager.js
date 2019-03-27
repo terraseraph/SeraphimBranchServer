@@ -36,10 +36,12 @@ function readScriptsInDirectory() {
         if (err) {
             return log.logError('Unable to scan directory: ' + err);
         }
+        configManager.configJson.branch_scripts = [];
         files.forEach(function (file) {
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
-            var pScript = JSON.parse(script)
+            var pScript = JSON.parse(script);
             eventActionScriptList.push(pScript);
+            configManager.configJson.branch_scripts.push(file);
         });
     });
 }
@@ -115,7 +117,8 @@ exports.getScriptByName = getScriptByName
 
 function deleteScript(scriptName, callback) {
     fs.unlink(directoryPath + `/${scriptName}.json`, (e) => {
-        console.log("complete")
+        console.log("complete", e)
+        readScriptsInDirectory();
         callback({
             "success": `Deleted ${scriptName}`
         });
