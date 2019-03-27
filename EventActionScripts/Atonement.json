@@ -1,0 +1,394 @@
+{
+  "name": "Atonement",
+  "id": "1",
+  "branch_address": "http://192.168.0.174:4400",
+  "masterId": "255",
+  "time": {
+    "hours": "0",
+    "minutes": "60",
+    "seconds": "0"
+  },
+  "states": [
+    {
+      "name": "start_instance",
+      "active": true
+    },
+    {
+      "name": "end_instance",
+      "active": true
+    },
+    {
+      "name": "timer_complete",
+      "active": false
+    },
+    {
+      "name": "Background",
+      "active": false
+    }
+  ],
+  "events": [
+    {
+      "id": "1",
+      "name": "start_instance",
+      "device_id": "10",
+      "event": "rangeTrigger",
+      "eventType": "thermometer",
+      "data": "0",
+      "description": "the beginning of the game, code typed or something",
+      "dependencies": [],
+      "actions": [],
+      "message": "started the game",
+      "states": [
+        {
+          "name": "start_instance",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "test_chest_door",
+      "device_id": "23",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "0",
+      "description": "players opened door",
+      "dependencies": [],
+      "actions": [
+        "chest_door_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "opened box",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "test_top_drawer",
+      "device_id": "23",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "1",
+      "description": "players opened door",
+      "dependencies": [],
+      "actions": [
+        "top_drawer_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "opened box",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "test_second_drawer",
+      "device_id": "23",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "2",
+      "description": "players opened door",
+      "dependencies": [],
+      "actions": [
+        "second_drawer_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "opened box",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "test_vent",
+      "device_id": "23",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "3",
+      "description": "players opened door",
+      "dependencies": [],
+      "actions": [
+        "vent_latch_toggle"
+      ],
+      "can_toggle": "true",
+      "message": "opened box",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "end_instance",
+      "device_id": "23",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "4",
+      "description": "players opened door",
+      "dependencies": [],
+      "actions": [
+        "play_start_music"
+      ],
+      "can_toggle": "true",
+      "message": "opened box",
+      "states": [
+        {
+          "name": "end_instance",
+          "active": true
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "1",
+      "name": "play_start_music",
+      "device_id": "30",
+      "event": "noneE",
+      "eventType": "noneET",
+      "action": "play",
+      "actionType": "mp3",
+      "wait": 0,
+      "data": "1",
+      "description": "the beginning of the game, code typed or something",
+      "dependencies": [],
+      "repeatable": false,
+      "actions": [],
+      "message": "played music",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "play_box_music",
+      "device_id": "30",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "play",
+      "actionType": "mp3",
+      "data": "3",
+      "description": "the music!!!!!!!!!",
+      "dependencies": [],
+      "repeatable": "true",
+      "actions": [],
+      "message": "played music",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "do_third_action",
+      "device_id": "20",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "start",
+      "actionType": "buzzer",
+      "data": "1",
+      "description": "Jump Scare!!!!",
+      "repeatable": "true",
+      "dependencies": [
+        "play_box_music",
+        "play_start_music"
+      ],
+      "actions": [],
+      "message": "Jump scare",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "open_door",
+      "device_id": "21",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "on",
+      "actionType": "relay",
+      "data": "929",
+      "description": "Jump Scare!!!!",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "open_door",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "test_led",
+      "device_id": "23",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "start",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED on",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "LED on",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "test_led_off",
+      "device_id": "23",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "stop",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "LED off",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "chest_door_toggle",
+      "device_id": "31",
+      "event": "noneE",
+      "eventType": "noneET",
+      "wait": 0,
+      "action": "toggleA",
+      "actionType": "relay",
+      "data": "4",
+      "description": "LED off",
+      "repeatable": "true",
+      "dependencies": [],
+      "actions": [],
+      "message": "chest_door_on",
+      "states": [
+        {
+          "name": "start_game",
+          "active": true
+        }
+      ]
+    }
+  ],
+  "triggers": [
+    {
+      "name": "Looping background",
+      "trigger": "Background",
+      "audio": "someFile.mp3",
+      "video": "video/static_small.mp4",
+      "timeValue": {
+        "hours": "0",
+        "minutes": "60",
+        "seconds": "0"
+      },
+      "hint": "",
+      "can_toggle": "true",
+      "loop_video": true,
+      "video_type": "background"
+    },
+    {
+      "name": "end video",
+      "trigger": "end_instance",
+      "audio": "anoptherfile.mp3",
+      "video": "video/redline.mp4",
+      "hint": "You win",
+      "can_toggle": "true",
+      "video_type": "custom",
+      "pause_timer": true
+    },
+    {
+      "name": "Play some vid",
+      "trigger": "start_instance",
+      "audio": "",
+      "video": "video/alex.mp4",
+      "hint": "Atonement begin",
+      "can_toggle": "",
+      "audio_type": "start",
+      "pause_timer": true
+    },
+    {
+      "name": "Lose trig",
+      "trigger": "timer_complete",
+      "audio": "",
+      "video": "",
+      "hint": "You r loser",
+      "can_toggle": ""
+    }
+  ],
+  "hints": [
+    {
+      "name": "Draw hint",
+      "hint": "The thing is in the thing!!!!"
+    },
+    {
+      "name": "not hint",
+      "hint": "make sure you drop some loose change"
+    },
+    {
+      "name": "end hint",
+      "hint": "waughhhh"
+    }
+  ],
+  "screenConfigs": [
+    {
+      "name": "Screen1",
+      "backgroundType": "Video",
+      "backgroundPath": "video/static_small.mp4",
+      "font": "'Times New Roman', Times, serif",
+      "font_colour": "white",
+      "audio": "",
+      "showTimer": true,
+      "showHints": true
+    },
+    {
+      "name": "screen2",
+      "backgroundType": "Video",
+      "backgroundPath": "video/christmas_background.mp4",
+      "font": "Impact, Charcoal, sans-serif",
+      "font_colour": "BlueViolet",
+      "audio": "",
+      "showTimer": false,
+      "showHints": false
+    }
+  ]
+}

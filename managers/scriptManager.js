@@ -20,7 +20,8 @@ updateScriptsFromRootServer();
 
 /** Create new script from http request */
 exports.newScript = function (req, res) {
-    var script = req.body
+    var script = req.body.script
+    console.log(req.body)
     createLocalScript(script);
     res.send({
         "message": script
@@ -81,7 +82,9 @@ exports.updateSelectedScript = updateSelectedScript;
  * @param {*} script
  */
 function createLocalScript(script) {
-    script = JSON.parse(script);
+    console.log(script);
+    // script = JSON.parse(script);
+    
     jsonfile.writeFileSync(directoryPath + `/${script.name}.json`, script, {
         spaces: 2
     });

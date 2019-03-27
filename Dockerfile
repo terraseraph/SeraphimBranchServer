@@ -1,10 +1,15 @@
-FROM node:10.15
+#FROM node:10.15
+FROM node:10.15-stretch
 
 
 WORKDIR /home/server
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 COPY package.json package-lock.json* ./
+# RUN apt-get install \
+#     python \
+#     make \
+#     g++
 RUN npm install
 COPY . /usr/app
 
