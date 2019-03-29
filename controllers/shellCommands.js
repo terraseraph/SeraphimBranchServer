@@ -1,5 +1,7 @@
 //@ts-check
 var shell = require('shelljs')
+const path = require('path');
+var directory = path.join(__dirname, `../`)
 
 
 function restartBranchServer() {
@@ -22,7 +24,7 @@ exports.customCommand = customCommand
 
 
 function gitUpdate() {
-    let cmd = `cd ${process.cwd} && git pull && npm install && sudo reboot`
+    let cmd = `bash -c 'cd ${directory} && git pull && npm install && sudo reboot'`
     shell.exec(`${cmd}`);
     shell.exit(1);
 }
