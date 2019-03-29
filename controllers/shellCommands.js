@@ -5,7 +5,10 @@ var directory = path.join(__dirname, `../`)
 
 
 function restartBranchServer() {
-    shell.exec('sudo reboot');
+    shell.exec('sudo reboot',(result)=>{
+        console.log(result);
+        
+    });
     shell.exit(1);
 }
 exports.restartBranchServer = restartBranchServer
