@@ -13,6 +13,7 @@ var DeviceManager = require('./deviceManager');
 var ScriptManager = require('./scriptManager');
 const mediaManager = require("../managers/mediaManager");
 const systemInformation = require("../controllers/systemInformation");
+const shellCommands = require("../controllers/shellCommands");
 
 var serverRoutes = {
     script: `/script`,
@@ -304,4 +305,29 @@ exports.sendLogToRoot = function (msg) {
     request(options, (err, res, body) => {
         // callback(res)
     })
+}
+
+
+
+// =============================================================================== //
+// ========================= Shell commands ===================================== //
+// ============================================================================= //
+exports.shellRestartBranchServer = function(req, res){
+    res.send({success:true})
+    shellCommands.restartBranchServer();
+}
+
+exports.shellReloadBranchDesktop = function(req, res){
+    res.send({success:true})
+    shellCommands.reloadBranchDesktop();
+}
+
+exports.shellCustomCommand = function(req, res){
+    res.send({success:true})
+    shellCommands.customCommand(req.body.command);
+}
+
+exports.shellGitUpdate = function(req, res){
+    res.send({success:true})
+    shellCommands.gitUpdate();
 }

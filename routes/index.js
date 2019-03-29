@@ -45,8 +45,15 @@ router.post("/config", httpManager.updateConfig);
 router.put("/config/api", httpManager.updateRootApi)
 
 
-
-
+/**
+ *
+ * Shell controller routes
+ *
+ */
+router.get("/shell/restart", httpManager.shellRestartBranchServer);
+router.get("/shell/reload", httpManager.shellReloadBranchDesktop);
+router.get("/shell/gitupdate", httpManager.shellGitUpdate);
+router.post("/shell/command", httpManager.shellCustomCommand);
 
 
 
