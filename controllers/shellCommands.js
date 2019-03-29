@@ -46,7 +46,7 @@ function customCommand(cmd) {
 exports.customCommand = customCommand;
 
 function gitUpdate() {
-    let cmd = `bash -c 'git pull && npm install && sudo reboot'`;
+    let cmd = `git pull && npm install && sudo reboot`;
     var bash = shell.exec(`${cmd}`, {
         async: true
     })
