@@ -4,6 +4,7 @@
 
 // var $ = require('jQuery')
 var request = require('request');
+var path = require('path');
 var ConfigManager = require("./configManager");
 var config = ConfigManager.configJson;
 var serialController = require('../controllers/serialController')
@@ -125,6 +126,7 @@ exports.getRootServerScripts = function () {
 }
 
 exports.getRootServerScript = function (scriptName) {
+    scriptName = path.parse(scriptName).name;
     return new Promise((resolve, reject) => {
         var address = (config.server_url + serverRoutes.script + `/${scriptName}`);
         var options = {
@@ -312,22 +314,22 @@ exports.sendLogToRoot = function (msg) {
 // =============================================================================== //
 // ========================= Shell commands ===================================== //
 // ============================================================================= //
-exports.shellRestartBranchServer = function(req, res){
-    res.send({success:true})
+exports.shellRestartBranchServer = function (req, res) {
+    res.send({ success: true })
     shellCommands.restartBranchServer();
 }
 
-exports.shellReloadBranchDesktop = function(req, res){
-    res.send({success:true})
+exports.shellReloadBranchDesktop = function (req, res) {
+    res.send({ success: true })
     shellCommands.reloadBranchDesktop();
 }
 
-exports.shellCustomCommand = function(req, res){
-    res.send({success:true})
+exports.shellCustomCommand = function (req, res) {
+    res.send({ success: true })
     shellCommands.customCommand(req.body.command);
 }
 
-exports.shellGitUpdate = function(req, res){
-    res.send({success:true})
+exports.shellGitUpdate = function (req, res) {
+    res.send({ success: true })
     shellCommands.gitUpdate();
 }
