@@ -35,7 +35,8 @@ server.on('published', function (packet, client) {
   log.log('Published : ', packet.payload.toString());
   if (client != undefined) {
     // log("Client id:");
-    log.log(client.id.toString());
+    log.log("ClientId: ", client.id.normalize(), packet.topic);
+    console.log(client.id.normalize("NFC"))
     parsePacket(packet, client.id);
   }
 });

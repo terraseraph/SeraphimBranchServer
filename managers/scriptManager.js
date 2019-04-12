@@ -84,8 +84,9 @@ exports.updateSelectedScript = updateSelectedScript;
 function createLocalScript(script) {
     console.log(script);
     // script = JSON.parse(script);
-    
-    jsonfile.writeFileSync(directoryPath + `/${script.name}.json`, script, {
+    var scriptName = JSON.parse(script).name;
+
+    jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, script, {
         spaces: 2
     });
 }
