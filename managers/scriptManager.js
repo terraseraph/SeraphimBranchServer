@@ -86,7 +86,7 @@ function createLocalScript(script) {
     // script = JSON.parse(script);
     var scriptName = JSON.parse(script).name;
 
-    jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, script, {
+    jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, JSON.parse(script), {
         spaces: 2
     });
 }
