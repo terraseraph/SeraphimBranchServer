@@ -4,13 +4,10 @@
   "branchId": 1,
   "localUrl": "0.0.0.0",
   "branch_name": "ex-revenge",
-  "selected_script": "Christmas.json",
+  "selected_script": "TEST - Atonement.json",
   "start_script_command": "wqeqweqwe",
   "end_script_command": "",
-  "branch_scripts": [
-    "Christmas.json",
-    "Dragon.json"
-  ],
+  "branch_scripts": [],
   "systemInformation": {
     "os": {
       "platform": "win32",
@@ -60,14 +57,14 @@
       {
         "iface": "vEthernet (DockerNAT)",
         "ip4": "10.0.75.1",
-        "ip6": "",
+        "ip6": "fe80::1cb1:25d8:e523:e55a",
         "mac": "00:15:5d:00:b4:02",
         "internal": false
       },
       {
         "iface": "Ethernet",
         "ip4": "192.168.0.180",
-        "ip6": "fd19:b785:9ed8:1:2039:8ee3:e681:afa3",
+        "ip6": "fdb6:e25c:5f67:1:2039:8ee3:e681:afa3",
         "mac": "04:92:26:4a:e3:79",
         "internal": false
       },
@@ -80,9 +77,9 @@
       },
       {
         "iface": "vEthernet (Default Switch)",
-        "ip4": "192.168.202.193",
-        "ip6": "fe80::8474:cb96:f723:bc51",
-        "mac": "7a:15:46:3e:9d:43",
+        "ip4": "172.17.247.81",
+        "ip6": "fe80::f15b:3d46:4bf7:ea14",
+        "mac": "7a:15:46:fa:df:58",
         "internal": false
       }
     ]

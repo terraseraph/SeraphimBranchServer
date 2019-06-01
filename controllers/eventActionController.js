@@ -47,9 +47,9 @@ exports.parseEvent = function (packet, bridgeId, callback) {
                         sendToServer(evt, selectedScript.states).then(result => {
                             // log(result);
                         });
-                        processActionsArray(evt.actions, bridgeId, (actArr) => {
-                            addActionsToMasterQueue(actArr, bridgeId);
-                            callback(actArr);
+                        processActionsArray(evt.actions, bridgeId).then(arr => {
+                            addActionsToMasterQueue(arr);
+                            callback(arr);
                         })
                     })
                 })
@@ -83,11 +83,10 @@ exports.forceEvent = function (eventName, bridgeId, callback) {
             setScriptStates(evt).then(() => {
                 evt.branch_name = selectedScript.name; //Attach the branch name
                 sendToServer(evt, selectedScript.states).then(result => {
-                    // log(result);
                 });
-                processActionsArray(evt.actions, bridgeId, (actArr) => {
-                    addActionsToMasterQueue(actArr, bridgeId);
-                    callback(actArr);
+                processActionsArray(evt.actions, bridgeId).then(arr => {
+                    addActionsToMasterQueue(arr);
+                    callback(arr);
                 })
             })
 
@@ -96,22 +95,29 @@ exports.forceEvent = function (eventName, bridgeId, callback) {
     })
 }
 
-
-function processActionsArray(actions, bridgeId, callback) {
-    let actionsArr = new Array();
-    if (actions.length > 0) {
-        for (var j = 0; j < actions.length; j++) {
-            findAction(actions[j], bridgeId).then((act) => {
-                playAction(act, function (result) {
-                    actionsArr.push(result);
-                    if (j == actions.length) {
-                        // addActionsToMasterQueue(actions, bridgeId);
-                        callback(actionsArr)
-                    }
+/**
+ * Find actions and create an array of them
+ *
+ * @param {*} actions
+ * @param {*} bridgeId
+ * @returns array of actions
+ */
+function processActionsArray(actions, bridgeId) {
+    return new Promise((resolve, reject) => {
+        let actionsArr = new Array();
+        if (actions.length > 0) {
+            for (var j = 0; j < actions.length; j++) {
+                findAction(actions[j], bridgeId).then((act) => {
+                    playAction(act, function (result) {
+                        actionsArr.push(result);
+                        if (actionsArr.length == actions.length) {
+                            resolve(actionsArr)
+                        }
+                    })
                 })
-            })
+            }
         }
-    }
+    })
 }
 
 
