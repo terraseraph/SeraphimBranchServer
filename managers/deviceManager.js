@@ -110,16 +110,9 @@ exports.sendAction = sendAction;
 function addActionsToDeviceQueue(deviceName, actionsArray) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
-            for (let i = 0; i < actionsArray.length; i++) {
-                // device.actionsArray.unshift(actionsArray[i]);
-                device.actionsArray.push(actionsArray[i]);
-                if (i == actionsArray.length - 1) {
-                    setDeviceReady(deviceName);
-                }
-            }
-            // actionsArray.forEach(action => {
-            //     device.actionsArray.push(action);
-            // })
+            device.pushNewActions(actionsArray).then(actions => {
+                setDeviceReady(deviceName);
+            });
         }
     });
 }
@@ -354,6 +347,15 @@ class NodeDevice {
         HttpManager.deviceManager_sendHeartbeats(this)
     }
 
+    pushNewActions(newActions) {
+        log.log("==================== NEW ACTIONS ====================", newActions)
+        log.log("==================== ACTIONS LIST ====================", this.actionsArray)
+        return new Promise((resolve, reject) => {
+            this.actionsArray = this.actionsArray.concat(newActions);
+            resolve(this.actionsArray);
+        })
+    }
+
     // =======================================================
     // ========= SERIAL ======================================
     // =======================================================
@@ -455,14 +457,12 @@ class NodeDevice {
             payload: Buffer.from(JSON.stringify(branchDetails)),
             qos: 1,
             retain: false
-        }, () => {})
+        }, () => { })
         log.log("================ created node =================")
     }
 
     mqtt_write(data, callback) {
         this.writeCount += 1
-        // this.actionsArray.shift();
-        // this.actionsArray.pop();
         log.log("Total writes to this node: ", this.writeCount)
 
         MqttController.server.publish({
@@ -499,14 +499,10 @@ class NodeDevice {
                 return
             }
 
-            // this.mqtt_write(this.actionsArray[this.actionsArray.length], (data) => {
-            //     log(data);
-            //     // this.actionsArray.shift();
-            //     this.ready = false;
-            // })
             this.mqtt_write(this.actionsArray[0], (data) => {
+                console.log("===== SENDING MQTT ========");
+
                 log.log(data);
-                // this.actionsArray = this.actionsArray.splice(0, 1);
                 this.actionsArray.shift();
                 this.ready = false;
             })

@@ -48,7 +48,7 @@ exports.parseEvent = function (packet, bridgeId, callback) {
                             // log(result);
                         });
                         processActionsArray(evt.actions, bridgeId).then(arr => {
-                            addActionsToMasterQueue(arr);
+                            addActionsToMasterQueue(arr, bridgeId);
                             callback(arr);
                         })
                     })
@@ -85,7 +85,7 @@ exports.forceEvent = function (eventName, bridgeId, callback) {
                 sendToServer(evt, selectedScript.states).then(result => {
                 });
                 processActionsArray(evt.actions, bridgeId).then(arr => {
-                    addActionsToMasterQueue(arr);
+                    addActionsToMasterQueue(arr, bridgeId);
                     callback(arr);
                 })
             })
@@ -502,7 +502,7 @@ function checkStateDependencies(event_action) {
 
 
 function addActionsToMasterQueue(actionsArray, deviceId) {
-    console.log("====SENDING ACTION TO MASTER====", actionsArray)
+    log.logStatus("====SENDING ACTION TO MASTER====", actionsArray, deviceId)
     DeviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;
