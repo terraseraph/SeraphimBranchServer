@@ -265,6 +265,8 @@ class NodeDevice {
         this.details = details;
         this.meshNodes = {};
         this.bridgeStatus = {};
+        this.sendUpdates = true;
+        this.heartbeatInterval = 10000;
 
         this.init();
     }
@@ -282,6 +284,7 @@ class NodeDevice {
                 break;
             default:
         }
+        this.sendHeartbeatOnInterval();
     }
 
 
@@ -339,12 +342,18 @@ class NodeDevice {
         var timeNow = new Date().getTime();
         heartbeatPacket.heartbeat.lastUpdated = timeNow;
         this.meshNodes[`${heartbeatPacket.heartbeat.hardwareId}`] = heartbeatPacket.heartbeat;
-        HttpManager.deviceManager_sendHeartbeats(this)
+    }
+
+    sendHeartbeatOnInterval() {
+        HttpManager.deviceManager_sendHeartbeats(this);
+        if (this.sendUpdates) {
+            setTimeout(this.sendHeartbeatOnInterval, this.heartbeatInterval);
+        }
     }
 
     updateBridgeStatus(packet) {
         this.bridgeStatus = packet;
-        HttpManager.deviceManager_sendHeartbeats(this)
+        // HttpManager.deviceManager_sendHeartbeats(this)
     }
 
     pushNewActions(newActions) {

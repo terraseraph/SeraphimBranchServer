@@ -20,6 +20,9 @@ var serverRoutes = {
     script: `/script`,
 }
 
+// Enable logging direct to root server
+var enableHttpLog = false;
+
 
 // =============================================================================== //
 // ========================= Config Manager ===================================== //
@@ -304,9 +307,11 @@ exports.sendLogToRoot = function (msg) {
         json: true,
         url: config.server_url + "/log"
     }
-    request(options, (err, res, body) => {
-        // callback(res)
-    })
+    if (enableHttpLog) {
+        request(options, (err, res, body) => {
+            // callback(res)
+        })
+    }
 }
 
 
