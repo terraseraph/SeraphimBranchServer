@@ -108,13 +108,24 @@ exports.sendAction = sendAction;
 
 
 function addActionsToDeviceQueue(deviceName, actionsArray) {
-    nodeDeviceList.forEach(device => {
-        if (device.name == deviceName) {
-            device.pushNewActions(actionsArray).then(actions => {
-                setDeviceReady(deviceName);
-            });
+    for (let i = 0; i = actionsArray.length; i++) {
+        let action = actionsArray[i];
+        for (let j = 0; j = nodeDeviceList.length; i++) {
+            let dev = nodeDeviceList[j];
+            if (action.device_id === dev.name) {
+                dev.pushNewActions([action]).then(actions => {
+                    setDeviceReady(action.device_id);
+                });
+            }
         }
-    });
+    }
+    // nodeDeviceList.forEach(device => {
+    //     if (device.name == deviceName) {
+    //         device.pushNewActions(actionsArray).then(actions => {
+    //             setDeviceReady(deviceName);
+    //         });
+    //     }
+    // });
 }
 exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
 
@@ -466,7 +477,7 @@ class NodeDevice {
             payload: Buffer.from(JSON.stringify(branchDetails)),
             qos: 1,
             retain: false
-        }, () => { })
+        }, () => {})
         log.log("================ created node =================")
     }
 

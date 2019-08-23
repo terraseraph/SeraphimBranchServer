@@ -82,8 +82,7 @@ exports.forceEvent = function (eventName, bridgeId, callback) {
         findEvent(eventName, selectedScript, true).then(evt => {
             setScriptStates(evt).then(() => {
                 evt.branch_name = selectedScript.name; //Attach the branch name
-                sendToServer(evt, selectedScript.states).then(result => {
-                });
+                sendToServer(evt, selectedScript.states).then(result => {});
                 processActionsArray(evt.actions, bridgeId).then(arr => {
                     addActionsToMasterQueue(arr, bridgeId);
                     callback(arr);
@@ -223,12 +222,13 @@ function playAction(action, callback) {
 
 
 function makeActionPacket(action) {
+    // Note: Used Number(action.device_id) to stop some error before
     let result = {
-        toId: Number(action.device_id),
+        toId: action.device_id,
         state: {
             type: "action",
             message: {
-                toId: Number(action.device_id),
+                toId: action.device_id,
                 wait: action.wait,
                 event: action.event,
                 eventType: action.eventType,
@@ -501,8 +501,8 @@ function checkStateDependencies(event_action) {
 
 
 
-function addActionsToMasterQueue(actionsArray, deviceId) {
-    log.logStatus("====SENDING ACTION TO MASTER====", actionsArray, deviceId)
-    DeviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
+function addActionsToMasterQueue(actionsArray, bridgeId) {
+    log.logStatus("====SENDING ACTION TO MASTER====", actionsArray, bridgeId)
+    DeviceManager.addActionsToDeviceQueue(bridgeId, actionsArray);
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;
