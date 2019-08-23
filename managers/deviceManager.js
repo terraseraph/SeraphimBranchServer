@@ -107,10 +107,11 @@ function sendAction(deviceName) {
 exports.sendAction = sendAction;
 
 
-function addActionsToDeviceQueue(deviceName, actionsArray) {
-    for (let i = 0; i = actionsArray.length; i++) {
-        let action = actionsArray[i];
-        for (let j = 0; j = nodeDeviceList.length; i++) {
+function addActionsToDeviceQueue(bridgeId, actionsArray) {
+
+    for (var i = 0; i < actionsArray.length; i++) {
+        var action = actionsArray[i];
+        for (let j = 0; j < nodeDeviceList.length; j++) {
             let dev = nodeDeviceList[j];
             if (action.device_id === dev.name) {
                 dev.pushNewActions([action]).then(actions => {
@@ -119,13 +120,16 @@ function addActionsToDeviceQueue(deviceName, actionsArray) {
             }
         }
     }
-    // nodeDeviceList.forEach(device => {
-    //     if (device.name == deviceName) {
-    //         device.pushNewActions(actionsArray).then(actions => {
-    //             setDeviceReady(deviceName);
-    //         });
-    //     }
-    // });
+
+
+    // Send all actions to the mesh network attached
+    nodeDeviceList.forEach(device => {
+        if (device.name == bridgeId) {
+            device.pushNewActions(actionsArray).then(actions => {
+                setDeviceReady(bridgeId);
+            });
+        }
+    });
 }
 exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
 
@@ -477,7 +481,7 @@ class NodeDevice {
             payload: Buffer.from(JSON.stringify(branchDetails)),
             qos: 1,
             retain: false
-        }, () => {})
+        }, () => { })
         log.log("================ created node =================")
     }
 
