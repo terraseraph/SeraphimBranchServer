@@ -5,6 +5,12 @@
   "scripts": {
     "start": "forever ./bin/www --config nodemon.json"
   },
+  "bin": "app.js",
+  "pkg": {
+    "config": "config/branchConfig.json",
+    "assets": "",
+    "scripts": "['packages/*/**', 'javascripts/*/**']"
+  },
   "dependencies": {
     "body-parser": "^1.18.3",
     "bootstrap": "^4.1.3",

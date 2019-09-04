@@ -4,8 +4,8 @@
   "branchId": 1,
   "localUrl": "0.0.0.0",
   "branch_name": "ex-revenge",
-  "selected_script": "TEST - Atonement.json",
-  "start_script_command": "wqeqweqwe",
+  "selected_script": "<NAME OF SCRIPT>.json",
+  "start_script_command": "placeholder",
   "end_script_command": "",
   "branch_scripts": [],
   "systemInformation": {
@@ -53,8 +53,7 @@
         "l3": 16777216
       }
     },
-    "networkInterfaces": [
-      {
+    "networkInterfaces": [{
         "iface": "vEthernet (DockerNAT)",
         "ip4": "10.0.75.1",
         "ip6": "fe80::1cb1:25d8:e523:e55a",
