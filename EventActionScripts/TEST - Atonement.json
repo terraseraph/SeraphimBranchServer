@@ -5,8 +5,7 @@
     "seconds": "0"
   },
   "name": "TEST - Atonement",
-  "states": [
-    {
+  "states": [{
       "name": "start_instance",
       "active": true
     },
@@ -19,14 +18,11 @@
       "active": false
     }
   ],
-  "events": [
-    {
-      "states": [
-        {
-          "name": "start_instance",
-          "active": true
-        }
-      ],
+  "events": [{
+      "states": [{
+        "name": "start_instance",
+        "active": true
+      }],
       "id": "",
       "name": "start_instnace",
       "device_id": "20",
@@ -168,8 +164,7 @@
       "message": ""
     }
   ],
-  "actions": [
-    {
+  "actions": [{
       "id": "",
       "name": "Close Vent",
       "device_id": "12",
@@ -325,7 +320,10 @@
       "device_id": "20",
       "action": "play",
       "actionType": "mp3",
-      "data": {"folder": "01", "file": "092"},
+      "data": {
+        "folder": "01",
+        "file": "092"
+      },
       "description": "",
       "dependencies": [],
       "actions": [],

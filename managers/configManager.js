@@ -17,8 +17,17 @@ exports.configJson = configJson;
 
 function configInit() {
     return new Promise((resolve, reject) => {
-        config = fs.readFileSync(`${configPath}`, 'utf8');
-        resolve(config);
+        fs.readFile(`${configPath}`, 'utf8', function (err, data) {
+            if (err) {
+                updateConfig(defaultConfig)
+                resolve(defaultConfig);
+            }
+            else {
+                resolve(data)
+            }
+        });
+        // config = fs.readFileSync(`${configPath}`, 'utf8');
+        // resolve(config);
     })
 };
 
@@ -39,6 +48,18 @@ exports.updateConfig = function (configUpdate) {
     jsonfile.writeFileSync(configPath, configUpdate, {
         spaces: 2
     })
+}
+
+var defaultConfig = {
+    "server_url": "http://192.168.0.180:4300",
+    "port": 4400,
+    "branchId": 1,
+    "localUrl": "0.0.0.0",
+    "branch_name": "Default",
+    "selected_script": "TEST-Atonement.json",
+    "start_script_command": "placeholder",
+    "end_script_command": "",
+    "branch_scripts": [],
 }
 
 //TODO: ADD config http routes!
