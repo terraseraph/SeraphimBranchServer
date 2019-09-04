@@ -26,35 +26,35 @@ exports.setEventFromServer = function () {
 
 /** Find the event */
 exports.parseEvent = function (packet, deviceId, callback) {
-    // ScriptManager.getScriptBymasterId(deviceId).then((selectedScript) => {
+    ScriptManager.getScriptBymasterId(deviceId).then((selectedScript) => {
 
-    // TODO: get bridge id and compare it to the script it is supposed to read
-    var selectedScript = memoryManager.getSelectedScript();
-    var actionsArr = new Array()
-    findEvent(packet, selectedScript, false)
-        .then((evt) => {
-            console.log("script_state: ", script_state)
-            console.log("non_repeatable_actions: ", non_repeatable_actions)
-            /*dependencies are met or skipped if fromServer (http request)*/
-            checkStateDependencies(evt).then(depMet => {
-                if (!depMet) {
-                    callback(actionsArr)
-                    return;
-                }
-                /*Dependencies are met, check if the event is in the script_state*/
-                setScriptStates(evt).then(() => {
-                    evt.branch_name = selectedScript.name; //Attach the branch name
-                    sendToServer(evt, selectedScript.states).then(result => {
-                        // log(result);
-                    });
-                    processActionsArray(evt.actions, deviceId).then(arr => {
-                        addActionsToMasterQueue(arr, deviceId);
-                        callback(arr);
+        // TODO: get bridge id and compare it to the script it is supposed to read
+        // var selectedScript = memoryManager.getSelectedScript();
+        var actionsArr = new Array()
+        findEvent(packet, selectedScript, false)
+            .then((evt) => {
+                console.log("script_state: ", script_state)
+                console.log("non_repeatable_actions: ", non_repeatable_actions)
+                /*dependencies are met or skipped if fromServer (http request)*/
+                checkStateDependencies(evt).then(depMet => {
+                    if (!depMet) {
+                        callback(actionsArr)
+                        return;
+                    }
+                    /*Dependencies are met, check if the event is in the script_state*/
+                    setScriptStates(evt).then(() => {
+                        evt.branch_name = selectedScript.name; //Attach the branch name
+                        sendToServer(evt, selectedScript.states).then(result => {
+                            // log(result);
+                        });
+                        processActionsArray(evt.actions, deviceId).then(arr => {
+                            addActionsToMasterQueue(arr, deviceId);
+                            callback(arr);
+                        })
                     })
                 })
             })
-        })
-    // })
+    })
 }
 
 
@@ -75,23 +75,23 @@ exports.forceEventFromServer = function (eventPacket, callback) {
 
 /** Force event by name */
 exports.forceEvent = function (eventName, bridgeId, callback) {
-    // ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
 
-    var selectedScript = memoryManager.getSelectedScript();
-    var actionsArr = new Array()
-    findEvent(eventName, selectedScript, true).then(evt => {
-        setScriptStates(evt).then(() => {
-            evt.branch_name = selectedScript.name; //Attach the branch name
-            sendToServer(evt, selectedScript.states).then(result => { });
-            processActionsArray(evt.actions, bridgeId).then(arr => {
-                addActionsToMasterQueue(arr, bridgeId);
-                callback(arr);
+        // var selectedScript = memoryManager.getSelectedScript();
+        var actionsArr = new Array()
+        findEvent(eventName, selectedScript, true).then(evt => {
+            setScriptStates(evt).then(() => {
+                evt.branch_name = selectedScript.name; //Attach the branch name
+                sendToServer(evt, selectedScript.states).then(result => { });
+                processActionsArray(evt.actions, bridgeId).then(arr => {
+                    addActionsToMasterQueue(arr, bridgeId);
+                    callback(arr);
+                })
             })
+
+
         })
-
-
     })
-    // })
 }
 
 /**
@@ -174,15 +174,15 @@ function forceAction(obj, bridgeId, callback) {
 }
 
 function forceActionFromServer(actionName, bridgeId = false) {
-    // ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
-    var actArr = new Array();
-    findAction(actionName, bridgeId).then((act) => {
-        playAction(act, function (result) {
-            actArr.push(result);
-            addActionsToMasterQueue(actArr, bridgeId);
+    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+        var actArr = new Array();
+        findAction(actionName, bridgeId).then((act) => {
+            playAction(act, function (result) {
+                actArr.push(result);
+                addActionsToMasterQueue(actArr, bridgeId);
+            })
         })
     })
-    // })
 }
 exports.forceActionFromServer = forceActionFromServer;
 
@@ -367,17 +367,17 @@ function findEvent(packet, script, findByName = false) {
  */
 function findAction(actionName, masterId = false) {
     return new Promise((resolve, reject) => {
-        // ScriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
+        ScriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
 
-        var selectedScript = memoryManager.getSelectedScript();
-        selectedScript.actions.forEach(act => {
-            if (act.name == actionName) {
-                console.log("=====FIND ACTION===", act)
-                resolve(act)
-                return;
-            }
-        });
-        // })
+            // var selectedScript = memoryManager.getSelectedScript();
+            selectedScript.actions.forEach(act => {
+                if (act.name == actionName) {
+                    console.log("=====FIND ACTION===", act)
+                    resolve(act)
+                    return;
+                }
+            });
+        })
     })
 }
 
