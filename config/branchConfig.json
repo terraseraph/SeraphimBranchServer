@@ -1,99 +1,246 @@
 {
   "server_url": "http://192.168.0.180:4300",
-  "port": 4400,
-  "branchId": 1,
+  "port": "4400",
+  "branchId": "1",
   "localUrl": "0.0.0.0",
   "branch_name": "ex-revenge",
-  "selected_script": "<NAME OF SCRIPT>.json",
+  "selected_script": "EXAMPLE.json",
   "start_script_command": "placeholder",
   "end_script_command": "",
-  "branch_scripts": [],
-  "systemInformation": {
-    "os": {
-      "platform": "win32",
-      "distro": "Microsoft Windows 10 Education",
-      "release": "10.0.17763",
-      "codename": "",
-      "kernel": "10.0.17763",
-      "arch": "x64",
-      "hostname": "DESKTOP-OHQ72AI",
-      "codepage": " 437",
-      "logofile": "windows",
-      "serial": "00328-00254-65584-AA664",
-      "build": "17763"
-    },
-    "system": {
-      "manufacturer": "System manufacturer",
-      "model": "System Product Name",
-      "version": "System Version",
-      "serial": "System Serial Number",
-      "uuid": "A4FF2291-A53D-83DA-3F48-0492264AE379",
-      "sku": "SKU"
-    },
-    "cpu": {
-      "manufacturer": "AMD",
-      "brand": "Ryzen 5 2600 Six-Core Processor",
-      "vendor": "AuthenticAMD",
-      "family": "23",
-      "model": "8",
-      "stepping": "2",
-      "revision": "2050",
-      "voltage": "",
-      "speed": "3.40",
-      "speedmin": "",
-      "speedmax": "3.40",
-      "cores": 12,
-      "physicalCores": 6,
-      "processors": 1,
-      "socket": "AM4",
-      "cache": {
-        "l1d": 0,
-        "l1i": 0,
-        "l2": 3145728,
-        "l3": 16777216
-      }
-    },
-    "networkInterfaces": [{
-        "iface": "vEthernet (DockerNAT)",
-        "ip4": "10.0.75.1",
-        "ip6": "fe80::1cb1:25d8:e523:e55a",
-        "mac": "00:15:5d:00:b4:02",
-        "internal": false
-      },
-      {
-        "iface": "Ethernet",
-        "ip4": "192.168.0.180",
-        "ip6": "fdb6:e25c:5f67:1:2039:8ee3:e681:afa3",
-        "mac": "04:92:26:4a:e3:79",
-        "internal": false
-      },
-      {
-        "iface": "Loopback Pseudo-Interface 1",
-        "ip4": "127.0.0.1",
-        "ip6": "::1",
-        "mac": "00:00:00:00:00:00",
-        "internal": true
-      },
-      {
-        "iface": "vEthernet (Default Switch)",
-        "ip4": "172.17.247.81",
-        "ip6": "fe80::f15b:3d46:4bf7:ea14",
-        "mac": "7a:15:46:fa:df:58",
-        "internal": false
-      }
-    ]
-  },
-  "media": {
-    "audio": [
-      "congrats.mp3",
-      "silence.mp3",
-      "win_audio.mp3"
-    ],
-    "video": [
-      "alex.mp4",
-      "christmas_background.mp4",
-      "redline.mp4",
-      "static_small.mp4"
-    ]
-  }
+  "branch_scripts[]": "EXAMPLE.json",
+  "systemInformation[os][platform]": [
+    "win32",
+    "win32"
+  ],
+  "systemInformation[os][distro]": [
+    "Microsoft Windows 10 Education",
+    "Microsoft Windows 10 Education"
+  ],
+  "systemInformation[os][release]": [
+    "10.0.17763",
+    "10.0.17763"
+  ],
+  "systemInformation[os][codename]": [
+    "",
+    ""
+  ],
+  "systemInformation[os][kernel]": [
+    "10.0.17763",
+    "10.0.17763"
+  ],
+  "systemInformation[os][arch]": [
+    "x64",
+    "x64"
+  ],
+  "systemInformation[os][hostname]": [
+    "DESKTOP-OHQ72AI",
+    "DESKTOP-OHQ72AI"
+  ],
+  "systemInformation[os][codepage]": [
+    " 437",
+    " 437"
+  ],
+  "systemInformation[os][logofile]": [
+    "windows",
+    "windows"
+  ],
+  "systemInformation[os][serial]": [
+    "00328-00254-65584-AA664",
+    "00328-00254-65584-AA664"
+  ],
+  "systemInformation[os][build]": [
+    "17763",
+    "17763"
+  ],
+  "systemInformation[system][manufacturer]": [
+    "System manufacturer",
+    "System manufacturer"
+  ],
+  "systemInformation[system][model]": [
+    "System Product Name",
+    "System Product Name"
+  ],
+  "systemInformation[system][version]": [
+    "System Version",
+    "System Version"
+  ],
+  "systemInformation[system][serial]": [
+    "System Serial Number",
+    "System Serial Number"
+  ],
+  "systemInformation[system][uuid]": [
+    "A4FF2291-A53D-83DA-3F48-0492264AE379",
+    "A4FF2291-A53D-83DA-3F48-0492264AE379"
+  ],
+  "systemInformation[system][sku]": [
+    "SKU",
+    "SKU"
+  ],
+  "systemInformation[cpu][manufacturer]": [
+    "AMD",
+    "AMD"
+  ],
+  "systemInformation[cpu][brand]": [
+    "Ryzen 5 2600 Six-Core Processor",
+    "Ryzen 5 2600 Six-Core Processor"
+  ],
+  "systemInformation[cpu][vendor]": [
+    "AuthenticAMD",
+    "AuthenticAMD"
+  ],
+  "systemInformation[cpu][family]": [
+    "23",
+    "23"
+  ],
+  "systemInformation[cpu][model]": [
+    "8",
+    "8"
+  ],
+  "systemInformation[cpu][stepping]": [
+    "2",
+    "2"
+  ],
+  "systemInformation[cpu][revision]": [
+    "2050",
+    "2050"
+  ],
+  "systemInformation[cpu][voltage]": [
+    "",
+    ""
+  ],
+  "systemInformation[cpu][speed]": [
+    "3.85",
+    "3.85"
+  ],
+  "systemInformation[cpu][speedmin]": [
+    "",
+    ""
+  ],
+  "systemInformation[cpu][speedmax]": [
+    "3.85",
+    "3.85"
+  ],
+  "systemInformation[cpu][cores]": [
+    "12",
+    "12"
+  ],
+  "systemInformation[cpu][physicalCores]": [
+    "6",
+    "6"
+  ],
+  "systemInformation[cpu][processors]": [
+    "1",
+    "1"
+  ],
+  "systemInformation[cpu][socket]": [
+    "AM4",
+    "AM4"
+  ],
+  "systemInformation[cpu][cache][l1d]": [
+    "0",
+    "0"
+  ],
+  "systemInformation[cpu][cache][l1i]": [
+    "0",
+    "0"
+  ],
+  "systemInformation[cpu][cache][l2]": [
+    "3145728",
+    "3145728"
+  ],
+  "systemInformation[cpu][cache][l3]": [
+    "16777216",
+    "16777216"
+  ],
+  "systemInformation[networkInterfaces][0][iface]": [
+    "vEthernet (DockerNAT)",
+    "vEthernet (DockerNAT)"
+  ],
+  "systemInformation[networkInterfaces][0][ip4]": [
+    "10.0.75.1",
+    "10.0.75.1"
+  ],
+  "systemInformation[networkInterfaces][0][ip6]": [
+    "fe80::28f6:714:d277:c80d",
+    "fe80::28f6:714:d277:c80d"
+  ],
+  "systemInformation[networkInterfaces][0][mac]": [
+    "00:15:5d:00:b4:04",
+    "00:15:5d:00:b4:04"
+  ],
+  "systemInformation[networkInterfaces][0][internal]": [
+    "false",
+    "false"
+  ],
+  "systemInformation[networkInterfaces][1][iface]": [
+    "Ethernet",
+    "Ethernet"
+  ],
+  "systemInformation[networkInterfaces][1][ip4]": [
+    "192.168.0.180",
+    "192.168.0.180"
+  ],
+  "systemInformation[networkInterfaces][1][ip6]": [
+    "fd1a:7ae1:b56f:1:2039:8ee3:e681:afa3",
+    "fd1a:7ae1:b56f:1:2039:8ee3:e681:afa3"
+  ],
+  "systemInformation[networkInterfaces][1][mac]": [
+    "04:92:26:4a:e3:79",
+    "04:92:26:4a:e3:79"
+  ],
+  "systemInformation[networkInterfaces][1][internal]": [
+    "false",
+    "false"
+  ],
+  "systemInformation[networkInterfaces][2][iface]": [
+    "Loopback Pseudo-Interface 1",
+    "Loopback Pseudo-Interface 1"
+  ],
+  "systemInformation[networkInterfaces][2][ip4]": [
+    "127.0.0.1",
+    "127.0.0.1"
+  ],
+  "systemInformation[networkInterfaces][2][ip6]": [
+    "::1",
+    "::1"
+  ],
+  "systemInformation[networkInterfaces][2][mac]": [
+    "00:00:00:00:00:00",
+    "00:00:00:00:00:00"
+  ],
+  "systemInformation[networkInterfaces][2][internal]": [
+    "true",
+    "true"
+  ],
+  "systemInformation[networkInterfaces][3][iface]": [
+    "vEthernet (Default Switch)",
+    "vEthernet (Default Switch)"
+  ],
+  "systemInformation[networkInterfaces][3][ip4]": [
+    "172.17.62.65",
+    "172.17.62.65"
+  ],
+  "systemInformation[networkInterfaces][3][ip6]": [
+    "fe80::99c0:86da:7624:1a7c",
+    "fe80::99c0:86da:7624:1a7c"
+  ],
+  "systemInformation[networkInterfaces][3][mac]": [
+    "7a:15:46:cb:54:4f",
+    "7a:15:46:cb:54:4f"
+  ],
+  "systemInformation[networkInterfaces][3][internal]": [
+    "false",
+    "false"
+  ],
+  "media[audio][]": [
+    "congrats.mp3",
+    "silence.mp3",
+    "win_audio.mp3"
+  ],
+  "media[video][]": [
+    "alex.mp4",
+    "christmas_background.mp4",
+    "redline.mp4",
+    "static_small.mp4"
+  ]
 }

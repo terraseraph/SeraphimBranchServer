@@ -6,6 +6,7 @@
     "start": "forever ./bin/www --config nodemon.json"
   },
   "bin": "app.js",
+  "main": "app.js",
   "pkg": {
     "config": "config/branchConfig.json",
     "assets": "",

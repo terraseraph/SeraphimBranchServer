@@ -44,7 +44,8 @@ exports.getConfig = function (req, res) {
 }
 
 exports.updateConfig = function (req, res) {
-    var newConfig = req.params.config
+    // var newConfig = req.params.config
+    var newConfig = req.body;
     ConfigManager.updateConfig(newConfig)
     res.send({
         "success": true,
