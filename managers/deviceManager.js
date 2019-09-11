@@ -144,8 +144,8 @@ function addActionsToDeviceQueue(bridgeId, actionsArray) {
     nodeDeviceList.forEach(device => {
         if (device.name == bridgeId) {
             device.pushNewActions(actionsArray).then(actions => {
-                // setDeviceReady(bridgeId);
-                // setDeviceReady("default");
+                setDeviceReady(bridgeId); //legacy
+                setDeviceReady("default");
             });
         }
     });
