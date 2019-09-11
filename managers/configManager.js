@@ -41,11 +41,20 @@ exports.getConfig = function () {
     })
 }
 
+
+// Update the config with a new one
 exports.updateConfig = function (configUpdate) {
     config = configUpdate;
-    console.log("======UPDATING ", config)
+    console.log("======UPDATING=======", config)
     configJson = configUpdate;
     jsonfile.writeFileSync(configPath, configUpdate, {
+        spaces: 2
+    })
+}
+
+// Update the running configuration
+exports.updateRunningConfig = function () {
+    jsonfile.writeFileSync(configPath, configJson, {
         spaces: 2
     })
 }
@@ -56,7 +65,7 @@ var defaultConfig = {
     "branchId": 1,
     "localUrl": "0.0.0.0",
     "branch_name": "Default",
-    "selected_script": "TEST-Atonement.json",
+    "selected_script": "EXAMPLE.json",
     "start_script_command": "placeholder",
     "end_script_command": "",
     "branch_scripts": [],

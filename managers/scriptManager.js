@@ -8,13 +8,30 @@ const fs = require('fs');
 const log = require('../controllers/loggingController');
 const directoryPath = path.join(__dirname, '../EventActionScripts');
 const jsonfile = require("jsonfile");
+const async = require("async");
 var configManager = require("./configManager");
 const HttpManager = require('./httpManager');
 
 var eventActionScriptList = new Array();
-readScriptsInDirectory(); //TODO: put this in an init file or something
 
-updateScriptsFromRootServer();
+exports.scriptsInit = scriptsInit;
+
+
+scriptsInit();
+
+//TODO: put this in an init file or something
+
+// Init the scripts in the config file
+function scriptsInit() {
+    async.series([
+        readScriptsInDirectory,
+        configManager.updateRunningConfig,
+        updateScriptsFromRootServer
+    ], (results) => {
+        console.log(results);
+    })
+}
+
 
 
 
@@ -22,28 +39,37 @@ updateScriptsFromRootServer();
 exports.newScript = function (req, res) {
     var script = req.body.script
     console.log(req.body)
-    createLocalScript(script);
+    if (script !== null && typeof script === 'object') {
+        createLocalScript(script);
+        eventActionScriptList.push(script);
+    }
     res.send({
         "message": script
     })
 }
 
-//TODO: make script updator function to fetch new scripts on startup
-
 
 /** Get all json event action scripts from directory */
-function readScriptsInDirectory() {
+function readScriptsInDirectory(callback) {
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
             return log.logError('Unable to scan directory: ' + err);
         }
         configManager.configJson.branch_scripts = [];
-        files.forEach(function (file) {
+        async.eachSeries(files, function (file, cb) {
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
             var pScript = JSON.parse(script);
             eventActionScriptList.push(pScript);
             configManager.configJson.branch_scripts.push(file);
-        });
+            log.logInfo(file)
+            cb();
+        })
+        // files.forEach(function (file) {
+        //     var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
+        //     var pScript = JSON.parse(script);
+        //     eventActionScriptList.push(pScript);
+        //     configManager.configJson.branch_scripts.push(file);
+        // });
     });
 }
 exports.readScriptsInDirectory = readScriptsInDirectory;
@@ -58,8 +84,14 @@ function updateScriptsFromRootServer() {
         for (var scriptName of config.branch_scripts) {
             HttpManager.getRootServerScript(scriptName).then(script => {
                 if (script == undefined) return;
-                createLocalScript(script);
-                eventActionScriptList.push(JSON.parse(script));
+                if (script !== null && typeof script === 'object') {
+                    createLocalScript(script);
+                    eventActionScriptList.push(script);
+                }
+                else {
+                    createLocalScript(JSON.parse(script));
+                    eventActionScriptList.push(JSON.parse(script));
+                }
                 console.log(script);
             })
         }
@@ -84,11 +116,12 @@ exports.updateSelectedScript = updateSelectedScript;
 function createLocalScript(script) {
     console.log(script);
     // script = JSON.parse(script);
-    var scriptName = JSON.parse(script).name;
+    var scriptName = script.name;
 
-    jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, JSON.parse(script), {
+    jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, script, {
         spaces: 2
     });
+    readScriptsInDirectory();
 }
 
 function getScriptBymasterId(masterId) {

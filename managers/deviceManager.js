@@ -1,6 +1,7 @@
 //@ts-check
 const SerialPort = require('serialport');
 const EventEmitter = require('events').EventEmitter;
+const async = require("async");
 var Readline = SerialPort.parsers.Readline;
 const log = require('../controllers/loggingController');
 const SerialController = require('../controllers/serialController');
@@ -12,6 +13,23 @@ var nodeDeviceList = new Array();
 exports.nodeDeviceList = nodeDeviceList;
 exports.addNewDevice = addNewDevice;
 exports.setDeviceReady = setDeviceReady;
+
+// Create a default device for debugging
+createDefaultDevice();
+
+function createDefaultDevice() {
+    setTimeout(() => {
+        var type = "default"
+        var details = {
+            id: "default",
+            name: "default",
+            ipAddress: "",
+            type: "default",
+            HardwareId: "default"
+        }
+        addNewDevice(details, NodeType.MQTT);
+    }, 1000);
+}
 
 
 /**
@@ -100,7 +118,7 @@ function setDeviceReady(deviceName) {
 function sendAction(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
-            device.playAction();
+            device.setReady();
         }
     });
 }
@@ -109,29 +127,44 @@ exports.sendAction = sendAction;
 
 function addActionsToDeviceQueue(bridgeId, actionsArray) {
 
-    for (var i = 0; i < actionsArray.length; i++) {
-        var action = actionsArray[i];
-        for (let j = 0; j < nodeDeviceList.length; j++) {
-            let dev = nodeDeviceList[j];
-            if (action.device_id === dev.name) {
-                dev.pushNewActions([action]).then(actions => {
-                    setDeviceReady(action.device_id);
-                });
+    async.eachSeries(nodeDeviceList, (device, dCallback) => {
+        buildActionArrayForOneDevice(device.id, actionsArray, (deviceActions) => {
+            if (deviceActions.length > 0 && deviceActions != undefined) {
+                device.pushNewActions(deviceActions).then(actions => {
+                    setDeviceReady(device.id);
+                })
             }
-        }
-    }
-
+        })
+        dCallback();
+    }, () => {
+        //on done
+    })
 
     // Send all actions to the mesh network attached
     nodeDeviceList.forEach(device => {
         if (device.name == bridgeId) {
             device.pushNewActions(actionsArray).then(actions => {
-                setDeviceReady(bridgeId);
+                // setDeviceReady(bridgeId);
+                // setDeviceReady("default");
             });
         }
     });
 }
 exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
+
+
+// Build an array of actions for a single device, returns an array of actions
+function buildActionArrayForOneDevice(deviceId, actionsArray, callbackActions) {
+    var tempActionsArr = new Array();
+    async.eachSeries(actionsArray, (action, aCallback) => {
+        if (action.toId == deviceId) {
+            tempActionsArr.push(action);
+        }
+        aCallback();
+    }, () => {
+        callbackActions(tempActionsArr)
+    })
+}
 
 // Replacement for an enum;
 const NodeType = {
@@ -330,6 +363,7 @@ class NodeDevice {
         switch (this.nodeType) {
             case NodeType.MQTT:
                 this.mqtt_playAction((cb) => {
+                    this.actionsArray.shift();
                     log.log(cb)
                 });
                 break;
@@ -499,7 +533,7 @@ class NodeDevice {
             log.log(data)
             log.log('======= time taken to send ==========')
             log.log(Date.now() - this.timer, "ms")
-            callback("data written")
+            callback(data)
         })
     }
 
@@ -522,13 +556,15 @@ class NodeDevice {
                 callback('Cannot repeat');
                 return
             }
+            var action = this.actionsArray[0];
+            this.mqtt_write(action, (data) => {
+                console.log("===== SENDING MQTT ========", action);
+                console.log("===== Actions array ========", this.actionsArray);
 
-            this.mqtt_write(this.actionsArray[0], (data) => {
-                console.log("===== SENDING MQTT ========");
-
-                log.log(data);
-                this.actionsArray.shift();
+                // log.log(data);
+                // this.actionsArray.shift();
                 this.ready = false;
+                callback(data);
             })
         }
     }
