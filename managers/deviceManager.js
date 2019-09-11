@@ -363,7 +363,6 @@ class NodeDevice {
         switch (this.nodeType) {
             case NodeType.MQTT:
                 this.mqtt_playAction((cb) => {
-                    this.actionsArray.shift();
                     log.log(cb)
                 });
                 break;
@@ -559,10 +558,7 @@ class NodeDevice {
             var action = this.actionsArray[0];
             this.mqtt_write(action, (data) => {
                 console.log("===== SENDING MQTT ========", action);
-                console.log("===== Actions array ========", this.actionsArray);
-
-                // log.log(data);
-                // this.actionsArray.shift();
+                this.actionsArray.shift();
                 this.ready = false;
                 callback(data);
             })
