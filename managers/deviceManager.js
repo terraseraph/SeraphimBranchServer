@@ -19,7 +19,7 @@ createDefaultDevice();
 
 function createDefaultDevice() {
     setTimeout(() => {
-        var type = "default"
+        var type = NodeType.MQTT
         var details = {
             id: "default",
             name: "default",
@@ -27,7 +27,7 @@ function createDefaultDevice() {
             type: "default",
             HardwareId: "default"
         }
-        addNewDevice(details, NodeType.MQTT);
+        addNewDevice(details, type);
     }, 1000);
 }
 
