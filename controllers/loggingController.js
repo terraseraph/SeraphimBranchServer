@@ -6,7 +6,7 @@ function log(...args) {
     try {
 
         args.unshift(log.caller.name.toString())
-    } catch (e) {}
+    } catch (e) { }
     console.log(args)
     var msg = {
         text: JSON.stringify(args),
