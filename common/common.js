@@ -71,19 +71,35 @@ exports.mqtt = _mqtt;
 exports.mosca = _mosca;
 exports.path = _path;
 
+/* Route Exports */
+exports.indexRouter = _indexRouter;
 
 
 /* Controller Exports */
+exports.eventActionController = _eventActionController;
+exports.logController = _logController;
+exports.mqttController = _mqttController;
+exports.serialController = _serialController;
+exports.shellCommands = _shellCommands;
+exports.systemInformation = _systemInformation;
 
 
 
 
 
 /* Manager Exports */
+exports.configManager = _configManager;
+exports.deviceManager = _deviceManager;
+exports.httpManager = _httpManager;
+exports.mediaManager = _mediaManager;
+exports.memoryManager = _memoryManager;
+exports.scriptManager = _scriptManager;
 
 
 
 
 /* Object Exports */
-
+exports.EventModel = _EventModel;
+exports.ActionModel = _ActionModel;
+exports.EventActionScriptModel = _EventActionScriptModel;
 
