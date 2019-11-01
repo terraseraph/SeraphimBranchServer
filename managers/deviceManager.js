@@ -1,8 +1,8 @@
 //@ts-check
-const SerialPort = require('serialport');
+// const SerialPort = require('serialport');
 const EventEmitter = require('events').EventEmitter;
 const async = require("async");
-var Readline = SerialPort.parsers.Readline;
+// var Readline = SerialPort.parsers.Readline;
 const log = require('../controllers/loggingController');
 const SerialController = require('../controllers/serialController');
 const MqttController = require('../controllers/mqttController');
@@ -418,32 +418,32 @@ class NodeDevice {
     // =======================================================
 
     serial_initialise() {
-        log.log("==================== Creating Node ====================", this.details)
-        var masterDeviceName = this.details.comName;
-        this.id = this.details.id;
-        this.name = masterDeviceName;
-        this.timer = Date.now()
-        this.port = new SerialPort(this.details.comName, {
-            baudRate: this.baudRate,
-            lock: true,
-        });
-        this.port.on('error', function (err) {
-            log.log('Error: ', err.message);
-        })
-        this.parser = this.port.pipe(new Readline({
-            delimiter: '\n'
-        }))
-        this.parser.on('data', function (data) {
-            var str = data;
-            str = str.toString(); //Convert to string
-            str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-            log.log(`msg_${masterDeviceName}`, str)
-            try {
-                SerialController.parseMessage(str, this.name)
-            } catch (err) {
-                log.log(err)
-            }
-        })
+        // log.log("==================== Creating Node ====================", this.details)
+        // var masterDeviceName = this.details.comName;
+        // this.id = this.details.id;
+        // this.name = masterDeviceName;
+        // this.timer = Date.now()
+        // this.port = new SerialPort(this.details.comName, {
+        //     baudRate: this.baudRate,
+        //     lock: true,
+        // });
+        // this.port.on('error', function (err) {
+        //     log.log('Error: ', err.message);
+        // })
+        // this.parser = this.port.pipe(new Readline({
+        //     delimiter: '\n'
+        // }))
+        // this.parser.on('data', function (data) {
+        //     var str = data;
+        //     str = str.toString(); //Convert to string
+        //     str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
+        //     log.log(`msg_${masterDeviceName}`, str)
+        //     try {
+        //         SerialController.parseMessage(str, this.name)
+        //     } catch (err) {
+        //         log.log(err)
+        //     }
+        // })
     }
 
     serial_write(data, callback) {

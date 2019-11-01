@@ -1,7 +1,7 @@
 //@ts-check
-const SerialPort = require('serialport');
+// const SerialPort = require('serialport');
 // const Readline = require('parser-readline')
-var Readline = SerialPort.parsers.Readline;
+// var Readline = SerialPort.parsers.Readline;
 const log = require('./loggingController');
 const eventActionController = require('./eventActionController')
 const DeviceManager = require('../managers/deviceManager');
@@ -97,17 +97,17 @@ function playAction(masterName) {
  * Generates a list of all serial devices
  */
 function generateSerialDevices() {
-    SerialPort.list(function (err, result) {
-        log.log(result)
-        result.forEach(device => {
-            log.log(device)
-            // var dev = new SerialMasterNode(device)
-            // nodeDeviceList.push(dev)
-            device.id = device.comName;
+    // SerialPort.list(function (err, result) {
+    //     log.log(result)
+    //     result.forEach(device => {
+    //         log.log(device)
+    //         // var dev = new SerialMasterNode(device)
+    //         // nodeDeviceList.push(dev)
+    //         device.id = device.comName;
 
-            DeviceManager.addNewDevice(device, DeviceManager.NodeType.SERIAL, true); //add new serial devices and overwrite
-        });
-    })
+    //         DeviceManager.addNewDevice(device, DeviceManager.NodeType.SERIAL, true); //add new serial devices and overwrite
+    //     });
+    // })
 }
 exports.generateSerialDevices = generateSerialDevices;
 

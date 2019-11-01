@@ -43,8 +43,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use("/packages", express.static(path.join(__dirname, 'node_modules'))) //TODO: make individ paths for each (jquery..etc)
 
 
-
-
 /** Server Settings */
 config.configInit;
 config.getConfig().then(c => {
@@ -74,4 +72,6 @@ function onError(err) {
         throw err;
     }
 }
-module.exports = app;
+exports.server = server;
+exports.app = app;
+// module.exports = app, server;

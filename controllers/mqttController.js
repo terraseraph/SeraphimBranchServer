@@ -5,11 +5,26 @@ const DeviceManager = require('../managers/deviceManager');
 const EventActionController = require('./eventActionController')
 var mqtt = require('mqtt')
 var mosca = require('mosca');
+var expressServer = require("../app.js").server;
 
 var nodeDeviceList = new Array();
 var tempNodeId;
 exports.nodeDeviceList = nodeDeviceList;
 
+//** Process kill handlers */
+// process.on('exit', exitHandler.bind(null, { cleanup: true }));
+// function exitHandler(options, exitCode) {
+//   if (server != null || server != undefined) {
+//     server.close(() => {
+//       expressServer.close();
+//       process.exit();
+//     });
+//   }
+//   else {
+//     expressServer.close();
+//     process.exit();
+//   }
+// }
 
 var settings = {
   port: 1883
