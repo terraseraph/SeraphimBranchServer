@@ -1,0 +1,888 @@
+{
+  "time": {
+    "hours": "0",
+    "minutes": "60",
+    "seconds": "0"
+  },
+  "name": "Atonement",
+  "states": [
+    {
+      "name": "start_instance",
+      "active": false
+    },
+    {
+      "name": "end_instance",
+      "active": true
+    },
+    {
+      "name": "timer_complete",
+      "active": false
+    },
+    {
+      "name": "sidequest",
+      "active": true
+    },
+    {
+      "name": "phone_dialed",
+      "active": true
+    },
+    {
+      "name": "HELP",
+      "active": false
+    },
+    {
+      "name": "Puzzle Boom",
+      "active": true
+    },
+    {
+      "name": "Phone continue selected",
+      "active": true
+    },
+    {
+      "name": "Chest Opened",
+      "active": true
+    }
+  ],
+  "events": [
+    {
+      "states": [
+        {
+          "name": "start_instance",
+          "active": true
+        },
+        {
+          "name": "sidequest",
+          "active": false
+        },
+        {
+          "name": "HELP",
+          "active": false
+        },
+        {
+          "name": "phone_dialed",
+          "active": false
+        },
+        {
+          "name": "Chest Opened",
+          "active": false
+        }
+      ],
+      "id": "",
+      "name": "start_instance",
+      "device_id": "50",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[1,1,0,0,0,0,0,0,0,0]",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Close Vent",
+        "Close Chest",
+        "Close Closet exit",
+        "Close Top Drawer",
+        "Close Second Drawer",
+        "Close main door",
+        "Help LED off"
+      ],
+      "message": ""
+    },
+    {
+      "states": [
+        {
+          "name": "end_instance",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "end_instance",
+      "device_id": "24",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[1,1,0,0,0,0,0,0,0,0]",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Open Closet Exit"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 8,
+        "seconds": 4
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Scan rfid",
+      "device_id": "16",
+      "event": "code",
+      "eventType": "rfid",
+      "data": "be 25 45 79",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Open Vent"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 32,
+        "seconds": 8
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Jack in the box",
+      "device_id": "17",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[0,1,0,0,0,0,0,0,0,0]",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Open Second Drawer"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 45,
+        "seconds": 24
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "phone_dialed",
+          "active": true
+        },
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Phone call",
+      "device_id": "20",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "0437897284",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Play phone track"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 27,
+        "seconds": 35
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "Chest Opened",
+          "active": true
+        },
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Phone open chest",
+      "device_id": "20",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "666#",
+      "description": "",
+      "dependencies": [
+        "phone_dialed",
+        "Phone continue selected"
+      ],
+      "actions": [
+        "Open chest"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 27,
+        "seconds": 32
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "phone open all",
+      "device_id": "20",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "411696#",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Open Vent",
+        "Open chest",
+        "Open Closet Exit",
+        "Open Top Drawer",
+        "Open Second Drawer",
+        "Open main door"
+      ],
+      "message": ""
+    },
+    {
+      "states": [
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Tetris puzzle",
+      "device_id": "15",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[1,1,1,1,1,1,1,1,1,1]",
+      "description": "",
+      "dependencies": [],
+      "actions": [
+        "Open Top Drawer"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 38,
+        "seconds": 54
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "HELP",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "HelpButton",
+      "device_id": "50",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[0,1,0,1,0,0,0,0,0,0]",
+      "description": "Help buton pressed",
+      "dependencies": [],
+      "actions": [
+        "Help LED on"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 6,
+        "seconds": 52
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "HELP",
+          "active": false
+        }
+      ],
+      "id": "",
+      "name": "dismissHelp",
+      "device_id": "",
+      "event": "toggle",
+      "eventType": "button",
+      "data": "",
+      "description": "turn off an led or something....",
+      "dependencies": [],
+      "actions": [
+        "Help LED off"
+      ],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 6,
+        "seconds": 49
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "phone lock all",
+      "device_id": "20",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "4132#",
+      "description": "lock all locks",
+      "dependencies": [],
+      "actions": [
+        "Close Vent",
+        "Close Chest",
+        "Close Closet exit",
+        "Close Second Drawer",
+        "Close main door",
+        "Close Top Drawer"
+      ],
+      "message": ""
+    },
+    {
+      "states": [
+        {
+          "name": "Phone continue selected",
+          "active": true
+        },
+        {
+          "name": "sidequest",
+          "active": true
+        },
+        {
+          "name": "Puzzle Boom",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "Phone Continue",
+      "device_id": "20",
+      "event": "code",
+      "eventType": "keypad",
+      "data": "1#",
+      "description": "",
+      "dependencies": [
+        "phone_dialed"
+      ],
+      "actions": [],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 27,
+        "seconds": 34
+      }
+    },
+    {
+      "states": [
+        {
+          "name": "end_instance",
+          "active": true
+        }
+      ],
+      "id": "",
+      "name": "end normal",
+      "device_id": "19",
+      "event": "toggle",
+      "eventType": "magnetSwitch",
+      "data": "[0,1,0,0,0,0,0,0,0,0]",
+      "description": "",
+      "dependencies": [
+        "phone_dialed"
+      ],
+      "actions": [],
+      "message": "",
+      "status": "complete",
+      "completed_time": {
+        "hours": 0,
+        "minutes": 8,
+        "seconds": 4
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "",
+      "name": "Close Vent",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "5",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open Vent",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "5",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Close Chest",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "4",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open chest",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "4",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Close Closet exit",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "13",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open Closet Exit",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "13",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Close Top Drawer",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "15",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open Top Drawer",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "15",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Close Second Drawer",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "2",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open Second Drawer",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "2",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Play phone track",
+      "device_id": "20",
+      "action": "play",
+      "actionType": "mp3",
+      "data": "[001,091]",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Close main door",
+      "device_id": "12",
+      "action": "start",
+      "actionType": "relay",
+      "data": "12",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Open main door",
+      "device_id": "12",
+      "action": "stop",
+      "actionType": "relay",
+      "data": "12",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Help LED on",
+      "device_id": "50",
+      "action": "start",
+      "actionType": "customPin",
+      "data": "27",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    },
+    {
+      "id": "",
+      "name": "Help LED off",
+      "device_id": "50",
+      "action": "stop",
+      "actionType": "customPin",
+      "data": "27",
+      "description": "",
+      "dependencies": [],
+      "actions": [],
+      "message": "",
+      "states": [],
+      "wait": 0,
+      "repeatable": true
+    }
+  ],
+  "hints": [
+    {
+      "name": "best hint",
+      "hint": "u r bung hole"
+    },
+    {
+      "name": "u r gaye",
+      "hint": "poop"
+    }
+  ],
+  "triggers": [
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "intro video",
+      "trigger": "start_instance",
+      "audio": "http://192.168.0.174:4400/audio/atonement_background.mp3",
+      "loop_audio": true,
+      "video": "http://192.168.0.174:4400/video/intro_small.mp4",
+      "loop_video": false,
+      "pause_timer": true,
+      "hint": "",
+      "can_toggle": true,
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "video_type": "custom",
+      "audio_type": "background"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "sidequest_trigger",
+      "trigger": "sidequest",
+      "audio": "",
+      "loop_audio": false,
+      "video": "http://192.168.0.174:4400/video/continue.mp4",
+      "loop_video": false,
+      "pause_timer": true,
+      "hint": "",
+      "can_toggle": true,
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "video_type": "custom",
+      "audio_type": "background"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "win_game",
+      "trigger": "end_instance",
+      "audio": "http://192.168.0.174:4400/audio/win_audio.mp3",
+      "loop_audio": false,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "You are free",
+      "can_toggle": "",
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "audio_type": "end",
+      "video_type": "background"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "lose game",
+      "trigger": "timer_complete",
+      "audio": "",
+      "loop_audio": false,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "You ran out of time.....",
+      "can_toggle": "",
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "audio_type": "background"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "Help button pressed",
+      "trigger": "HELP",
+      "audio": "",
+      "loop_audio": false,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "",
+      "can_toggle": "",
+      "screenName": "other",
+      "httpRequestType": "POST",
+      "httpRequestUrl": "http://192.168.0.180:4300/socket/message",
+      "httpRequestBody": "{ \"scriptName\": \"Atonement\",  \"message\":\"some hint plz\", \"toaster\":\"true\", \"eventName\" :\"dismissHelp\", \"type\": \"danger\"}"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "Boom Sound",
+      "trigger": "Puzzle Boom",
+      "audio": "http://192.168.0.174:4400/audio/congrats.mp3",
+      "loop_audio": false,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "",
+      "can_toggle": true,
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "audio_type": "custom"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "Game over",
+      "trigger": "timer_complete",
+      "audio": "http://192.168.0.174:4400/audio/fail.mp3",
+      "loop_audio": false,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "Time is up....",
+      "can_toggle": true,
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "audio_type": "custom"
+    },
+    {
+      "AudioTypes": {
+        "BACKGROUND": "background",
+        "START": "start",
+        "END": "end",
+        "HINT": "hint",
+        "CUSTOM": "custom"
+      },
+      "name": "Sidequest Audio",
+      "trigger": "Chest Opened",
+      "audio": "http://192.168.0.174:4400/audio/room_3_sterio.mp3",
+      "loop_audio": true,
+      "video": "",
+      "loop_video": false,
+      "pause_timer": false,
+      "hint": "",
+      "can_toggle": "",
+      "screenName": "main",
+      "httpRequestType": "NONE",
+      "httpRequestUrl": "",
+      "httpRequestBody": "",
+      "audio_type": "background"
+    }
+  ],
+  "screenConfigs": [
+    {
+      "name": "main",
+      "backgroundType": "Video",
+      "backgroundPath": "http://192.168.0.174:4400/video/static_small.mp4",
+      "audio": "",
+      "font": "'YouMurderer BB'",
+      "font_colour": "Maroon",
+      "showTimer": true,
+      "showHints": true,
+      "defaultHintAudioPath": "http://192.168.0.174:4400/audio/HINT SOUND.mp3"
+    },
+    {
+      "name": "other",
+      "backgroundType": "",
+      "backgroundPath": "",
+      "audio": "",
+      "font": "Tahoma, Geneva, sans-serif",
+      "font_colour": "Red",
+      "showTimer": true,
+      "showHints": true,
+      "defaultHintAudioPath": ""
+    },
+    {
+      "name": "somescreen",
+      "backgroundType": "",
+      "backgroundPath": "",
+      "audio": "",
+      "font": "Tahoma, Geneva, sans-serif",
+      "font_colour": "Indego",
+      "showTimer": false,
+      "showHints": true,
+      "defaultHintAudioPath": ""
+    }
+  ],
+  "branch_address": "http://192.168.0.174:4400",
+  "masterId": "10",
+  "timeUpdate": {
+    "hours": 0,
+    "minutes": 8,
+    "seconds": 4
+  },
+  "displayedHint": "You are free",
+  "ended": true
+}
