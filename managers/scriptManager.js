@@ -18,19 +18,52 @@ exports.scriptsInit = scriptsInit;
 
 // Init the scripts in the config file
 function scriptsInit() {
-    readDirFiles().then(
-        (dirScripts) => {
-            updateConfigScripts(dirScripts).then(
-                (scripts) => {
-                    updateScriptsFromRootServer(() => {
-                        populateEventActionScripts(scripts).then((eaScripts) => {
-                            // scripts are now updated from server and added
-                        });
-                    })
-                })
-        })
+    // readDirFiles().then(
+    //     (dirScripts) => {
+    //         updateConfigScripts(dirScripts).then(
+    //             (scripts) => {
+    //                 updateScriptsFromRootServer(() => {
+    //                     populateEventActionScripts(scripts).then((eaScripts) => {
+    //                         // scripts are now updated from server and added
+    //                     });
+    //                 })
+    //             })
+    //     })
+    oldReadScripts();
+    oldUpdateScripts();
 
 }
+
+
+function oldReadScripts() {
+    fs.readdir(directoryPath, function (err, files) {
+        if (err) {
+            return log.logError('Unable to scan directory: ' + err);
+        }
+        configManager.configJson.branch_scripts = [];
+        files.forEach(function (file) {
+            var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
+            var pScript = JSON.parse(script);
+            eventActionScriptList.push(pScript);
+            configManager.configJson.branch_scripts.push(file);
+        });
+    });
+}
+
+function oldUpdateScripts() {
+    eventActionScriptList = [];
+    configManager.getConfig().then(config => {
+        for (var scriptName of config.branch_scripts) {
+            HttpManager.getRootServerScript(scriptName).then(script => {
+                if (script == undefined) return;
+                createLocalScript(script);
+                eventActionScriptList.push(JSON.parse(script));
+                console.log(script);
+            })
+        }
+    })
+}
+
 
 
 
@@ -72,6 +105,7 @@ function readScriptsInDirectory(callback) {
     callback()
 }
 exports.readScriptsInDirectory = readScriptsInDirectory;
+
 
 
 

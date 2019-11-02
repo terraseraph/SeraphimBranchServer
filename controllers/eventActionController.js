@@ -366,16 +366,16 @@ function findEvent(packet, script, findByName = false) {
  */
 function findAction(actionName, masterId = false) {
     return new Promise((resolve, reject) => {
-        g.scriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
+        // g.scriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
 
-            // var selectedScript = g.memoryManager.getSelectedScript();
-            selectedScript.actions.forEach(act => {
-                if (act.name == actionName) {
-                    console.log("=====FIND ACTION===", act)
-                    resolve(act)
-                    return;
-                }
-            });
+        var selectedScript = g.memoryManager.getSelectedScript();
+        selectedScript.actions.forEach(act => {
+            if (act.name == actionName) {
+                console.log("=====FIND ACTION===", act)
+                resolve(act)
+                return;
+            }
+            // });
         })
     })
 }
