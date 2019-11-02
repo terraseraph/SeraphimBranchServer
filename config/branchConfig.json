@@ -8,7 +8,6 @@
   "start_script_command": "placeholder",
   "end_script_command": "",
   "branch_scripts[]": [
-    "EXAMPLE.json",
     "Atonement.json"
   ],
   "systemInformation[os][platform][]": [
@@ -308,5 +307,9 @@
   "systemInformation[networkInterfaces][3][ip4]": "172.17.62.65",
   "systemInformation[networkInterfaces][3][ip6]": "fe80::99c0:86da:7624:1a7c",
   "systemInformation[networkInterfaces][3][mac]": "7a:15:46:cb:54:4f",
-  "systemInformation[networkInterfaces][3][internal]": "false"
+  "systemInformation[networkInterfaces][3][internal]": "false",
+  "branch_scripts": [
+    "Atonement.json",
+    "EXAMPLE.json"
+  ]
 }

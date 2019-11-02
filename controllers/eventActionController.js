@@ -1,10 +1,16 @@
 //@ts-check
 // const $ = require('jquery');
-var memoryManager = require('../managers/memoryManager');
-var ScriptManager = require('../managers/scriptManager');
-var httpManager = require('../managers/httpManager')
-var log = require('./loggingController');
-var DeviceManager = require('../managers/deviceManager');
+const g = require("../common/common.js");
+// var memoryManager = g.memoryManager;
+// const ScriptManager = g.scriptManager;
+// const httpManager = g.httpManager;
+// const log = g.logController;
+// const DeviceManager = g.deviceManager;
+// var g.memoryManager = require('../managers/g.memoryManager');
+// var ScriptManager = require('../managers/scriptManager');
+// var httpManager = require('../managers/httpManager')
+// var log = require('./loggingController');
+// var DeviceManager = require('../managers/deviceManager');
 var script;
 
 var actions_array = new Array()
@@ -17,7 +23,6 @@ var script_state = new Array(); //for dependencey updating
 var completed_actions = new Array();
 var non_repeatable_actions = new Array();
 var fromServer = false; // if the request was from the server //TODO: rename to skip dependencies
-getSelectedScript();
 
 /** Skip dependencey check */
 exports.setEventFromServer = function () {
@@ -26,34 +31,34 @@ exports.setEventFromServer = function () {
 
 /** Find the event */
 exports.parseEvent = function (packet, deviceId, callback) {
-    ScriptManager.getScriptBymasterId(deviceId).then((selectedScript) => {
+    var selectedScript = g.memoryManager.getSelectedScript();
+    var actionsArr = new Array()
+    findEvent(packet, selectedScript, false).then((evt) => {
+        console.log("script_state: ", script_state)
+        console.log("non_repeatable_actions: ", non_repeatable_actions)
 
-        // TODO: get bridge id and compare it to the script it is supposed to read
-        // var selectedScript = memoryManager.getSelectedScript();
-        var actionsArr = new Array()
-        findEvent(packet, selectedScript, false)
-            .then((evt) => {
-                console.log("script_state: ", script_state)
-                console.log("non_repeatable_actions: ", non_repeatable_actions)
-                /*dependencies are met or skipped if fromServer (http request)*/
-                checkStateDependencies(evt).then(depMet => {
-                    if (!depMet) {
-                        callback(actionsArr)
-                        return;
-                    }
-                    /*Dependencies are met, check if the event is in the script_state*/
-                    setScriptStates(evt).then(() => {
-                        evt.branch_name = selectedScript.name; //Attach the branch name
-                        sendToServer(evt, selectedScript.states).then(result => {
-                            // log(result);
-                        });
-                        processActionsArray(evt.actions, deviceId).then(arr => {
-                            addActionsToMasterQueue(arr, deviceId);
-                            callback(arr);
-                        })
-                    })
+        /*dependencies are met or skipped if fromServer (http request)*/
+        checkStateDependencies(evt).then(depMet => {
+            if (!depMet) {
+                callback(actionsArr)
+                return;
+            }
+
+            /*Dependencies are met, check if the event is in the script_state*/
+            setScriptStates(evt).then(() => {
+                evt.branch_name = selectedScript.name; //Attach the branch name
+                sendToServer(evt, selectedScript.states).then(result => {
+                });
+
+                /* process actions */
+                processActionsArray(evt.actions, deviceId).then(arr => {
+                    addActionsToMasterQueue(arr, deviceId);
+                    callback(arr);
                 })
+
+
             })
+        })
     })
 }
 
@@ -65,7 +70,6 @@ exports.forceEventFromServer = function (eventPacket, callback) {
     let evtName = eventPacket.name;
     let ScriptName = eventPacket.scriptName;
     this.forceEvent(evtName, bridgeId, (actions) => {
-        // addActionsToMasterQueue(actions, bridgeId);
         callback({
             actions: actions
         })
@@ -75,21 +79,16 @@ exports.forceEventFromServer = function (eventPacket, callback) {
 
 /** Force event by name */
 exports.forceEvent = function (eventName, bridgeId, callback) {
-    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
-
-        // var selectedScript = memoryManager.getSelectedScript();
-        var actionsArr = new Array()
-        findEvent(eventName, selectedScript, true).then(evt => {
-            setScriptStates(evt).then(() => {
-                evt.branch_name = selectedScript.name; //Attach the branch name
-                sendToServer(evt, selectedScript.states).then(result => { });
-                processActionsArray(evt.actions, bridgeId).then(arr => {
-                    addActionsToMasterQueue(arr, bridgeId);
-                    callback(arr);
-                })
+    var selectedScript = g.memoryManager.getSelectedScript();
+    var actionsArr = new Array()
+    findEvent(eventName, selectedScript, true).then(evt => {
+        setScriptStates(evt).then(() => {
+            evt.branch_name = selectedScript.name; //Attach the branch name
+            sendToServer(evt, selectedScript.states).then(result => { });
+            processActionsArray(evt.actions, bridgeId).then(arr => {
+                addActionsToMasterQueue(arr, bridgeId);
+                callback(arr);
             })
-
-
         })
     })
 }
@@ -174,7 +173,7 @@ function forceAction(obj, bridgeId, callback) {
 }
 
 function forceActionFromServer(actionName, bridgeId = false) {
-    ScriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
+    g.scriptManager.getScriptBymasterId(bridgeId).then((selectedScript) => {
         var actArr = new Array();
         findAction(actionName, bridgeId).then((act) => {
             playAction(act, function (result) {
@@ -252,7 +251,7 @@ function sendToServer(event, states) {
             states: states
         }
         console.log("===Sending packet to server ===", packet);
-        httpManager.sendEventsToServer(packet)
+        g.httpManager.sendEventsToServer(packet)
             .then((data) => {
                 resolve(data)
             })
@@ -290,7 +289,7 @@ function scriptStateValidation(evt, cb) {
 function eventStateSpecialActions(evt) { //TODO:make it check config
     if (evt.state == "end_script") {
         script_state = new Array();
-        log.logInfo("ENDING Script script_state:", script_state)
+        g.logController.logInfo("ENDING Script script_state:", script_state)
     }
 }
 
@@ -367,9 +366,9 @@ function findEvent(packet, script, findByName = false) {
  */
 function findAction(actionName, masterId = false) {
     return new Promise((resolve, reject) => {
-        ScriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
+        g.scriptManager.getScriptBymasterId(masterId).then((selectedScript) => {
 
-            // var selectedScript = memoryManager.getSelectedScript();
+            // var selectedScript = g.memoryManager.getSelectedScript();
             selectedScript.actions.forEach(act => {
                 if (act.name == actionName) {
                     console.log("=====FIND ACTION===", act)
@@ -393,8 +392,14 @@ function arraysEqual(a, b) {
 }
 
 function getSelectedScript() {
+    console.log("Attempting script get....")
     return new Promise((res, rej) => {
-        script = memoryManager.getSelectedScript();
+        if (g.memoryManager.getSelectedScript != undefined || g.memoryManager != undefined) {
+            script = g.memoryManager.getSelectedScript();
+        }
+        else {
+            rej(script)
+        }
         res(script);
         return;
     })
@@ -423,8 +428,8 @@ function getState(stateName) {
 }
 
 function resetStates(scriptName) {
-    // script = memoryManager.getSelectedScript();
-    ScriptManager.getScriptByName(scriptName).then(script => {
+    // script = g.memoryManager.getSelectedScript();
+    g.scriptManager.getScriptByName(scriptName).then(script => {
         if (script.states != undefined) {
             script.states.forEach(state => {
                 state.active = false;
@@ -442,7 +447,7 @@ function toggleState(stateName) {
 
 function findState(stateName) {
     return new Promise((resolve, reject) => {
-        script = memoryManager.getSelectedScript();
+        script = g.memoryManager.getSelectedScript();
         script.states.forEach(state => {
             if (state.name == stateName) {
                 resolve(state);
@@ -466,7 +471,7 @@ function setScriptStates(evt) {
                 } else if (state.active == evtState.active && evt.can_toggle == "true") {
                     toggleState(state);
                 }
-                console.log(memoryManager.getSelectedScript().states);
+                console.log(g.memoryManager.getSelectedScript().states);
             })
         });
         resolve()
@@ -501,8 +506,8 @@ function checkStateDependencies(event_action) {
 
 
 
-function addActionsToMasterQueue(actionsArray, bridgeId) {
-    log.logStatus("====SENDING ACTION TO MASTER====", actionsArray, bridgeId)
-    DeviceManager.addActionsToDeviceQueue(bridgeId, actionsArray);
+function addActionsToMasterQueue(actionsArray, deviceId) {
+    g.logController.logStatus("====SENDING ACTION TO DEVICE ====", actionsArray, deviceId)
+    g.deviceManager.addActionsToDeviceQueue(deviceId, actionsArray);
 }
 exports.addActionsToMasterQueue = addActionsToMasterQueue;

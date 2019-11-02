@@ -53,11 +53,14 @@ exports.updateConfig = function (configUpdate) {
 }
 
 // Update the running configuration
-exports.updateRunningConfig = function () {
+function updateRunningConfig(cb) {
+    console.log("updating config")
     jsonfile.writeFileSync(configPath, configJson, {
         spaces: 2
     })
+    cb()
 }
+exports.updateRunningConfig = updateRunningConfig;
 
 var defaultConfig = {
     "server_url": "http://192.168.0.180:4300",

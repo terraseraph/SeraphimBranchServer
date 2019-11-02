@@ -14,8 +14,6 @@ exports.nodeDeviceList = nodeDeviceList;
 exports.addNewDevice = addNewDevice;
 exports.setDeviceReady = setDeviceReady;
 
-// Create a default device for debugging
-createDefaultDevice();
 
 function createDefaultDevice() {
     setTimeout(() => {
@@ -30,6 +28,7 @@ function createDefaultDevice() {
         addNewDevice(details, type);
     }, 1000);
 }
+exports.createDefaultDevice = createDefaultDevice
 
 
 /**
@@ -125,7 +124,7 @@ function sendAction(deviceName) {
 exports.sendAction = sendAction;
 
 
-function addActionsToDeviceQueue(bridgeId, actionsArray) {
+function addActionsToDeviceQueue(deviceIdFromSentEvent, actionsArray) {
 
     async.eachSeries(nodeDeviceList, (device, dCallback) => {
         buildActionArrayForOneDevice(device.id, actionsArray, (deviceActions) => {
@@ -141,14 +140,14 @@ function addActionsToDeviceQueue(bridgeId, actionsArray) {
     })
 
     // Send all actions to the mesh network attached
-    nodeDeviceList.forEach(device => {
-        if (device.name == bridgeId) {
-            device.pushNewActions(actionsArray).then(actions => {
-                setDeviceReady(bridgeId); //legacy
-                setDeviceReady("default");
-            });
-        }
-    });
+    // nodeDeviceList.forEach(device => {
+    //     if (device.name == deviceIdFromSentEvent) {
+    //         device.pushNewActions(actionsArray).then(actions => {
+    //             setDeviceReady(deviceIdFromSentEvent); //legacy
+    //             setDeviceReady("default");
+    //         });
+    //     }
+    // });
 }
 exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
 

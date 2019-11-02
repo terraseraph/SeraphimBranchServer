@@ -1,6 +1,5 @@
 //@ts-check
 /**Packages */
-var config = require('./managers/configManager');
 var express = require('express');
 var exphbs = require('express-handlebars');
 const fileUpload = require('express-fileupload');
@@ -10,14 +9,15 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser')
 var logger = require('morgan');
 var http = require('http');
-
 var server, port, ipAddress;
 
 
 /**Local requires */
-var serialPort = require('./controllers/serialController')
-var scriptReader = require('./managers/scriptManager')
-var log = require('./controllers/loggingController');
+const g = require("./common/common");
+const config = g.configManager;
+const log = g.logController;
+// var config = require('./managers/configManager');
+// var log = require('./controllers/loggingController');
 var indexRouter = require('./routes/index');
 
 /** Express settings */

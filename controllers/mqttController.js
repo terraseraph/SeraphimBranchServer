@@ -11,76 +11,67 @@ var nodeDeviceList = new Array();
 var tempNodeId;
 exports.nodeDeviceList = nodeDeviceList;
 
-//** Process kill handlers */
-// process.on('exit', exitHandler.bind(null, { cleanup: true }));
-// function exitHandler(options, exitCode) {
-//   if (server != null || server != undefined) {
-//     server.close(() => {
-//       expressServer.close();
-//       process.exit();
-//     });
-//   }
-//   else {
-//     expressServer.close();
-//     process.exit();
-//   }
-// }
 
 var settings = {
   port: 1883
 };
-
-var server = new mosca.Server(settings);
-server.on('ready', setup);
+let server = new mosca.Server(settings);
 exports.server = server;
+exports.mqttInit = mqttInit;
 
 // fired when the mqtt server is ready
 function setup() {
   log.log('Mosca server is up and running')
 }
 
-// fired whena  client is connected
-server.on('clientConnected', function (client) {
-  log.log('client connected', client.id);
-});
 
-// fired when a message is received
-server.on('published', function (packet, client) {
-  // log(packet.toString())
-  log.log('Published : ', packet.payload.toString());
-  if (client != undefined) {
-    // log("Client id:");
-    log.log("ClientId: ", client.id.normalize(), packet.topic);
-    console.log(client.id.normalize("NFC"))
-    parsePacket(packet, client.id);
-  }
-});
+function mqttInit() {
+  server.on('ready', setup);
 
-// fired when a client subscribes to a topic
-server.on('subscribed', function (topic, client) {
-  log.log('subscribed : ', topic);
-});
+  // fired whena  client is connected
+  server.on('clientConnected', function (client) {
+    log.log('client connected', client.id);
+  });
 
-// fired when a client subscribes to a topic
-server.on('unsubscribed', function (topic, client) {
-  log.log('unsubscribed : ', topic);
-});
+  // fired when a message is received
+  server.on('published', function (packet, client) {
+    // log(packet.toString())
+    log.log('Published : ', packet.payload.toString());
+    if (client != undefined) {
+      // log("Client id:");
+      log.log("ClientId: ", client.id.normalize(), packet.topic);
+      console.log(client.id.normalize("NFC"))
+      parsePacket(packet, client.id);
+    }
+  });
 
-// fired when a client is disconnecting
-server.on('clientDisconnecting', function (client) {
-  log.log('clientDisconnecting : ', client.id);
-});
+  // fired when a client subscribes to a topic
+  server.on('subscribed', function (topic, client) {
+    log.log('subscribed : ', topic);
+  });
 
-// fired when a client is disconnected
-server.on('clientDisconnected', function (client) {
-  log.log('clientDisconnected : ', client.id);
-  DeviceManager.removeDevice(client.id);
-});
+  // fired when a client subscribes to a topic
+  server.on('unsubscribed', function (topic, client) {
+    log.log('unsubscribed : ', topic);
+  });
 
+  // fired when a client is disconnecting
+  server.on('clientDisconnecting', function (client) {
+    log.log('clientDisconnecting : ', client.id);
+  });
+
+  // fired when a client is disconnected
+  server.on('clientDisconnected', function (client) {
+    log.log('clientDisconnected : ', client.id);
+    DeviceManager.removeDevice(client.id);
+  });
+
+}
 
 function parsePacket(packet, nodeId = undefined) {
   tempNodeId = nodeId
   let msg = packet.payload.toString();
+  msg.topic = packet.topic;
   if (isJSON(msg)) {
     msg = JSON.parse(msg);
     if (msg.hasOwnProperty("JOAT_CONNECT")) {

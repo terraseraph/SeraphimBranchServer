@@ -15,11 +15,11 @@ const _fs = require('fs');
 const _async = require("async");
 const _jsonfile = require("jsonfile");
 const _request = require('request');
-const _SerialPort = require('serialport');
 const _EventEmitter = require('events').EventEmitter;
-const _Readline = _SerialPort.parsers.Readline;
 const _mqtt = require('mqtt')
 const _mosca = require('mosca');
+// const _SerialPort = require('serialport');
+// const _Readline = _SerialPort.parsers.Readline;
 
 
 /* Local requires */
@@ -40,7 +40,7 @@ const _deviceManager = require('../managers/deviceManager');
 const _httpManager = require("../managers/httpManager");
 const _mediaManager = require("../managers/mediaManager");
 const _memoryManager = require("../managers/memoryManager");
-const _scriptManager = require('../managers/scriptManager')
+const _scriptManager = require('../managers/scriptManager');
 
 
 
@@ -64,12 +64,12 @@ exports.fs = _fs;
 exports.async = _async;
 exports.jsonFile = _jsonfile;
 exports.request = _request;
-exports.SerialPort = _SerialPort;
 exports.EventEmitter = _EventEmitter;
-exports.ReadLine = _Readline;
 exports.mqtt = _mqtt;
 exports.mosca = _mosca;
 exports.path = _path;
+// exports.SerialPort = _SerialPort;
+// exports.ReadLine = _Readline;
 
 /* Route Exports */
 exports.indexRouter = _indexRouter;
@@ -103,3 +103,22 @@ exports.EventModel = _EventModel;
 exports.ActionModel = _ActionModel;
 exports.EventActionScriptModel = _EventActionScriptModel;
 
+
+
+
+// Init functions
+setTimeout(loadInitOnTimeout, 500);
+
+
+
+function loadInitOnTimeout() {
+    _memoryManager.initLoadConfig();
+    _scriptManager.scriptsInit();
+    _mqttController.mqttInit();
+
+
+
+
+    // Debugging functions
+    _deviceManager.createDefaultDevice();
+}

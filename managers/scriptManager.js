@@ -16,20 +16,20 @@ var eventActionScriptList = new Array();
 
 exports.scriptsInit = scriptsInit;
 
-
-scriptsInit();
-
-//TODO: put this in an init file or something
-
 // Init the scripts in the config file
 function scriptsInit() {
-    async.series([
-        readScriptsInDirectory,
-        configManager.updateRunningConfig,
-        updateScriptsFromRootServer
-    ], (results) => {
-        console.log(results);
-    })
+    readDirFiles().then(
+        (dirScripts) => {
+            updateConfigScripts(dirScripts).then(
+                (scripts) => {
+                    updateScriptsFromRootServer(() => {
+                        populateEventActionScripts(scripts).then((eaScripts) => {
+                            // scripts are now updated from server and added
+                        });
+                    })
+                })
+        })
+
 }
 
 
@@ -50,35 +50,82 @@ exports.newScript = function (req, res) {
 
 
 /** Get all json event action scripts from directory */
+var scCnt = 0;
 function readScriptsInDirectory(callback) {
     fs.readdir(directoryPath, function (err, files) {
         if (err) {
             return log.logError('Unable to scan directory: ' + err);
         }
-        configManager.configJson.branch_scripts = [];
+        updateConfigScripts(files);
+        // configManager.configJson.branch_scripts = [];
         async.eachSeries(files, function (file, cb) {
             var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
+            console.log("found: ", file)
             var pScript = JSON.parse(script);
             eventActionScriptList.push(pScript);
-            configManager.configJson.branch_scripts.push(file);
+            // configManager.configJson.branch_scripts.push(file);
             log.logInfo(file)
-            cb();
+            cb(null);
+        }, () => {
         })
-        // files.forEach(function (file) {
-        //     var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
-        //     var pScript = JSON.parse(script);
-        //     eventActionScriptList.push(pScript);
-        //     configManager.configJson.branch_scripts.push(file);
-        // });
     });
+    callback()
 }
 exports.readScriptsInDirectory = readScriptsInDirectory;
+
+
+
+function readDirFiles() {
+    return new Promise((resolve, reject) => {
+        fs.readdir(directoryPath, function (err, scriptFileNames) {
+            if (err) {
+                reject(log.logError('Unable to scan directory: ' + err))
+            }
+            else {
+                resolve(scriptFileNames)
+            }
+        });
+    })
+}
+
+// Takes an array of script names to place in the config file
+function updateConfigScripts(scriptFileNames) {
+    return new Promise((resolve, reject) => {
+        configManager.configJson.branch_scripts = [];
+        async.eachSeries(scriptFileNames, (script, cb) => {
+            configManager.configJson.branch_scripts.push(script);
+            cb()
+        }, () => {
+            resolve(scriptFileNames)
+        })
+    })
+}
+
+// Takes an array of scripts to populate local working memory copy of scripts
+function populateEventActionScripts(scriptFileNames) {
+    return new Promise((resolve, reject) => {
+        async.eachSeries(scriptFileNames, function (file, cb) {
+            var script = fs.readFileSync(directoryPath + `/${file}`, 'utf8')
+            var pScript = JSON.parse(script);
+            if (!eventActionScriptList.includes(pScript)) {
+                eventActionScriptList.push(pScript);
+            }
+            // log.logInfo(file)
+            cb(null);
+        }, () => {
+            resolve(eventActionScriptList)
+        })
+    })
+}
+
+
 
 /**
  *Update scripts from root server.
  *Scripts are defined in config.json
  */
-function updateScriptsFromRootServer() {
+function updateScriptsFromRootServer(callback) {
+    console.log("Getting scripts from root server")
     eventActionScriptList = [];
     configManager.getConfig().then(config => {
         for (var scriptName of config.branch_scripts) {
@@ -92,9 +139,10 @@ function updateScriptsFromRootServer() {
                     createLocalScript(JSON.parse(script));
                     eventActionScriptList.push(JSON.parse(script));
                 }
-                console.log(script);
+                // console.log(script);
             })
         }
+        callback()
     })
 }
 exports.updateScriptsFromRootServer = updateScriptsFromRootServer;
@@ -114,14 +162,12 @@ exports.updateSelectedScript = updateSelectedScript;
  * @param {*} script
  */
 function createLocalScript(script) {
-    console.log(script);
-    // script = JSON.parse(script);
     var scriptName = script.name;
 
     jsonfile.writeFileSync(directoryPath + `/${scriptName}.json`, script, {
         spaces: 2
     });
-    readScriptsInDirectory();
+    // readScriptsInDirectory();
 }
 
 function getScriptBymasterId(masterId) {

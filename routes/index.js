@@ -4,6 +4,7 @@ var router = express.Router();
 var path = require("path");
 
 // const sysInfo = require("../controllers/systemInformation");
+const g = require("../common/common");
 const scriptReader = require("../managers/scriptManager");
 const memoryManager = require("../managers/memoryManager");
 const httpManager = require("../managers/httpManager");
