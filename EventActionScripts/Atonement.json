@@ -12,7 +12,7 @@
     },
     {
       "name": "end_instance",
-      "active": true
+      "active": false
     },
     {
       "name": "timer_complete",
@@ -20,11 +20,11 @@
     },
     {
       "name": "sidequest",
-      "active": true
+      "active": false
     },
     {
       "name": "phone_dialed",
-      "active": true
+      "active": false
     },
     {
       "name": "HELP",
@@ -32,15 +32,15 @@
     },
     {
       "name": "Puzzle Boom",
-      "active": true
+      "active": false
     },
     {
       "name": "Phone continue selected",
-      "active": true
+      "active": false
     },
     {
       "name": "Chest Opened",
-      "active": true
+      "active": false
     }
   ],
   "events": [
@@ -69,7 +69,7 @@
       ],
       "id": "",
       "name": "start_instance",
-      "device_id": "50",
+      "device_id": "at/start",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[1,1,0,0,0,0,0,0,0,0]",
@@ -95,7 +95,7 @@
       ],
       "id": "",
       "name": "end_instance",
-      "device_id": "24",
+      "device_id": "at/end2",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[1,1,0,0,0,0,0,0,0,0]",
@@ -104,13 +104,7 @@
       "actions": [
         "Open Closet Exit"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 8,
-        "seconds": 4
-      }
+      "message": ""
     },
     {
       "states": [
@@ -121,7 +115,7 @@
       ],
       "id": "",
       "name": "Scan rfid",
-      "device_id": "16",
+      "device_id": "at/rfid",
       "event": "code",
       "eventType": "rfid",
       "data": "be 25 45 79",
@@ -130,13 +124,7 @@
       "actions": [
         "Open Vent"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 32,
-        "seconds": 8
-      }
+      "message": ""
     },
     {
       "states": [
@@ -147,7 +135,7 @@
       ],
       "id": "",
       "name": "Jack in the box",
-      "device_id": "17",
+      "device_id": "at/jack",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[0,1,0,0,0,0,0,0,0,0]",
@@ -156,13 +144,7 @@
       "actions": [
         "Open Second Drawer"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 45,
-        "seconds": 24
-      }
+      "message": ""
     },
     {
       "states": [
@@ -173,26 +155,26 @@
         {
           "name": "Puzzle Boom",
           "active": true
+        },
+        {
+          "name": "sidequest",
+          "active": true
+        },
+        {
+          "name": "Phone continue selected",
+          "active": true
         }
       ],
       "id": "",
       "name": "Phone call",
-      "device_id": "20",
+      "device_id": "at/phone",
       "event": "code",
       "eventType": "keypad",
       "data": "0437897284",
       "description": "",
       "dependencies": [],
-      "actions": [
-        "Play phone track"
-      ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 27,
-        "seconds": 35
-      }
+      "actions": [],
+      "message": ""
     },
     {
       "states": [
@@ -207,7 +189,7 @@
       ],
       "id": "",
       "name": "Phone open chest",
-      "device_id": "20",
+      "device_id": "at/phone",
       "event": "code",
       "eventType": "keypad",
       "data": "666#",
@@ -219,13 +201,7 @@
       "actions": [
         "Open chest"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 27,
-        "seconds": 32
-      }
+      "message": ""
     },
     {
       "states": [
@@ -236,7 +212,7 @@
       ],
       "id": "",
       "name": "phone open all",
-      "device_id": "20",
+      "device_id": "at/phone",
       "event": "code",
       "eventType": "keypad",
       "data": "411696#",
@@ -261,7 +237,7 @@
       ],
       "id": "",
       "name": "Tetris puzzle",
-      "device_id": "15",
+      "device_id": "at/tetris",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[1,1,1,1,1,1,1,1,1,1]",
@@ -270,13 +246,7 @@
       "actions": [
         "Open Top Drawer"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 38,
-        "seconds": 54
-      }
+      "message": ""
     },
     {
       "states": [
@@ -287,7 +257,7 @@
       ],
       "id": "",
       "name": "HelpButton",
-      "device_id": "50",
+      "device_id": "at/start",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[0,1,0,1,0,0,0,0,0,0]",
@@ -296,13 +266,7 @@
       "actions": [
         "Help LED on"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 6,
-        "seconds": 52
-      }
+      "message": ""
     },
     {
       "states": [
@@ -322,13 +286,7 @@
       "actions": [
         "Help LED off"
       ],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 6,
-        "seconds": 49
-      }
+      "message": ""
     },
     {
       "states": [
@@ -339,7 +297,7 @@
       ],
       "id": "",
       "name": "phone lock all",
-      "device_id": "20",
+      "device_id": "at/phone",
       "event": "code",
       "eventType": "keypad",
       "data": "4132#",
@@ -372,7 +330,7 @@
       ],
       "id": "",
       "name": "Phone Continue",
-      "device_id": "20",
+      "device_id": "at/phone",
       "event": "code",
       "eventType": "keypad",
       "data": "1#",
@@ -381,13 +339,7 @@
         "phone_dialed"
       ],
       "actions": [],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 27,
-        "seconds": 34
-      }
+      "message": ""
     },
     {
       "states": [
@@ -398,7 +350,7 @@
       ],
       "id": "",
       "name": "end normal",
-      "device_id": "19",
+      "device_id": "at/end1",
       "event": "toggle",
       "eventType": "magnetSwitch",
       "data": "[0,1,0,0,0,0,0,0,0,0]",
@@ -407,20 +359,14 @@
         "phone_dialed"
       ],
       "actions": [],
-      "message": "",
-      "status": "complete",
-      "completed_time": {
-        "hours": 0,
-        "minutes": 8,
-        "seconds": 4
-      }
+      "message": ""
     }
   ],
   "actions": [
     {
       "id": "",
       "name": "Close Vent",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "5",
@@ -435,7 +381,7 @@
     {
       "id": "",
       "name": "Open Vent",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "5",
@@ -450,7 +396,7 @@
     {
       "id": "",
       "name": "Close Chest",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "4",
@@ -465,7 +411,7 @@
     {
       "id": "",
       "name": "Open chest",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "4",
@@ -480,7 +426,7 @@
     {
       "id": "",
       "name": "Close Closet exit",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "13",
@@ -495,7 +441,7 @@
     {
       "id": "",
       "name": "Open Closet Exit",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "13",
@@ -510,7 +456,7 @@
     {
       "id": "",
       "name": "Close Top Drawer",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "15",
@@ -525,7 +471,7 @@
     {
       "id": "",
       "name": "Open Top Drawer",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "15",
@@ -540,7 +486,7 @@
     {
       "id": "",
       "name": "Close Second Drawer",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "2",
@@ -555,7 +501,7 @@
     {
       "id": "",
       "name": "Open Second Drawer",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "2",
@@ -570,7 +516,7 @@
     {
       "id": "",
       "name": "Play phone track",
-      "device_id": "20",
+      "device_id": "at/phone",
       "action": "play",
       "actionType": "mp3",
       "data": "[001,091]",
@@ -585,7 +531,7 @@
     {
       "id": "",
       "name": "Close main door",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "start",
       "actionType": "relay",
       "data": "12",
@@ -600,7 +546,7 @@
     {
       "id": "",
       "name": "Open main door",
-      "device_id": "12",
+      "device_id": "at/relay",
       "action": "stop",
       "actionType": "relay",
       "data": "12",
@@ -615,7 +561,7 @@
     {
       "id": "",
       "name": "Help LED on",
-      "device_id": "50",
+      "device_id": "at/start",
       "action": "start",
       "actionType": "customPin",
       "data": "27",
@@ -630,7 +576,7 @@
     {
       "id": "",
       "name": "Help LED off",
-      "device_id": "50",
+      "device_id": "at/start",
       "action": "stop",
       "actionType": "customPin",
       "data": "27",
@@ -645,12 +591,120 @@
   ],
   "hints": [
     {
-      "name": "best hint",
-      "hint": "u r bung hole"
+      "name": "Have read the walls, can't work it out",
+      "hint": "The sin in which all sin begins will open the box up high"
     },
     {
-      "name": "u r gaye",
-      "hint": "poop"
+      "name": "Haven't read the walls yet",
+      "hint": "Read the walls to open the box up high"
+    },
+    {
+      "name": "Haven't worked out how to open briefcase",
+      "hint": "Use the dice to turn 1MONEY into a six number code to open the briefcase"
+    },
+    {
+      "name": "Absolutely can't solve briefcase - give answer",
+      "hint": "the code for the briefcase is 136 524"
+    },
+    {
+      "name": "Have jigsaw together but can't solve riddle",
+      "hint": "The main clues are SWINE and MEAT... What kind of meat is SWINE MEAT?"
+    },
+    {
+      "name": "Absolutely can't solve the jigsaw riddle - give answer",
+      "hint": "The answer to the green barrel is PORK"
+    },
+    {
+      "name": "Has completed room 1 but not room 2",
+      "hint": "You are at the end of the line... Leave the CD player for now and ALWAYS CHECK THE DRAINS..."
+    },
+    {
+      "name": "Has completed room 2 but not room 1",
+      "hint": "You are at the end of the line... Read the walls to open the box up high..."
+    },
+    {
+      "name": "Hasn't checked the drains",
+      "hint": "Always check the drains..."
+    },
+    {
+      "name": "Has the card but can't open the door",
+      "hint": "Slip the card from the wallet in the crack, next to where the door handle should be..."
+    },
+    {
+      "name": "Hasn't popped Jack in the Box",
+      "hint": "You may wish to play with the Jack in a Box"
+    },
+    {
+      "name": "Has popped Jack in a box, but hasn't noticed the drawer opened.",
+      "hint": "Check the second drawer..."
+    },
+    {
+      "name": "Doesn't have all the tetris pieces",
+      "hint": "Check the drawers for more tetris pieces..."
+    },
+    {
+      "name": "Hasn't found the bible",
+      "hint": "Check the bottom drawer..."
+    },
+    {
+      "name": "Has the bible verse but can't figure out where the tetris pieces go",
+      "hint": "Look at the back of the clue for SLOTH to find the placement of the tetris pieces"
+    },
+    {
+      "name": "Can't figure out the bible verse of placement",
+      "hint": "Spell HEDGE OF THORNS MADE PLAIN with the tetris pieces, then use the back of the clue for SLOTH to see the placement..."
+    },
+    {
+      "name": "Has solved the tetris puzzle on the floor",
+      "hint": "Put the tetris puzzle onto the wall..."
+    },
+    {
+      "name": "Solved tetris but hasn't noticed the drawer",
+      "hint": "Check the top drawer..."
+    },
+    {
+      "name": "Has the clue for ENVY but isn't looking at the dolls",
+      "hint": "Read the clue for ENVY all the way through..."
+    },
+    {
+      "name": "Has the hand but hasn't noticed the vent",
+      "hint": "Find a matching hand print..."
+    },
+    {
+      "name": "Refuses to put someone in the chest",
+      "hint": "Someone must get in the chest if you wish to play on..."
+    },
+    {
+      "name": "Working on the box inside the wardrobe",
+      "hint": "Find the pattern of the murders to find today's date..."
+    },
+    {
+      "name": "Absolutely cannot work out the date - give answer",
+      "hint": "The date is 27 July"
+    },
+    {
+      "name": "Hasn't turned on UV light",
+      "hint": "Find the small black box on the wall..."
+    },
+    {
+      "name": "Has the UV light on but can't solve JUMPY",
+      "hint": "Find the cup to solve JUMPY and open the fridge..."
+    },
+    {
+      "name": "Has ring from drain and WRATH math, but has the wrong numbers",
+      "hint": "Check the numbers on the ring again..."
+    },
+    {
+      "name": "Has ring from drain and WRATH math, but isn't doing the order of operations",
+      "hint": "It is a sin to not know the order of operations..."
+    },
+    {
+      "name": "Has the key to the top drawer but isn't using it",
+      "hint": "That key will open the top drawer..."
+    },
+    {
+      "name": "In the side quest but almost out of time",
+      "hint": "Your time is almost up... Use the key to escape "
     }
   ],
   "triggers": [
@@ -664,7 +718,7 @@
       },
       "name": "intro video",
       "trigger": "start_instance",
-      "audio": "http://192.168.0.174:4400/audio/atonement_background.mp3",
+      "audio": "http://192.168.0.174:4400/audio/background.mp3",
       "loop_audio": true,
       "video": "http://192.168.0.174:4400/video/intro_small.mp4",
       "loop_video": false,
@@ -769,7 +823,7 @@
       "screenName": "other",
       "httpRequestType": "POST",
       "httpRequestUrl": "http://192.168.0.180:4300/socket/message",
-      "httpRequestBody": "{ \"scriptName\": \"Atonement\",  \"message\":\"some hint plz\", \"toaster\":\"true\", \"eventName\" :\"dismissHelp\", \"type\": \"danger\"}"
+      "httpRequestBody": "{ \"scriptName\": \"Atonement\",  \"message\":\"some hint plz\", \"toaster\":\"true\", \"eventName\" :\"dismissHelp\", \"type\": \"danger\", \"sound\": \"http://localhost:4300/media/audio/alarm-beeps.mp3\"}"
     },
     {
       "AudioTypes": {
@@ -880,9 +934,9 @@
   "masterId": "10",
   "timeUpdate": {
     "hours": 0,
-    "minutes": 8,
-    "seconds": 4
+    "minutes": 30,
+    "seconds": 49
   },
-  "displayedHint": "You are free",
-  "ended": true
+  "displayedHint": "",
+  "ended": false
 }

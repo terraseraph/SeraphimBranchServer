@@ -5,7 +5,6 @@ const DeviceManager = require('../managers/deviceManager');
 const EventActionController = require('./eventActionController')
 var mqtt = require('mqtt')
 var mosca = require('mosca');
-var expressServer = require("../app.js").server;
 
 var nodeDeviceList = new Array();
 var tempNodeId;
@@ -15,71 +14,70 @@ exports.nodeDeviceList = nodeDeviceList;
 var settings = {
   port: 1883
 };
-let server = new mosca.Server(settings);
+
+var server = new mosca.Server(settings);
+server.on('ready', setup);
 exports.server = server;
-exports.mqttInit = mqttInit;
 
 // fired when the mqtt server is ready
 function setup() {
   log.log('Mosca server is up and running')
 }
 
+// fired whena  client is connected
+server.on('clientConnected', function (client) {
+  log.log('client connected', client.id);
+});
 
-function mqttInit() {
-  server.on('ready', setup);
+// fired when a message is received
+server.on('published', function (packet, client) {
+  // log(packet.toString())
+  log.log('Published : ', packet.payload.toString());
+  if (client != undefined) {
+    // log("Client id:");
+    log.log("ClientId: ", client.id.normalize(), packet.topic);
+    console.log(client.id.normalize("NFC"))
+    parsePacket(packet, client.id);
+  }
+});
 
-  // fired whena  client is connected
-  server.on('clientConnected', function (client) {
-    log.log('client connected', client.id);
-  });
+// fired when a client subscribes to a topic
+server.on('subscribed', function (topic, client) {
+  log.log('subscribed : ', topic);
+});
 
-  // fired when a message is received
-  server.on('published', function (packet, client) {
-    // log(packet.toString())
-    log.log('Published : ', packet.payload.toString());
-    if (client != undefined) {
-      // log("Client id:");
-      log.log("ClientId: ", client.id.normalize(), packet.topic);
-      console.log(client.id.normalize("NFC"))
-      parsePacket(packet, client.id);
-    }
-  });
+// fired when a client subscribes to a topic
+server.on('unsubscribed', function (topic, client) {
+  log.log('unsubscribed : ', topic);
+});
 
-  // fired when a client subscribes to a topic
-  server.on('subscribed', function (topic, client) {
-    log.log('subscribed : ', topic);
-  });
+// fired when a client is disconnecting
+server.on('clientDisconnecting', function (client) {
+  log.log('clientDisconnecting : ', client.id);
+});
 
-  // fired when a client subscribes to a topic
-  server.on('unsubscribed', function (topic, client) {
-    log.log('unsubscribed : ', topic);
-  });
+// fired when a client is disconnected
+server.on('clientDisconnected', function (client) {
+  log.log('clientDisconnected : ', client.id);
+  DeviceManager.removeDevice(client.id);
+});
 
-  // fired when a client is disconnecting
-  server.on('clientDisconnecting', function (client) {
-    log.log('clientDisconnecting : ', client.id);
-  });
-
-  // fired when a client is disconnected
-  server.on('clientDisconnected', function (client) {
-    log.log('clientDisconnected : ', client.id);
-    DeviceManager.removeDevice(client.id);
-  });
-
-}
 
 function parsePacket(packet, nodeId = undefined) {
   tempNodeId = nodeId
+  log.log("======================== PARSE PACKET", nodeId);
   let msg = packet.payload.toString();
-  msg.topic = packet.topic;
   if (isJSON(msg)) {
     msg = JSON.parse(msg);
     if (msg.hasOwnProperty("JOAT_CONNECT")) {
+		log.log("======================== JOAT_CONNECT", nodeId);
       // Packet is to create a new node device
       createMqttNode(msg)
     } else if (msg.hasOwnProperty("state")) {
+		log.log("======================== STATE", nodeId);
       // is an event from a node device
-      if (msg.state.type == "event") {
+      if (msg.state.type == "event") { 
+		  
         EventActionController.parseEvent(msg.state.message, nodeId, actionsAddedToNode)
       } else if (msg.state.type == "action") {
         EventActionController.parseAction(msg.state.message, nodeId, actionsAddedToNode)
@@ -138,7 +136,7 @@ exports.publishtMqtt = function (req, res) {
   var topic = req.params.topic;
   var packet = JSON.stringify(req.body);
   client.publish(topic, packet, (result) => {
-    log.log(result);
+    log.log("===================== PUBLISHED========",result);
     res.send(result);
   });
 }

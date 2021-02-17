@@ -5,23 +5,18 @@
 var eventActionScripts = new Array()
 const path = require('path');
 const fs = require('fs');
+var configManager = require("./configManager");
+var log = require('../controllers/loggingController');
 var jsonfile = require("jsonfile");
-const g = require("../common/common.js");
-// var configManager = require("./configManager");
-// var log = require('../controllers/loggingController');
 var scriptName, config, selectedScript;
 var currentScript;
 
-
-function initLoadConfig() {
-    g.configManager.getConfig().then(c => {
-        config = c;
-        scriptName = config.selected_script;
-        selectedScript = require(`../EventActionScripts/${scriptName}`);
-        currentScript = jsonfile.readFileSync(path.join(__dirname, `../EventActionScripts/${scriptName}`));
-    })
-}
-exports.initLoadConfig = initLoadConfig;
+configManager.getConfig().then(c => {
+    config = c;
+    scriptName = config.selected_script;
+    selectedScript = require(`../EventActionScripts/${scriptName}`);
+    currentScript = jsonfile.readFileSync(path.join(__dirname, `../EventActionScripts/${scriptName}`));
+})
 
 
 /** for local functions accessing the script */

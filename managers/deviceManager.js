@@ -1,9 +1,8 @@
 //@ts-check
-// const SerialPort = require('serialport');
-const EventEmitter = require('events').EventEmitter;
-const async = require("async");
-// var Readline = SerialPort.parsers.Readline;
 const log = require('../controllers/loggingController');
+const SerialPort = require('serialport');
+const EventEmitter = require('events').EventEmitter;
+var Readline = SerialPort.parsers.Readline;
 const SerialController = require('../controllers/serialController');
 const MqttController = require('../controllers/mqttController');
 const HttpManager = require('./httpManager');
@@ -14,21 +13,8 @@ exports.nodeDeviceList = nodeDeviceList;
 exports.addNewDevice = addNewDevice;
 exports.setDeviceReady = setDeviceReady;
 
+var masterNodeId = 10;
 
-function createDefaultDevice() {
-    setTimeout(() => {
-        var type = NodeType.MQTT
-        var details = {
-            id: "default",
-            name: "default",
-            ipAddress: "",
-            type: "default",
-            HardwareId: "default"
-        }
-        addNewDevice(details, type);
-    }, 1000);
-}
-exports.createDefaultDevice = createDefaultDevice
 
 
 /**
@@ -101,6 +87,7 @@ function setDeviceReady(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
             // device.ready = true
+			log.log(" ===================== SETTING DEVICE READY");
             device.setReady();
             // device.readyEvent.emit('ready');
             // device.playAction();
@@ -117,53 +104,42 @@ function setDeviceReady(deviceName) {
 function sendAction(deviceName) {
     nodeDeviceList.forEach(device => {
         if (device.name == deviceName) {
-            device.setReady();
+            device.playAction();
         }
     });
 }
 exports.sendAction = sendAction;
 
 
-function addActionsToDeviceQueue(deviceIdFromSentEvent, actionsArray) {
-
-    async.eachSeries(nodeDeviceList, (device, dCallback) => {
-        buildActionArrayForOneDevice(device.id, actionsArray, (deviceActions) => {
-            if (deviceActions.length > 0 && deviceActions != undefined) {
-                device.pushNewActions(deviceActions).then(actions => {
-                    setDeviceReady(device.id);
-                })
-            }
-        })
-        dCallback();
-    }, () => {
-        //on done
-    })
-
-    // Send all actions to the mesh network attached
-    // nodeDeviceList.forEach(device => {
-    //     if (device.name == deviceIdFromSentEvent) {
-    //         device.pushNewActions(actionsArray).then(actions => {
-    //             setDeviceReady(deviceIdFromSentEvent); //legacy
-    //             setDeviceReady("default");
-    //         });
-    //     }
+function addActionsToDeviceQueue(deviceName, actionsArray) {
+	// actionsArray.forEach(action => {
+		// nodeDeviceList.forEach(device => {
+			// log.log("========= SEARCHING...", action.toId, action.state.message.data, device.name);
+			// if(action.toId == device.name){
+				// log.log("========= device found");	
+				// device.pushNewActions([action]).then(actions => {
+					// setTimeout(()=>{setDeviceReady(device.name)},100)
+					
+				// });
+			// }
+		// });
     // });
+	
+	nodeDeviceList.forEach(device => {
+		log.log("========= SEARCHING...", actionsArray[0].toId, actionsArray[0].state.message.data, device.name);
+		if (device.name == deviceName) {
+			log.log("========= device found");
+			device.pushNewActions(actionsArray).then(actions => {
+				setDeviceReady(deviceName);
+				// setTimeout(()=>{setDeviceReady(device.name)},100)
+			});
+		}
+	});
+	
+
+
 }
 exports.addActionsToDeviceQueue = addActionsToDeviceQueue;
-
-
-// Build an array of actions for a single device, returns an array of actions
-function buildActionArrayForOneDevice(deviceId, actionsArray, callbackActions) {
-    var tempActionsArr = new Array();
-    async.eachSeries(actionsArray, (action, aCallback) => {
-        if (action.toId == deviceId) {
-            tempActionsArr.push(action);
-        }
-        aCallback();
-    }, () => {
-        callbackActions(tempActionsArr)
-    })
-}
 
 // Replacement for an enum;
 const NodeType = {
@@ -312,8 +288,6 @@ class NodeDevice {
         this.details = details;
         this.meshNodes = {};
         this.bridgeStatus = {};
-        this.sendUpdates = true;
-        this.heartbeatInterval = 10000;
 
         this.init();
     }
@@ -331,7 +305,6 @@ class NodeDevice {
                 break;
             default:
         }
-        this.sendHeartbeatOnInterval();
     }
 
 
@@ -361,9 +334,9 @@ class NodeDevice {
     playAction() {
         switch (this.nodeType) {
             case NodeType.MQTT:
-                this.mqtt_playAction((cb) => {
-                    log.log(cb)
-                });
+				this.mqtt_playAction((cb) => {
+						log.log(cb.toString())
+				});
                 break;
             case NodeType.SERIAL:
                 this.serial_playAction((cb) => {
@@ -389,23 +362,20 @@ class NodeDevice {
         var timeNow = new Date().getTime();
         heartbeatPacket.heartbeat.lastUpdated = timeNow;
         this.meshNodes[`${heartbeatPacket.heartbeat.hardwareId}`] = heartbeatPacket.heartbeat;
-    }
-
-    sendHeartbeatOnInterval() {
-        HttpManager.deviceManager_sendHeartbeats(this);
-        if (this.sendUpdates) {
-            setTimeout(this.sendHeartbeatOnInterval, this.heartbeatInterval);
-        }
+        HttpManager.deviceManager_sendHeartbeats(this)
     }
 
     updateBridgeStatus(packet) {
         this.bridgeStatus = packet;
-        // HttpManager.deviceManager_sendHeartbeats(this)
+        HttpManager.deviceManager_sendHeartbeats(this)
     }
 
     pushNewActions(newActions) {
         log.log("==================== NEW ACTIONS ====================", newActions)
         log.log("==================== ACTIONS LIST ====================", this.actionsArray)
+		this.actionsArray.forEach(act =>{
+			log.log(act.toId, act.state.message.data);
+		})
         return new Promise((resolve, reject) => {
             this.actionsArray = this.actionsArray.concat(newActions);
             resolve(this.actionsArray);
@@ -417,32 +387,32 @@ class NodeDevice {
     // =======================================================
 
     serial_initialise() {
-        // log.log("==================== Creating Node ====================", this.details)
-        // var masterDeviceName = this.details.comName;
-        // this.id = this.details.id;
-        // this.name = masterDeviceName;
-        // this.timer = Date.now()
-        // this.port = new SerialPort(this.details.comName, {
-        //     baudRate: this.baudRate,
-        //     lock: true,
-        // });
-        // this.port.on('error', function (err) {
-        //     log.log('Error: ', err.message);
-        // })
-        // this.parser = this.port.pipe(new Readline({
-        //     delimiter: '\n'
-        // }))
-        // this.parser.on('data', function (data) {
-        //     var str = data;
-        //     str = str.toString(); //Convert to string
-        //     str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-        //     log.log(`msg_${masterDeviceName}`, str)
-        //     try {
-        //         SerialController.parseMessage(str, this.name)
-        //     } catch (err) {
-        //         log.log(err)
-        //     }
-        // })
+        log.log("==================== Creating Node ====================", this.details)
+        var masterDeviceName = this.details.comName;
+        this.id = this.details.id;
+        this.name = masterDeviceName;
+        this.timer = Date.now()
+        this.port = new SerialPort(this.details.comName, {
+            baudRate: this.baudRate,
+            lock: true,
+        });
+        this.port.on('error', function (err) {
+            log.log('Error: ', err.message);
+        })
+        this.parser = this.port.pipe(new Readline({
+            delimiter: '\n'
+        }))
+        this.parser.on('data', function (data) {
+            var str = data;
+            str = str.toString(); //Convert to string
+            str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
+            log.log(`msg_${masterDeviceName}`, str)
+            try {
+                SerialController.parseMessage(str, this.name)
+            } catch (err) {
+                log.log(err)
+            }
+        })
     }
 
     serial_write(data, callback) {
@@ -520,9 +490,9 @@ class NodeDevice {
     mqtt_write(data, callback) {
         this.writeCount += 1
         log.log("Total writes to this node: ", this.writeCount)
-
+		this.actionsArray = this.actionsArray.slice(1)
         MqttController.server.publish({
-            topic: this.details.name,
+            topic: this.details.name.toString(),
             payload: Buffer.from(JSON.stringify(data)),
             qos: 1,
             retain: false
@@ -531,8 +501,22 @@ class NodeDevice {
             log.log(data)
             log.log('======= time taken to send ==========')
             log.log(Date.now() - this.timer, "ms")
-            callback(data)
+            callback("data written")
         })
+		
+		//Also send to master node
+		// MqttController.server.publish({
+            // topic: masterNodeId.toString(),
+            // payload: Buffer.from(JSON.stringify(data)),
+            // qos: 1,
+            // retain: false
+        // }, () => {
+            // log.log('======= message written to mqtt ==========');
+            // log.log(data)
+            // log.log('======= time taken to send ==========')
+            // log.log(Date.now() - this.timer, "ms")
+            // callback("data written")
+        // })
     }
 
 
@@ -554,12 +538,13 @@ class NodeDevice {
                 callback('Cannot repeat');
                 return
             }
-            var action = this.actionsArray[0];
-            this.mqtt_write(action, (data) => {
-                console.log("===== SENDING MQTT ========", action);
-                this.actionsArray.shift();
+
+            this.mqtt_write(this.actionsArray[0], (data) => {
+                console.log("===== SENDING MQTT ========");
+
+                log.log(data);
+                // this.actionsArray.shift();
                 this.ready = false;
-                callback(data);
             })
         }
     }
@@ -624,3 +609,14 @@ class NodeDevice {
     }
 
 }
+var d = {
+	JOAT_CONNECT:true,
+	id:"10",
+	HardwareId:"MCUDEVICE-FC1A8ABF713C",
+	ipAddress:"192.168.0.9",
+	name:"10",
+	type: "magSwitch"
+}
+setTimeout(()=>{
+	//addNewDevice(d,"mqtt");
+}, 500)

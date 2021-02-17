@@ -1,5 +1,6 @@
 //@ts-check
 /**Packages */
+var config = require('./managers/configManager');
 var express = require('express');
 var exphbs = require('express-handlebars');
 const fileUpload = require('express-fileupload');
@@ -9,15 +10,14 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser')
 var logger = require('morgan');
 var http = require('http');
+
 var server, port, ipAddress;
 
 
 /**Local requires */
-const g = require("./common/common");
-const config = g.configManager;
-const log = g.logController;
-// var config = require('./managers/configManager');
-// var log = require('./controllers/loggingController');
+var serialPort = require('./controllers/serialController')
+var scriptReader = require('./managers/scriptManager')
+var log = require('./controllers/loggingController');
 var indexRouter = require('./routes/index');
 
 /** Express settings */
@@ -41,6 +41,8 @@ app.set('view engine', 'handlebars');
 /** Directory linking */
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/packages", express.static(path.join(__dirname, 'node_modules'))) //TODO: make individ paths for each (jquery..etc)
+
+
 
 
 /** Server Settings */
@@ -72,6 +74,4 @@ function onError(err) {
         throw err;
     }
 }
-exports.server = server;
-exports.app = app;
-// module.exports = app, server;
+module.exports = app;

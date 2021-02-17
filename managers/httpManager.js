@@ -5,14 +5,13 @@
 // var $ = require('jQuery')
 var request = require('request');
 var path = require('path');
-var configManager = require("./configManager");
-const g = require("../common/common")
-// var config = g.configManager.configJson;
+var ConfigManager = require("./configManager");
+var config = ConfigManager.configJson;
 var serialController = require('../controllers/serialController')
-var logController = require('../controllers/loggingController');
-var eventActionController = require("../controllers/eventActionController");
-var deviceManager = require('./deviceManager');
-var scriptManager = require('./scriptManager');
+var log = require('../controllers/loggingController');
+var EventActionController = require("../controllers/eventActionController");
+var DeviceManager = require('./deviceManager');
+var ScriptManager = require('./scriptManager');
 const mediaManager = require("../managers/mediaManager");
 const systemInformation = require("../controllers/systemInformation");
 const shellCommands = require("../controllers/shellCommands");
@@ -21,23 +20,20 @@ var serverRoutes = {
     script: `/script`,
 }
 
-// Enable logging direct to root server
-var enableHttpLog = false;
-
 
 // =============================================================================== //
 // ========================= Config Manager ===================================== //
 // ============================================================================= //
 exports.getConfig = function (req, res) {
     let conf = {}
-    g.configManager.getConfig().then(c => {
+    ConfigManager.getConfig().then(c => {
         conf = c;
     }).then(() => {
-        g.mediaManager.getAllMedia().then(media => {
+        mediaManager.getAllMedia().then(media => {
             conf.media = media
         })
     }).then(() => {
-        g.systemInformation.getInfo().then(data => {
+        systemInformation.getInfo().then(data => {
             conf.systemInformation = data
             res.send(conf)
         })
@@ -45,9 +41,8 @@ exports.getConfig = function (req, res) {
 }
 
 exports.updateConfig = function (req, res) {
-    // var newConfig = req.params.config
-    var newConfig = req.body;
-    g.configManager.updateConfig(newConfig)
+    var newConfig = req.params.config
+    ConfigManager.updateConfig(newConfig)
     res.send({
         "success": true,
         "config": newConfig
@@ -56,9 +51,9 @@ exports.updateConfig = function (req, res) {
 
 exports.updateRootApi = function (req, res) {
     var newApi = req.body.api
-    g.configManager.getConfig().then(currentConfig => {
+    ConfigManager.getConfig().then(currentConfig => {
         currentConfig.server_url = newApi;
-        g.configManager.updateConfig(currentConfig);
+        ConfigManager.updateConfig(currentConfig);
     })
 }
 
@@ -73,9 +68,9 @@ exports.serverEvent = function (req, res) {
         name: req.body.eventName,
         masterId: req.body.masterId
     }
-    g.eventActionController.setEventFromServer();
-    g.eventActionController.forceEventFromServer(packet, (result) => {
-        g.logController.log(result);
+    EventActionController.setEventFromServer();
+    EventActionController.forceEventFromServer(packet, (result) => {
+        log.log(result);
     });
     res.send({
         success: true
@@ -88,7 +83,7 @@ exports.serverAction = function (req, res) {
         actionName: req.body.actionName,
         masterId: req.body.masterId
     }
-    g.eventActionController.forceActionFromServer(packet.actionName, packet.masterId);
+    EventActionController.forceActionFromServer(packet.actionName, packet.masterId);
     res.send("Forcing Action")
 }
 
@@ -100,7 +95,7 @@ exports.sendEventsToServer = function (message) {
             method: 'put',
             body: message,
             json: true,
-            url: g.configManager.configJson.server_url + '/game/event/complete' //TODO: change from game to script
+            url: config.server_url + '/game/event/complete' //TODO: change from game to script
         }
         request(options, (err, res, body) => {
             var result = {
@@ -119,7 +114,7 @@ exports.sendEventsToServer = function (message) {
 // ============================================================================= //
 exports.getRootServerScripts = function () {
     return new Promise((resolve, reject) => {
-        var address = (g.configManager.configJson.server_url + serverRoutes.script);
+        var address = (config.server_url + serverRoutes.script);
         var options = {
             method: 'get',
             url: address
@@ -133,7 +128,7 @@ exports.getRootServerScripts = function () {
 exports.getRootServerScript = function (scriptName) {
     scriptName = path.parse(scriptName).name;
     return new Promise((resolve, reject) => {
-        var address = (g.configManager.configJson.server_url + serverRoutes.script + `/${scriptName}`);
+        var address = (config.server_url + serverRoutes.script + `/${scriptName}`);
         var options = {
             method: 'get',
             url: address
@@ -145,25 +140,25 @@ exports.getRootServerScript = function (scriptName) {
 }
 
 exports.resetEventActionStates = (req, res) => {
-    g.eventActionController.resetStates(req.params.scriptName);
+    EventActionController.resetStates(req.params.scriptName);
     res.send("States reset");
 }
 
 exports.getSelectedEventActionScript = (req, res) => {
-    g.eventActionController.getSelectedScript().then((script) => {
+    EventActionController.getSelectedScript().then((script) => {
         res.send(script);
     })
 }
 
 /** Route from root server to fetch updates on all scripts */
 exports.forceEventActionScriptUpdate = function (req, res) {
-    g.scriptManager.updateScriptsFromRootServer();
+    ScriptManager.updateScriptsFromRootServer();
     res.send("Updated");
 }
 
 exports.deleteEventActionScript = function (req, res) {
     var script = req.params.scriptName;
-    g.scriptManager.deleteScript(script, (m) => {
+    ScriptManager.deleteScript(script, (m) => {
         res.send(m)
     });
 }
@@ -197,14 +192,14 @@ exports.deviceManager_sendHttp = function (address, message, type = "GET", callb
 
 exports.deviceManager_sendHeartbeats = function (node) {
     var msg = {
-        branchId: g.configManager.configJson.branchId,
+        branchId: config.branchId,
         node: node
     }
     var options = {
         method: 'post',
         body: msg,
         json: true,
-        url: g.configManager.configJson.server_url + "/branch/nodeUpdate"
+        url: config.server_url + "/branch/nodeUpdate"
     }
     request(options, (err, res, body) => {
         // callback(res)
@@ -221,13 +216,13 @@ exports.deviceManager_sendHeartbeats = function (node) {
 // ============================================================================= //
 
 exports.deviceManager_info = function (req, res) {
-    g.deviceManager.getNodeInfo(req.params.id).then(info => {
+    DeviceManager.getNodeInfo(req.params.id).then(info => {
         res.send(info);
     })
 }
 
 exports.DeviceManager_createNewNode = function (req, res) {
-    g.deviceManager.addNewDevice(req.body.details, req.body.type, true)
+    DeviceManager.addNewDevice(req.body.details, req.body.type, true)
     res.send("Node created")
 }
 
@@ -236,14 +231,14 @@ exports.DeviceManager_updateNode = function (req, res) {
 }
 
 exports.DeviceManager_deleteNode = function (req, res) {
-    g.deviceManager.removeDevice(req.params.id);
+    DeviceManager.removeDevice(req.params.id);
     res.send("Node removed")
 }
 
 
 /** Get all master devices connected to serial */
 exports.deviceManager_infoAll = function (req, res) {
-    g.deviceManager.getAllNodeInfo().then(result => {
+    DeviceManager.getAllNodeInfo().then(result => {
         res.send(result);
     })
 }
@@ -252,7 +247,7 @@ exports.deviceManager_infoAll = function (req, res) {
 exports.deviceManager_directMqttMessage = function (req, res) {
     var id = req.body.id;
     var message = req.body.message;
-    g.deviceManager.directMqttMessage(id, message, (result) => {
+    DeviceManager.directMqttMessage(id, message, (result) => {
         res.send(result);
     })
 }
@@ -260,7 +255,7 @@ exports.deviceManager_directMqttMessage = function (req, res) {
 exports.deviceManager_directSerialMessage = function (req, res) {
     var id = req.body.id;
     var message = req.body.message
-    g.deviceManager.directSerialMessage(id, message, (result) => {
+    DeviceManager.directSerialMessage(id, message, (result) => {
         res.send(result)
     })
 }
@@ -268,7 +263,7 @@ exports.deviceManager_directSerialMessage = function (req, res) {
 exports.deviceManager_directHTTPMessage = function (req, res) {
     var id = req.body.id;
     var message = req.body.message
-    g.deviceManager.directHTTPMessage(id, message, (result) => {
+    DeviceManager.directHTTPMessage(id, message, (result) => {
         res.send(result)
     })
 }
@@ -280,7 +275,7 @@ exports.deviceManager_directHTTPMessage = function (req, res) {
 // ========================= Serial Controller ================================== //
 // ============================================================================= //
 exports.serialController_refresh = function (req, res) {
-    g.serialController.generateSerialDevices();
+    serialController.generateSerialDevices();
     res.send("Refreshed");
 }
 
@@ -291,7 +286,7 @@ exports.serialController_refresh = function (req, res) {
 // ============================================================================= //
 exports.updateSelectedScript = function (req, res) {
     var scriptName = req.params.scriptName;
-    g.scriptManager.updateSelectedScript(scriptName, (result) => {
+    ScriptManager.updateSelectedScript(scriptName, (result) => {
         res.send(result);
     });
 }
@@ -307,13 +302,11 @@ exports.sendLogToRoot = function (msg) {
         method: 'post',
         body: msg,
         json: true,
-        url: g.configManager.configJson.server_url + "/log"
+        url: config.server_url + "/log"
     }
-    if (enableHttpLog) {
-        request(options, (err, res, body) => {
-            // callback(res)
-        })
-    }
+    request(options, (err, res, body) => {
+        // callback(res)
+    })
 }
 
 
@@ -323,20 +316,20 @@ exports.sendLogToRoot = function (msg) {
 // ============================================================================= //
 exports.shellRestartBranchServer = function (req, res) {
     res.send({ success: true })
-    g.shellCommands.restartBranchServer();
+    shellCommands.restartBranchServer();
 }
 
 exports.shellReloadBranchDesktop = function (req, res) {
     res.send({ success: true })
-    g.shellCommands.reloadBranchDesktop();
+    shellCommands.reloadBranchDesktop();
 }
 
 exports.shellCustomCommand = function (req, res) {
     res.send({ success: true })
-    g.shellCommands.customCommand(req.body.command);
+    shellCommands.customCommand(req.body.command);
 }
 
 exports.shellGitUpdate = function (req, res) {
     res.send({ success: true })
-    g.shellCommands.gitUpdate();
+    shellCommands.gitUpdate();
 }
